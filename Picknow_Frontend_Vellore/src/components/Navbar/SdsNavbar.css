@@ -1,0 +1,569 @@
+/* ============================================================
+   SHRI DEEPAALAYA SILKS — Navbar Styles
+   Reference: minimal editorial template (maroon/gold/ivory)
+   ============================================================ */
+
+/* ── Container ── */
+.sds-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-beige);
+  transition: box-shadow var(--transition-base), background-color var(--transition-base);
+  will-change: box-shadow;
+}
+
+.sds-navbar.scrolled {
+  box-shadow: 0 2px 20px rgba(40, 35, 33, 0.10);
+}
+
+.sds-navbar-inner {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-left: var(--container-px);
+  padding-right: var(--container-px);
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-sizing: border-box;
+}
+
+.sds-navbar.scrolled .sds-navbar-inner {
+  height: var(--nav-height-sm);
+}
+
+/* ── Logo (left) ── */
+.sds-nav-logo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+/* ── Center nav links (desktop) ── */
+.sds-nav-links {
+  flex: 1;
+  display: flex;
+  align-items: center;   /* all children sit on the same vertical center line */
+  justify-content: center;
+  gap: 2rem;
+  height: 100%;
+}
+
+/* Plain links inside the nav row — flex-centered so they match dropdown items */
+.sds-nav-links > .sds-nav-link {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-bottom: 0;     /* remove bottom padding that pushes text up */
+}
+
+.sds-nav-link {
+  font-family: var(--font-sans);
+  font-size: var(--nav-label-size);
+  font-weight: var(--nav-label-weight);
+  letter-spacing: var(--nav-label-spacing);
+  text-transform: uppercase;
+  color: var(--color-charcoal);
+  text-decoration: none;
+  position: relative;
+  padding-bottom: 3px;
+  white-space: nowrap;
+  transition: color var(--transition-fast);
+}
+
+.sds-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--color-gold);
+  transition: width var(--transition-base);
+}
+
+.sds-nav-link:hover,
+.sds-nav-link.active {
+  color: var(--color-maroon);
+}
+
+.sds-nav-link:hover::after,
+.sds-nav-link.active::after {
+  width: 100%;
+}
+
+/* Dropdown trigger */
+.sds-nav-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;   /* vertically center the link text */
+  height: 100%;          /* fill full navbar row — eliminates dead gap */
+}
+
+/* Keep dropdown trigger link text itself vertically centered */
+.sds-nav-dropdown > .sds-nav-link {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-bottom: 0;
+}
+
+.sds-nav-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;             /* sits flush below the full-height wrapper */
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 200px;
+  background: var(--color-white);
+  border: 1px solid var(--color-beige);
+  border-top: 2px solid var(--color-gold);
+  box-shadow: var(--shadow-md);
+  padding: 8px 0;
+  z-index: 1050;
+}
+
+/* Invisible bridge prevents mouse-leave between wrapper and menu */
+.sds-nav-dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: transparent;
+}
+
+.sds-nav-dropdown:hover .sds-nav-dropdown-menu {
+  display: block;
+  animation: fadeInDown 180ms ease forwards;
+}
+
+/* Keep link highlighted while hovering the open menu */
+.sds-nav-dropdown:hover > .sds-nav-link {
+  color: var(--color-maroon);
+}
+.sds-nav-dropdown:hover > .sds-nav-link::after {
+  width: 100%;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.sds-dropdown-item {
+  display: block;
+  padding: 10px 20px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-charcoal);
+  transition: background-color var(--transition-fast), color var(--transition-fast), padding-left var(--transition-fast);
+}
+
+.sds-dropdown-item:hover {
+  background-color: var(--color-ivory);
+  color: var(--color-maroon);
+  padding-left: 26px;
+}
+
+.sds-nav-caret {
+  font-size: 8px;
+  margin-left: 3px;
+  vertical-align: middle;
+  color: var(--color-gold);
+}
+
+/* ── Right utilities ── */
+.sds-nav-utils {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.sds-nav-icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--color-charcoal);
+  text-decoration: none;
+  border-radius: var(--radius);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.sds-nav-icon-btn:hover {
+  color: var(--color-maroon);
+  background-color: var(--color-ivory);
+}
+
+/* Badge on icon */
+.sds-icon-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background-color: var(--color-maroon);
+  color: var(--color-white);
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* INR currency label */
+.sds-currency-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  padding: 4px 8px;
+  border: 1px solid var(--color-beige);
+}
+
+/* Login button */
+.sds-nav-login-btn {
+  font-family: var(--font-sans);
+  font-size: var(--nav-label-size);
+  font-weight: var(--nav-label-weight);
+  letter-spacing: var(--nav-label-spacing);
+  text-transform: uppercase;
+  color: var(--color-charcoal);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--color-beige);
+  background: transparent;
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.sds-nav-login-btn:hover {
+  background-color: var(--color-maroon);
+  color: var(--color-white);
+  border-color: var(--color-maroon);
+}
+
+/* Avatar */
+.sds-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: var(--color-maroon);
+  color: var(--color-white);
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid var(--color-gold);
+  transition: box-shadow var(--transition-fast);
+}
+
+.sds-user-avatar:hover {
+  box-shadow: 0 0 0 3px rgba(197, 161, 90, 0.3);
+}
+
+/* ── Hamburger (mobile only) ── */
+.sds-hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--color-charcoal);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* ── Mobile Search bar (below main row) ── */
+.sds-mobile-search-row {
+  display: none;
+  padding: 8px var(--container-px) 10px;
+  border-top: 1px solid var(--color-beige);
+}
+
+.sds-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-ivory);
+  border: 1px solid var(--color-beige);
+  padding: 8px 12px;
+  width: 100%;
+  transition: border-color var(--transition-fast);
+}
+
+.sds-search-bar:focus-within {
+  border-color: var(--color-gold);
+}
+
+.sds-search-bar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--color-charcoal);
+}
+
+.sds-search-bar input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* ── Search suggestions dropdown ── */
+.sds-search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--color-white);
+  border: 1px solid var(--color-beige);
+  border-top: none;
+  box-shadow: var(--shadow-md);
+  z-index: 200;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.sds-search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  border-bottom: 1px solid var(--color-beige);
+}
+
+.sds-search-result-item:last-child { border-bottom: none; }
+
+.sds-search-result-item:hover {
+  background-color: var(--color-ivory);
+}
+
+.sds-search-result-img {
+  width: 44px;
+  height: 58px; /* 3:4 */
+  object-fit: cover;
+  border: 1px solid var(--color-beige);
+  flex-shrink: 0;
+}
+
+.sds-search-result-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-charcoal);
+  display: block;
+}
+
+.sds-search-result-cat {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.sds-search-result-price {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-maroon);
+  white-space: nowrap;
+}
+
+/* ── Mobile Sidebar drawer ── */
+.sds-mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(40, 35, 33, 0.5);
+  z-index: 9999;
+  backdrop-filter: blur(2px);
+}
+
+.sds-mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(320px, 85vw);
+  background: var(--color-white);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.sds-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-beige);
+}
+
+.sds-drawer-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--color-beige);
+  color: var(--color-charcoal);
+  cursor: pointer;
+}
+
+.sds-drawer-nav-list {
+  padding: 12px 0;
+  flex: 1;
+}
+
+.sds-drawer-nav-link {
+  display: block;
+  padding: 14px 24px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-charcoal);
+  border-bottom: 1px solid var(--color-beige);
+  transition: color var(--transition-fast), padding-left var(--transition-fast);
+}
+
+.sds-drawer-nav-link:hover {
+  color: var(--color-maroon);
+  padding-left: 30px;
+}
+
+.sds-drawer-section-title {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  padding: 16px 24px 8px;
+}
+
+.sds-drawer-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--color-beige);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sds-drawer-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-maroon);
+  background: transparent;
+  border: 1px solid var(--color-maroon);
+  padding: 10px 16px;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.sds-drawer-logout-btn:hover {
+  background-color: var(--color-maroon);
+  color: var(--color-white);
+}
+
+/* ── Logout confirm modal ── */
+.sds-logout-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(40, 35, 33, 0.55);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.sds-logout-modal {
+  background: var(--color-white);
+  border: 1px solid var(--color-beige);
+  padding: 2rem;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+}
+
+.sds-logout-modal .sds-logo-center {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.sds-logout-modal h3 {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-charcoal);
+  margin-bottom: 0.5rem;
+}
+
+.sds-logout-modal p {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.sds-logout-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.sds-logout-actions .btn {
+  flex: 1;
+  padding: 10px 16px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .sds-nav-links { gap: 1.25rem; }
+}
+
+@media (max-width: 768px) {
+  .sds-nav-links { display: none; }
+  .sds-hamburger { display: flex; }
+  .sds-mobile-search-row { display: block; }
+  .sds-currency-label { display: none; }
+
+  .sds-navbar-inner {
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sds-nav-utils > .sds-currency-label,
+  .sds-nav-utils > .sds-nav-link { display: none; }
+}

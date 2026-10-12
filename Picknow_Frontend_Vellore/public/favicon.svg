@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" fill="none">
+  <!-- Gold ornament: small diamond motif -->
+  <g transform="translate(8, 12)">
+    <polygon points="12,0 20,8 12,16 4,8" fill="#C5A15A" opacity="0.9"/>
+    <polygon points="12,3 17,8 12,13 7,8" fill="#6D1734"/>
+  </g>
+  <!-- Wordmark: Shri Deepaalaya Silks -->
+  <text
+    x="38" y="34"
+    font-family="'Playfair Display', Georgia, serif"
+    font-size="21"
+    font-weight="700"
+    fill="#6D1734"
+    letter-spacing="0.03em"
+  >Shri Deepaalaya</text>
+  <text
+    x="38" y="56"
+    font-family="'Playfair Display', Georgia, serif"
+    font-size="14"
+    font-weight="400"
+    fill="#C5A15A"
+    letter-spacing="0.22em"
+  >SILKS</text>
+  <!-- thin gold underline -->
+  <rect x="38" y="62" width="180" height="1" fill="#C5A15A" opacity="0.6"/>
+</svg>
