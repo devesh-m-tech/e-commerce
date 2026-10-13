@@ -64,20 +64,20 @@ export const initiateRegistration = async (req, res) => {
                 // Send OTP via email
                 const emailData = {
                     to: email,
-                    subject: "Email Verification OTP - Picknow Vendor Registration",
+                    subject: "Email Verification OTP - Shri Deepaalaya Silks Artisan Registration",
                     html: generateEmailTemplate({
-                        title: "Welcome back to the<br>Picknow Vendor Program!",
+                        title: "Welcome back to the<br>Shri Deepaalaya Silks Artisan Program!",
                         greetingName: existingVendor.vendorName,
-                        mainContent: "Thank you for continuing your vendor registration with Picknow. To verify your email and proceed with your application, please use the OTP below.",
+                        mainContent: "Thank you for continuing your artisan partner registration with Shri Deepaalaya Silks. To verify your email and proceed with your application, please use the OTP below.",
                         otpBox: {
                             title: "Email Verification OTP",
                             code: otp,
                             footer: "This OTP expires in 10 minutes",
-                            instructions: "Enter this OTP on the vendor registration page to continue your application."
+                            instructions: "Enter this OTP on the registration page to continue your application."
                         },
-                        portalName: "Vendor Partner Portal",
-                        portalSubtitle: "Vendor Registration",
-                        supportEmail: "vendors@picknow.in"
+                        portalName: "Artisan Partner Portal",
+                        portalSubtitle: "Partner Registration",
+                        supportEmail: "artisans@shrideepaalayasilks.com"
                     })
                 };
 
@@ -113,20 +113,20 @@ export const initiateRegistration = async (req, res) => {
         // Send OTP via email
         const emailData = {
             to: email,
-            subject: "Email Verification OTP - Picknow Vendor Registration",
+            subject: "Email Verification OTP - Shri Deepaalaya Silks Artisan Registration",
             html: generateEmailTemplate({
-                title: "Welcome to the<br>Picknow Vendor Program!",
+                title: "Welcome to the<br>Shri Deepaalaya Silks Artisan Program!",
                 greetingName: vendorName,
-                mainContent: "Thank you for registering as a vendor on Picknow. To complete your registration, please use the following OTP:",
+                mainContent: "Thank you for registering as an artisan partner on Shri Deepaalaya Silks. To complete your registration, please use the following OTP:",
                 otpBox: {
                     title: "Email Verification OTP",
                     code: otp,
                     footer: "This OTP expires in 10 minutes",
-                    instructions: "Enter this OTP on the vendor registration page to continue your application."
+                    instructions: "Enter this OTP on the registration page to continue your application."
                 },
-                portalName: "Vendor Partner Portal",
-                portalSubtitle: "Vendor Registration",
-                supportEmail: "vendors@picknow.in"
+                portalName: "Artisan Partner Portal",
+                portalSubtitle: "Partner Registration",
+                supportEmail: "artisans@shrideepaalayasilks.com"
             })
         };
 

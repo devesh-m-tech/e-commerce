@@ -284,9 +284,10 @@ const Layout = () => {
     },
     title: {
       color: '#fff',
+      fontFamily: '"Playfair Display", Georgia, serif',
       fontWeight: 600,
-      fontSize: isMobile ? '0.9rem' : isTablet ? '1rem' : '1.2rem', // Reduced font sizes
-      letterSpacing: '0.3px', // Reduced letter spacing
+      fontSize: isMobile ? '0.95rem' : isTablet ? '1.05rem' : '1.25rem',
+      letterSpacing: '0.04em',
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
@@ -626,7 +627,7 @@ const Layout = () => {
             flexGrow: { xs: 1, md: 0 }, 
             ml: 1,
           }}>
-            PickNow Admin
+            Shri Deepaalaya Silks Admin
           </Typography>
           
           <Box sx={styles.userMenuContainer}>
@@ -786,7 +787,7 @@ const Layout = () => {
       >
         <Box sx={styles.mobileDrawerHeader}>
           <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1.1rem' }}>
-            PickNow Admin
+            Shri Deepaalaya Silks Admin
           </Typography>
           <IconButton
             onClick={() => setDrawerOpen(false)}

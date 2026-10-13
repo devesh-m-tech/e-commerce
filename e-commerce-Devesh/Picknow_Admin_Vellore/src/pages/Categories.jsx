@@ -641,7 +641,7 @@ const Categories = () => {
                 color: 'primary.main',
                 '&:hover': {
                   borderColor: 'primary.dark',
-                  backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                  backgroundColor: 'rgba(109, 23, 52, 0.06)',
                 },
               }}
             >

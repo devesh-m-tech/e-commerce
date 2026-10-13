@@ -63,8 +63,8 @@
   position: absolute;
   width: 105%;
   height: 105%;
-  border: 2.5px solid #f1f5f9;
-  border-top-color: #fb641b;
+  border: 2px solid #EDE2D2;
+  border-top-color: #6D1734;
   border-radius: 50%;
   animation: spinSleek 0.8s linear infinite;
 }

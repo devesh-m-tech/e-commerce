@@ -56,8 +56,8 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     >
       <Box sx={{ display: 'flex', alignItems: 'center', padding: theme.spacing(2) }}>
         {isSidebarOpen && (
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            Admin Panel
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontFamily: '"Playfair Display", Georgia, serif', letterSpacing: '0.04em', fontSize: '1rem', fontWeight: 600 }}>
+            Shri Deepaalaya Silks
           </Typography>
         )}
         <IconButton onClick={() => setIsSidebarOpen(!isSidebarOpen)} sx={{ color: 'white' }}>

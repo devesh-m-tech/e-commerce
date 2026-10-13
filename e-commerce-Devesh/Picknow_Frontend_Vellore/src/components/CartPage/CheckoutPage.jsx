@@ -88,7 +88,7 @@ const AddressStep = ({ addresses, selectedAddress, setSelectedAddress, navigate,
           <p style={{ fontSize: '15px', color: '#878787' }}>No addresses found in your profile.</p>
           <button
             className="change-addr-btn"
-            style={{ float: 'none', background: '#2874f0', color: '#fff', border: 'none', padding: '8px 24px' }}
+            style={{ float: 'none', background: '#6D1734', color: '#fff', border: 'none', padding: '10px 24px', borderRadius: '2px', fontWeight: 600, letterSpacing: '0.5px' }}
             onClick={() => navigate("/profile", { state: { activeTab: "addresses" } })}
           >
             <Plus size={16} /> ADD NEW ADDRESS

@@ -217,7 +217,7 @@ export const createProduct = async (req, res) => {
       console.log("System: Attempting to create notification for new product:", pName);
       const newNotification = new Notification({
         title: "New Product Arrived! 🔥",
-        message: `${pName} is now available on Picknow. Check it out!`,
+        message: `${pName} is now available at Shri Deepaalaya Silks. Check it out!`,
         type: "PRODUCT",
         link: `/product/${product._id}`,
         metadata: {
@@ -232,7 +232,7 @@ export const createProduct = async (req, res) => {
       await sendPushNotification(
         null, // null = broadcast to all users
         "New Product Arrived! 🔥",
-        `${pName} is now available on Picknow. Check it out!`,
+        `${pName} is now available at Shri Deepaalaya Silks. Check it out!`,
         { id: newNotification._id.toString(), type: "PRODUCT", productId: product._id.toString() }
       );
     } catch (notifError) {

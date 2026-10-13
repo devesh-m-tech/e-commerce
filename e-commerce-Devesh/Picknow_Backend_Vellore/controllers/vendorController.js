@@ -384,14 +384,14 @@ export const updateVendorStatus = async (req, res) => {
                 try {
                     await sendMail({
                         to: vendor.email,
-                        subject: "Registration Approved - Welcome to Picknow Vendor Program!",
+                        subject: "Registration Approved - Welcome to Shri Deepaalaya Silks Artisan Program!",
                         html: generateEmailTemplate({
                             title: "Congratulations!<br>Your account has been approved.",
                             greetingName: vendor.vendorName,
-                            mainContent: "We are pleased to inform you that your registration for the Picknow Vendor Program has been approved. You can now log in to your dashboard to manage your products and orders.",
-                            portalName: "Vendor Partner Portal",
+                            mainContent: "We are pleased to inform you that your registration for the Shri Deepaalaya Silks Artisan Program has been approved. You can now log in to your dashboard to manage your products and orders.",
+                            portalName: "Artisan Partner Portal",
                             portalSubtitle: "Account Approval",
-                            supportEmail: "vendors@picknow.in"
+                            supportEmail: "artisans@shrideepaalayasilks.com"
                         })
                     });
                     console.log('Approval email sent to vendor:', vendor.email);
@@ -407,14 +407,14 @@ export const updateVendorStatus = async (req, res) => {
                 try {
                     await sendMail({
                         to: vendor.email,
-                        subject: "Update on your Registration - Picknow Vendor Program",
+                        subject: "Update on your Registration - Shri Deepaalaya Silks Artisan Program",
                         html: generateEmailTemplate({
                             title: "Registration Update",
                             greetingName: vendor.vendorName,
-                            mainContent: `Thank you for your interest in Picknow. After reviewing your application, we regret to inform you that your registration could not be approved at this time.<br><br><strong>Reason:</strong> ${adminMessage || 'Incomplete documentation or information.'}`,
-                            portalName: "Vendor Partner Portal",
+                            mainContent: `Thank you for your interest in Shri Deepaalaya Silks. After reviewing your application, we regret to inform you that your registration could not be approved at this time.<br><br><strong>Reason:</strong> ${adminMessage || 'Incomplete documentation or information.'}`,
+                            portalName: "Artisan Partner Portal",
                             portalSubtitle: "Account Status",
-                            supportEmail: "vendors@picknow.in"
+                            supportEmail: "artisans@shrideepaalayasilks.com"
                         })
                     });
                     console.log('Rejection email sent to vendor:', vendor.email);

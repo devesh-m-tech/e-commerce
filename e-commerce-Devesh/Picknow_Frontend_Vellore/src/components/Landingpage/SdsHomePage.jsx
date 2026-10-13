@@ -202,7 +202,7 @@ const SdsHomePage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            Handpicked designer dresses, festive wear and heirloom jewelleries.
+            Handpicked silk sarees, festive wear and heirloom jewellery.
           </motion.p>
 
           <motion.div
@@ -211,8 +211,8 @@ const SdsHomePage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.35 }}
           >
-            <Link to="/category/cat_dresses" className="sds-btn sds-btn-primary">Shop Dresses</Link>
-            <Link to="/category/cat_jewelleries" className="sds-btn sds-btn-secondary">Explore Jewelleries</Link>
+            <Link to="/products" className="sds-btn sds-btn-primary">Shop The Collection</Link>
+            <Link to="/category/cat_silk_sarees" className="sds-btn sds-btn-secondary">Explore Sarees</Link>
           </motion.div>
 
           <div className="sds-hero-ornament" aria-hidden="true">
@@ -255,10 +255,11 @@ const SdsHomePage = () => {
                 : (
                   // Fallback static categories
                   [
-                    { label: 'Dresses',      path: '/category/cat_dresses',     emoji: '👗' },
-                    { label: 'Jewelleries',  path: '/category/cat_jewelleries',  emoji: '💍' },
-                    { label: 'All Products', path: '/products',                 emoji: '✨' },
-                    { label: 'Offers',       path: '/deals',                    emoji: '🏷️' },
+                    { label: 'Silk Sarees',       path: '/category/cat_silk_sarees',    emoji: '🥻' },
+                    { label: 'Bridal Collection', path: '/category/cat_bridal_wear',    emoji: '👑' },
+                    { label: "Women's Wear",      path: '/category/cat_womens_wear',    emoji: '✨' },
+                    { label: 'Jewellery',         path: '/category/cat_jewellery',      emoji: '💎' },
+                    { label: 'Cotton Sarees',     path: '/category/cat_cotton_sarees',  emoji: '🌸' },
                   ].map((c) => (
                     <Link key={c.path} to={c.path} className="sds-category-card">
                       <div className="sds-category-img-ring" style={{ fontSize: '2.5rem', lineHeight: 1 }}>

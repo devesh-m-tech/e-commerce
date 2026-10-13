@@ -22,27 +22,41 @@ const formatINR = (amount) => {
 
 // ── Nav link configuration ───────────────────────────────────
 const NAV_LINKS = [
-  { label: 'Home',     path: '/' },
+  { label: 'Home', path: '/' },
   {
-    label: 'Dresses',
-    path: '/category/cat_dresses',
+    label: 'Sarees',
+    path: '/category/cat_silk_sarees',
     dropdown: [
-      { label: 'All Dresses',      path: '/category/cat_dresses' },
-      { label: 'Anarkali Suits',   path: '/category/cat_dresses' },
-      { label: 'Kurtis & Sets',    path: '/category/cat_dresses' },
+      { label: 'All Silk Sarees', path: '/category/cat_silk_sarees' },
+      { label: 'Kanchipuram Silk', path: '/category/cat_silk_sarees' },
+      { label: 'Banarasi Silk', path: '/category/cat_silk_sarees' },
+      { label: 'Soft Silk Sarees', path: '/category/cat_silk_sarees' },
+      { label: 'Cotton & Daily Sarees', path: '/category/cat_cotton_sarees' },
     ],
   },
   {
-    label: 'Jewelleries',
-    path: '/category/cat_jewelleries',
+    label: "Women's Wear",
+    path: '/category/cat_womens_wear',
     dropdown: [
-      { label: 'All Jewelleries',   path: '/category/cat_jewelleries' },
-      { label: 'Temple Jewellery',  path: '/category/cat_jewelleries' },
-      { label: 'Bridal Jewellery',  path: '/category/cat_jewelleries' },
+      { label: 'All Ethnic Wear', path: '/category/cat_womens_wear' },
+      { label: 'Anarkali Suits', path: '/category/cat_womens_wear' },
+      { label: 'Kurtis & Sets', path: '/category/cat_womens_wear' },
+      { label: 'Designer Blouses', path: '/category/cat_womens_wear' },
     ],
   },
+  {
+    label: 'Jewellery',
+    path: '/category/cat_jewellery',
+    dropdown: [
+      { label: 'All Heirloom Jewellery', path: '/category/cat_jewellery' },
+      { label: 'Temple Jewellery', path: '/category/cat_jewellery' },
+      { label: 'Bridal Jewellery Sets', path: '/category/cat_jewellery' },
+      { label: 'Antique Gold Finish', path: '/category/cat_jewellery' },
+    ],
+  },
+  { label: 'Bridal Collection', path: '/category/cat_bridal_wear' },
   { label: 'All Products', path: '/products' },
-  { label: 'Offers',       path: '/deals' },
+  { label: 'Offers', path: '/deals' },
 ];
 
 // ── Mobile Drawer ────────────────────────────────────────────

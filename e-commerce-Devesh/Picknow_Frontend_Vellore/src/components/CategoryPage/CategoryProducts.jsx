@@ -12,7 +12,7 @@ import { FiFilter, FiCheck, FiSearch, FiZap, FiTag } from "react-icons/fi";
 const CategoryProducts = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
-  const fallbackName = searchParams.get("name") || (id?.toLowerCase().includes("saree") ? "Dresses" : (id?.toLowerCase().includes("jewel") ? "Jewelleries" : "Dresses"));
+  const fallbackName = searchParams.get("name") || (id?.toLowerCase().includes("jewel") ? "Heirloom Gold Temple Jewellery" : "Pure Kanchipuram Silk Sarees");
 
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);

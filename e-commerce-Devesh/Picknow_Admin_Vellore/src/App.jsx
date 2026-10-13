@@ -28,79 +28,87 @@ import './index.css';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
-      light: '#42a5f5',
-      dark: '#1565c0',
+      main: '#6D1734', // Luxury Maroon
+      light: '#8e2346',
+      dark: '#4A1025', // Deep Burgundy
       contrastText: '#ffffff',
     },
     secondary: {
-      main: '#dc004e',
-      light: '#ff4081',
-      dark: '#c51162',
-      contrastText: '#ffffff',
+      main: '#C5A15A', // Gold
+      light: '#d8b97c',
+      dark: '#9e7b32',
+      contrastText: '#282321',
     },
     success: {
-      main: '#4caf50',
-      light: '#81c784',
-      dark: '#388e3c',
+      main: '#2e7d32',
+      light: '#4caf50',
+      dark: '#1b5e20',
     },
     error: {
-      main: '#f44336',
-      light: '#e57373',
-      dark: '#d32f2f',
+      main: '#c62828',
+      light: '#ef5350',
+      dark: '#b71c1c',
     },
     warning: {
-      main: '#ff9800',
-      light: '#ffb74d',
-      dark: '#f57c00',
+      main: '#ed6c02',
+      light: '#ff9800',
+      dark: '#e65100',
     },
     info: {
-      main: '#2196f3',
-      light: '#64b5f6',
-      dark: '#1976d2',
+      main: '#6D1734',
+      light: '#8e2346',
+      dark: '#4A1025',
     },
     background: {
-      default: '#f8f9fa',
+      default: '#FFF9F0', // Ivory
       paper: '#ffffff',
     },
     text: {
-      primary: '#333333',
-      secondary: '#666666',
+      primary: '#282321',
+      secondary: '#6b5f5a',
     },
   },
   typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Karla", system-ui, -apple-system, sans-serif',
     h1: {
+      fontFamily: '"Playfair Display", Georgia, serif',
       fontWeight: 600,
       fontSize: '2.5rem',
     },
     h2: {
+      fontFamily: '"Playfair Display", Georgia, serif',
       fontWeight: 600,
       fontSize: '2rem',
     },
     h3: {
+      fontFamily: '"Playfair Display", Georgia, serif',
       fontWeight: 600,
       fontSize: '1.75rem',
     },
     h4: {
+      fontFamily: '"Playfair Display", Georgia, serif',
       fontWeight: 600,
       fontSize: '1.5rem',
     },
     h5: {
+      fontFamily: '"Playfair Display", Georgia, serif',
       fontWeight: 600,
       fontSize: '1.25rem',
     },
     h6: {
+      fontFamily: '"Playfair Display", Georgia, serif',
       fontWeight: 600,
       fontSize: '1rem',
     },
     button: {
-      textTransform: 'none',
-      fontWeight: 500,
+      fontFamily: '"Karla", sans-serif',
+      textTransform: 'uppercase',
+      letterSpacing: '0.12em',
+      fontWeight: 600,
     },
   },
   shape: {
-    borderRadius: 8,
+    borderRadius: 2,
   },
   shadows: [
     'none',

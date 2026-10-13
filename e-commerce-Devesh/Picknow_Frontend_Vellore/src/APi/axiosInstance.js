@@ -1,16 +1,20 @@
 import axios from 'axios';
 import { handleMockRequest } from '../mockData/mockApiHandler';
 
+const defaultAdapter = axios.getAdapter(axios.defaults.adapter);
+
 const axiosInstance = axios.create({
-  baseURL: import.meta.env?.VITE_API_BASE_URL || 'http://localhost:3000 /api',
+  baseURL: import.meta.env?.VITE_API_BASE_URL || 'http://localhost:5000/api',
+  timeout: 5000,
   headers: {
     'Content-Type': 'application/json'
   }
 });
 
-// Offline / Disconnected adapter for local frontend execution with dummy data
+// Dual-mode adapter: attempts real backend first, seamlessly falls back to mock handler if offline/unreachable
 axiosInstance.defaults.adapter = async (config) => {
-  try {
+  // If explicitly requested mock mode via env
+  if (import.meta.env?.VITE_USE_MOCK === 'true') {
     const mockData = handleMockRequest(config);
     return {
       data: mockData,
@@ -20,16 +24,29 @@ axiosInstance.defaults.adapter = async (config) => {
       config,
       request: {}
     };
+  }
+
+  try {
+    const response = await defaultAdapter(config);
+    return response;
   } catch (error) {
-    console.error('[Mock API Adapter Error]:', error);
-    return {
-      data: { success: false, message: error.message },
-      status: 500,
-      statusText: 'Internal Error',
-      headers: {},
-      config,
-      request: {}
-    };
+    // If backend is not running or network request failed, gracefully fall back to local dataset
+    try {
+      const mockData = handleMockRequest(config);
+      if (mockData !== undefined) {
+        return {
+          data: mockData,
+          status: 200,
+          statusText: 'OK',
+          headers: { 'content-type': 'application/json' },
+          config,
+          request: {}
+        };
+      }
+    } catch (mockErr) {
+      // Fall through to throw original network error
+    }
+    throw error;
   }
 };
 

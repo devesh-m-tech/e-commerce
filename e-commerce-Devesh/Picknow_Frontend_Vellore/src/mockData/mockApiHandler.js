@@ -164,13 +164,27 @@ export const handleMockRequest = (config) => {
   // ── PRODUCTS BY CATEGORY ──────────────────────────────────────
   const prodCatMatch = cleanPath.match(/^\/product\/category\/([^/]+)$/) || cleanPath.match(/^\/products\/category\/([^/]+)$/);
   if (prodCatMatch) {
-    const catParam = decodeURIComponent(prodCatMatch[1]).toLowerCase();
+    const rawParam = decodeURIComponent(prodCatMatch[1]).toLowerCase();
+    const matchedCat = DUMMY_CATEGORIES.find(c =>
+      c._id.toLowerCase() === rawParam ||
+      c.cName.toLowerCase() === rawParam ||
+      rawParam.includes(c._id.toLowerCase()) ||
+      c.cName.toLowerCase().includes(rawParam)
+    );
+
     const filtered = DUMMY_PRODUCTS.filter(p => {
-      const pCat = p.pCategory.toLowerCase();
-      if (catParam.includes("dress") || catParam.includes("women") || catParam.includes("saree")) return pCat === "dresses";
-      if (catParam.includes("jewel")) return pCat === "jewelleries";
-      return pCat === catParam;
+      const pCat = (p.pCategory || "").toLowerCase();
+      const pSub = (p.pSubCategory || "").toLowerCase();
+      if (matchedCat && pCat === matchedCat.cName.toLowerCase()) return true;
+      if (pCat.includes(rawParam) || rawParam.includes(pCat)) return true;
+      if (pSub.includes(rawParam) || rawParam.includes(pSub)) return true;
+      if (rawParam.includes("saree") && pCat.includes("saree")) return true;
+      if (rawParam.includes("jewel") && pCat.includes("jewel")) return true;
+      if ((rawParam.includes("women") || rawParam.includes("dress")) && (pCat.includes("women") || pCat.includes("dress"))) return true;
+      if (rawParam.includes("bridal") && (pCat.includes("bridal") || pSub.includes("bridal"))) return true;
+      return false;
     });
+
     const results = filtered.length > 0 ? filtered : DUMMY_PRODUCTS;
     return {
       success: true,

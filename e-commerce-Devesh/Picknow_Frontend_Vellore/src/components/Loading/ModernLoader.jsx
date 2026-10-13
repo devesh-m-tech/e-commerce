@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import './ModernLoader.css';
-import PicknowLogo from '../../assets/PicknowLogo.png';
 
 const ModernLoader = ({
-  text = 'Picknow',
+  text = 'Shri Deepaalaya Silks',
   showProgress = true,
-  customMessage = 'Loading...',
+  customMessage = 'Weaving tradition into luxury...',
   preventScroll = true,
   inline = false
 }) => {
@@ -30,38 +29,65 @@ const ModernLoader = ({
   }, [preventScroll, inline]);
 
   useEffect(() => {
-  if (showProgress) {
-    const interval = setInterval(() => {
-      setProgress(prev =>
-        prev >= 100 ? 100 : Math.min(prev + Math.random() * 5, 100)
-      );
-    }, 300);
+    if (showProgress) {
+      const interval = setInterval(() => {
+        setProgress(prev =>
+          prev >= 100 ? 100 : Math.min(prev + Math.random() * 8, 100)
+        );
+      }, 200);
 
-    return () => clearInterval(interval);
-  }
-}, [showProgress]);
+      return () => clearInterval(interval);
+    }
+  }, [showProgress]);
 
   return (
     <div className={`modern-discovery-loader ${inline ? 'inline' : ''}`}>
       <div className="loader-portal-sleek">
         <div className="loader-logo-container-sleek">
           <div className="loader-spinner-minimal"></div>
-          <img src={PicknowLogo} alt="Picknow" className="loader-logo-sleek" />
+          <div className="loader-luxury-mark" style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontWeight: 800,
+            fontSize: '24px',
+            color: '#6D1734',
+            letterSpacing: '1px',
+            zIndex: 3,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <span style={{ color: '#6D1734' }}>/</span>
+            <span style={{ color: '#C5A15A' }}>\</span>
+            <span style={{ color: '#6D1734' }}>/</span>
+            <span style={{ color: '#C5A15A' }}>\</span>
+            <span style={{ color: '#6D1734', fontSize: '28px', lineHeight: 0.5 }}>.</span>
+          </div>
         </div>
         
         <div className="loader-info-sleek">
-          <h3 className="loader-title-sleek">{text}</h3>
-          <p className="loader-msg-sleek">{customMessage}</p>
+          <h3 className="loader-title-sleek" style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            letterSpacing: '1px',
+            color: '#6D1734',
+            fontSize: '1.15rem'
+          }}>{text}</h3>
+          <p className="loader-msg-sleek" style={{
+            fontFamily: "'Karla', sans-serif",
+            color: '#8C827A',
+            fontSize: '0.85rem'
+          }}>{customMessage}</p>
           
           {showProgress && (
             <div className="loader-progress-sleek">
-              <div className="loader-bar-bg-sleek">
+              <div className="loader-bar-bg-sleek" style={{ background: '#EDE2D2' }}>
                 <div 
                   className="loader-bar-fill-sleek" 
-                  style={{ width: `${Math.round(progress)}%` }}
+                  style={{ width: `${Math.round(progress)}%`, background: '#6D1734' }}
                 ></div>
               </div>
-              <span className="loader-percent-sleek">{Math.round(progress)}%</span>
+              <span className="loader-percent-sleek" style={{ color: '#C5A15A', fontWeight: 700 }}>
+                {Math.round(progress)}%
+              </span>
             </div>
           )}
         </div>

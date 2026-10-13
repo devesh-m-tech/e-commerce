@@ -22,12 +22,12 @@ const SOCIAL_LINKS = [
 
 const QUICK_LINKS = [
   { name: 'Home',               path: '/' },
-  { name: 'Silk Sarees',        path: '/category/silk-sarees' },
-  { name: 'Bridal Collection',  path: '/category/bridal-sarees' },
-  { name: "Women's Wear",       path: '/category/womens-wear' },
-  { name: 'Jewellery',          path: '/category/jewellery' },
+  { name: 'Silk Sarees',        path: '/category/cat_silk_sarees' },
+  { name: 'Bridal Collection',  path: '/category/cat_bridal_wear' },
+  { name: "Women's Wear",       path: '/category/cat_womens_wear' },
+  { name: 'Heirloom Jewellery', path: '/category/cat_jewellery' },
   { name: 'New Arrivals',       path: '/products?sort=newest' },
-  { name: 'Offers',             path: '/deals' },
+  { name: 'Special Offers',     path: '/deals' },
 ];
 
 const POLICY_LINKS = [

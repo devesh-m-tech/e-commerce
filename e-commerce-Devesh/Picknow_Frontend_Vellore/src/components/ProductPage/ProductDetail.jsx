@@ -1564,11 +1564,67 @@ const ProductDetail = () => {
                     <div className="specs-grid">
                       <div className="spec-item">
                         <span className="spec-label">Brand:</span>
-                        <span className="spec-value">{product.pBrand || "Premium"}</span>
+                        <span className="spec-value">{product.pBrand || "Shri Deepaalaya Silks"}</span>
                       </div>
                       <div className="spec-item">
                         <span className="spec-label">Category:</span>
-                        <span className="spec-value">{product.pCategory?.cName || product.pCategory || "General"}</span>
+                        <span className="spec-value">{product.pCategory?.cName || product.pCategory || "Silk Sarees"}</span>
+                      </div>
+                      {product.pSubCategory && (
+                        <div className="spec-item">
+                          <span className="spec-label">Collection:</span>
+                          <span className="spec-value">{product.pSubCategory}</span>
+                        </div>
+                      )}
+                      {(product.fabric || product.material) && (
+                        <div className="spec-item">
+                          <span className="spec-label">Fabric / Material:</span>
+                          <span className="spec-value">{product.fabric || product.material}</span>
+                        </div>
+                      )}
+                      {(product.weave || product.work) && (
+                        <div className="spec-item">
+                          <span className="spec-label">Weave / Work:</span>
+                          <span className="spec-value">{product.weave || product.work}</span>
+                        </div>
+                      )}
+                      {(product.zari || product.finish) && (
+                        <div className="spec-item">
+                          <span className="spec-label">Zari / Finish:</span>
+                          <span className="spec-value">{product.zari || product.finish}</span>
+                        </div>
+                      )}
+                      {product.blousePiece && (
+                        <div className="spec-item">
+                          <span className="spec-label">Blouse Piece:</span>
+                          <span className="spec-value">{product.blousePiece}</span>
+                        </div>
+                      )}
+                      {product.length && (
+                        <div className="spec-item">
+                          <span className="spec-label">Length:</span>
+                          <span className="spec-value">{product.length}</span>
+                        </div>
+                      )}
+                      {product.stones && (
+                        <div className="spec-item">
+                          <span className="spec-label">Stones / Pearls:</span>
+                          <span className="spec-value">{product.stones}</span>
+                        </div>
+                      )}
+                      {product.occasion && (
+                        <div className="spec-item">
+                          <span className="spec-label">Occasion:</span>
+                          <span className="spec-value">{product.occasion}</span>
+                        </div>
+                      )}
+                      <div className="spec-item">
+                        <span className="spec-label">Care Instructions:</span>
+                        <span className="spec-value">{product.careInstructions || "Dry Clean Only. Store in pure cotton or muslin wrap."}</span>
+                      </div>
+                      <div className="spec-item">
+                        <span className="spec-label">Authenticity:</span>
+                        <span className="spec-value">100% Genuine Handcrafted Artisan Quality</span>
                       </div>
                     </div>
                   )}

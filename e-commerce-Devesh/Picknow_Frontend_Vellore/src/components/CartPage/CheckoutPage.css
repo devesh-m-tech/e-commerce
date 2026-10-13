@@ -1,28 +1,29 @@
 /* ═══════════════════════════════════════════════
-   CHECKOUT PAGE STYLES - Flipkart-inspired
+   CHECKOUT PAGE STYLES - Shri Deepaalaya Silks Luxury
    ═══════════════════════════════════════════════ */
 
-/* ── Variables ─────────────────────────────────────────── */
+/* ── Luxury Tokens ─────────────────────────────────────── */
 :root {
-  --blue: #2874f0;
-  --blue-hover: #1a5dc8;
-  --blue-light: #f5faff;
-  --orange: #fb641b;
-  --orange-hover: #e0561a;
-  --green: #388e3c;
-  --green-pct: #26a541;
-  --red: #ff6161;
-  --grey-bg: #f1f3f6;
+  --blue: #6D1734;          /* Luxury Maroon */
+  --blue-hover: #4A1025;    /* Deep Burgundy */
+  --blue-light: #FFF9F0;    /* Warm Ivory */
+  --orange: #C5A15A;        /* Heritage Gold */
+  --orange-hover: #A88338;  /* Antique Gold */
+  --green: #166534;         /* Forest Emerald */
+  --green-pct: #15803d;
+  --red: #c62828;
+  --grey-bg: #FAF7F2;       /* Editorial Warm Sand */
   --white: #ffffff;
-  --border: #e0e0e0;
-  --text-dark: #212121;
-  --text-mid: #424242;
-  --text-light: #878787;
-  --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-premium: 0 10px 30px rgba(0, 0, 0, 0.08);
-  --font: 'Roboto', sans-serif;
+  --border: #EDE2D2;
+  --text-dark: #282321;
+  --text-mid: #524744;
+  --text-light: #8C827A;
+  --shadow: 0 2px 8px rgba(40, 35, 33, 0.05);
+  --shadow-premium: 0 10px 30px rgba(109, 23, 52, 0.07);
+  --font: 'Karla', sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
   --item-box-width: 110px;
-  --accent: #2874f0;
+  --accent: #6D1734;
 }
 
 .checkout-page {

@@ -193,16 +193,16 @@ export const createDirectOrder = async (req, res) => {
     // Send confirmation email (non-blocking)
     const emailData = {
       to: user.email,
-      subject: "Order Confirmation - Picknow",
+      subject: "Order Confirmation - Shri Deepaalaya Silks",
       html: generateEmailTemplate({
         title: "Thank you for your order!",
         greetingName: user.name || user.email,
-        mainContent: "We've received your order and are currently processing it. You will receive another notification once your order is dispatched.",
+        mainContent: "We've received your order and are currently handpicking and packing it with care. You will receive tracking details once dispatched.",
         orderBox: {
           orderId: order._id,
           amount: order.finalAmount
         },
-        portalName: "Picknow Delivery",
+        portalName: "Shri Deepaalaya Silks",
         portalSubtitle: "Order Confirmation"
       }),
     };
@@ -410,16 +410,16 @@ export const createCartOrder = async (req, res) => {
     // Send confirmation
     const emailData = {
       to: user.email,
-      subject: "Order Confirmation - Picknow",
+      subject: "Order Confirmation - Shri Deepaalaya Silks",
       html: generateEmailTemplate({
         title: "Order Confirmed!",
         greetingName: user.name || user.email,
-        mainContent: "Your order has been successfully placed. We'll update you as soon as it's dispatched.",
+        mainContent: "Your order has been successfully placed. We will update you as soon as your handloom items are dispatched.",
         orderBox: {
           orderId: newOrder._id,
           amount: newOrder.finalAmount
         },
-        portalName: "Picknow Delivery",
+        portalName: "Shri Deepaalaya Silks",
         portalSubtitle: "Order Confirmation"
       }),
     };

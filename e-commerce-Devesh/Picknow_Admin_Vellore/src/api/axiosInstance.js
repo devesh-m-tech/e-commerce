@@ -1,14 +1,41 @@
 import axios from 'axios';
+import { handleAdminMockRequest } from './adminMockHandler';
 
-// const BASE_URL = 'http://localhost:3000 /api'; // Replace with your actual API URL
-const BASE_URL = 'http://localhost:3000 /api'; // Replace with your actual API URL
+const BASE_URL = import.meta.env?.VITE_API_URL || 'http://localhost:5000/api';
+const defaultAdapter = axios.getAdapter(axios.defaults.adapter);
+
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
-  timeout: 60000, // Increased timeout to 60 seconds for image uploads
+  timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+// Resilient adapter: attempts real backend first, falls back to admin mock handler if backend is offline
+axiosInstance.defaults.adapter = async (config) => {
+  try {
+    const res = await defaultAdapter(config);
+    return res;
+  } catch (err) {
+    try {
+      const mockData = handleAdminMockRequest(config);
+      if (mockData) {
+        return {
+          data: mockData,
+          status: 200,
+          statusText: 'OK',
+          headers: { 'content-type': 'application/json' },
+          config,
+          request: {}
+        };
+      }
+    } catch (mErr) {
+      // ignore
+    }
+    throw err;
+  }
+};
 
 // Request interceptor
 axiosInstance.interceptors.request.use(

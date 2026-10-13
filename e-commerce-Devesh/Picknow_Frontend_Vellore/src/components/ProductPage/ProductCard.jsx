@@ -307,7 +307,7 @@ const ProductCard = ({ product, isInitialWishlisted = false, onAddToCartSuccess 
             onClick={handleWishlistToggle}
             title="Wishlist"
           >
-            <Heart size={18} fill={isWishlisted ? "#ff5e00" : "none"} strokeWidth={2.5} />
+            <Heart size={18} fill={isWishlisted ? "#6D1734" : "none"} color={isWishlisted ? "#6D1734" : "#282321"} strokeWidth={2} />
           </button>
         </div>
       </div>
@@ -315,9 +315,9 @@ const ProductCard = ({ product, isInitialWishlisted = false, onAddToCartSuccess 
       <div className="card-details-aesthetic">
         <div className="top-details-group">
           <div className="cat-tag-row">
-            <span className="aesthetic-category">{product.pCategory || "Organic"}</span>
+            <span className="aesthetic-category">{product.pCategory || "Silk Saree"}</span>
             <div className="aesthetic-rating">
-              <Star size={22} fill="#ffb800" color="#ffb800" />
+              <Star size={14} fill="#C5A15A" color="#C5A15A" />
               <span>{product.pRating || 4.8}</span>
             </div>
           </div>

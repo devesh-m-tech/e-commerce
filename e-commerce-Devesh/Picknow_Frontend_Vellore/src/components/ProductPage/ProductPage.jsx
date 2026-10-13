@@ -32,7 +32,7 @@ import Heading from "../Heading";
 import ModernLoader from "../Loading/ModernLoader";
 import ProductCard from "./ProductCard";
 
-const BASE_URL = "https://www.picknow.in";
+const BASE_URL = "";
 
 // Add Rating component
 const Rating = ({ selectedRating, handleRatingSelect }) => {

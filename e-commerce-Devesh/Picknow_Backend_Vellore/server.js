@@ -85,18 +85,20 @@ app.use("/api/notifications", notificationRoutes);
 // app.use('/api/otp', otpRoutes);
 
 app.get('/getlog', (req, res) => {
-
-  res.sendFile(path.join(__dirname, '../../../../.pm2/logs/PicknowBack-out.log'))
-})
+  const logPath = path.join(__dirname, 'logs', 'app.log');
+  if (fs.existsSync(logPath)) {
+    res.sendFile(logPath);
+  } else {
+    res.send("No logs found.");
+  }
+});
 
 app.get('/clearlog', (req, res) => {
-  var data = '';
-  fs.writeFile(path.join(__dirname, '../../../../.pm2/logs/PicknowBack-out.log'), JSON.stringify(data), (err, response) => {
-    res.send("removed successfully")
-  })
-
-
-})
+  const logPath = path.join(__dirname, 'logs', 'app.log');
+  fs.writeFile(logPath, '', (err) => {
+    res.send("removed successfully");
+  });
+});
 
 // Start server
 app.listen(port, async () => {

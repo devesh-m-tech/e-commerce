@@ -76,9 +76,9 @@ export const registerUser = async (req, res) => {
 
     const emailData = {
       to: email,
-      subject: "Welcome to PICKNOW - Email Verification",
+      subject: "Welcome to Shri Deepaalaya Silks - Email Verification",
       html: generateEmailTemplate({
-        title: "Welcome to Picknow!",
+        title: "Welcome to Shri Deepaalaya Silks!",
         greetingName: name || email,
         mainContent: "Thank you for registering. Please verify your account using the code below.",
         otpBox: {
@@ -349,7 +349,7 @@ export const resendOtp = async (req, res) => {
     // Send email
     const emailData = {
       to: email,
-      subject: "Account Verification - PICKNOW",
+      subject: "Account Verification - Shri Deepaalaya Silks",
       html: generateEmailTemplate({
         title: "New Verification Code",
         greetingName: user.name || user.email,
@@ -360,7 +360,7 @@ export const resendOtp = async (req, res) => {
           footer: "This code expires in 5 minutes",
           instructions: "Enter this code to verify your account."
         },
-        portalName: "User Portal",
+        portalName: "Shri Deepaalaya Silks",
         portalSubtitle: "Account Verification"
       }),
     };
@@ -399,7 +399,7 @@ export const forgotPassword = async (req, res) => {
     // Send reset token email
     const emailData = {
       to: email,
-      subject: "Password Reset Request - PICKNOW",
+      subject: "Password Reset Request - Shri Deepaalaya Silks",
       html: generateEmailTemplate({
         title: "Password Reset Request",
         greetingName: user.name || user.email,
@@ -1164,7 +1164,7 @@ export const addMoneyWithCodePass = async (req, res) => {
       let data = qs.stringify({
         'voucher': code.trim().toString(),
         'pin': pass.trim().toString(),
-        'comment': `Picknow wallet topup ${userData.email}`,
+        'comment': `Shri Deepaalaya Silks wallet topup ${userData.email}`,
         'order': `WALLET_${Date.now()}`,
         'amount': amount
       });

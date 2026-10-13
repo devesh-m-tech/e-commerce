@@ -1315,34 +1315,34 @@ const Dashboard = () => {
     const getColorByType = (type) => {
       switch (type) {
         case 'order': return {
-          light: '#e3f2fd', 
-          main: '#2196f3', 
-          gradient: 'linear-gradient(135deg, #2196f3 0%, #64b5f6 100%)'
+          light: 'rgba(109, 23, 52, 0.08)', 
+          main: '#6D1734', 
+          gradient: 'linear-gradient(135deg, #6D1734 0%, #4A1025 100%)'
         };
         case 'payment': return {
           light: '#e8f5e9', 
-          main: '#4caf50',
-          gradient: 'linear-gradient(135deg, #4caf50 0%, #81c784 100%)'
+          main: '#2e7d32',
+          gradient: 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)'
         };
         case 'product': return {
           light: '#fff8e1', 
-          main: '#ff9800',
-          gradient: 'linear-gradient(135deg, #ff9800 0%, #ffb74d 100%)'
+          main: '#C5A15A',
+          gradient: 'linear-gradient(135deg, #C5A15A 0%, #d8b97c 100%)'
         };
         case 'system': return {
-          light: '#e1f5fe', 
-          main: '#03a9f4',
-          gradient: 'linear-gradient(135deg, #03a9f4 0%, #4fc3f7 100%)'
+          light: 'rgba(109, 23, 52, 0.06)', 
+          main: '#4A1025',
+          gradient: 'linear-gradient(135deg, #4A1025 0%, #6D1734 100%)'
         };
         case 'vendor': return {
           light: '#f3e5f5', 
-          main: '#9c27b0',
-          gradient: 'linear-gradient(135deg, #9c27b0 0%, #ba68c8 100%)'
+          main: '#8e2346',
+          gradient: 'linear-gradient(135deg, #8e2346 0%, #6D1734 100%)'
         };
         default: return {
-          light: '#e3f2fd', 
-          main: '#2196f3',
-          gradient: 'linear-gradient(135deg, #2196f3 0%, #64b5f6 100%)'
+          light: 'rgba(109, 23, 52, 0.08)', 
+          main: '#6D1734',
+          gradient: 'linear-gradient(135deg, #6D1734 0%, #4A1025 100%)'
         };
       }
     };
@@ -1405,10 +1405,10 @@ const Dashboard = () => {
         <Box 
           sx={{ 
             p: 2.5, 
-            background: 'linear-gradient(135deg, #1976d2 0%, #64b5f6 100%)',
+            background: 'linear-gradient(135deg, #6D1734 0%, #4A1025 100%)',
             color: 'white',
-            borderTopLeftRadius: '8px',
-            borderTopRightRadius: '8px',
+            borderTopLeftRadius: '2px',
+            borderTopRightRadius: '2px',
             position: 'relative',
             overflow: 'hidden',
             '&::after': {
@@ -1951,9 +1951,9 @@ const Dashboard = () => {
     {
       title: 'Total Orders',
       value: orderCount.toString(),
-      icon: <ShoppingCartIcon sx={{ fontSize: 40, color: '#1976d2' }} />,
+      icon: <ShoppingCartIcon sx={{ fontSize: 40, color: '#6D1734' }} />,
       path: '/orders',
-      color: '#1976d2',
+      color: '#6D1734',
       buttonText: 'Manage Orders'
     },
     {

@@ -900,9 +900,9 @@ const Orders = () => {
           <div class="container">
             <div class="header">
               <div class="logo">
-                <img src="/PicknowLogo.png" alt="Picknow Logo" onerror="this.style.display='none'">
+                <h2 style="font-family: 'Playfair Display', serif; color: #6D1734; margin: 0; font-size: 22px; letter-spacing: 1px;">Shri Deepaalaya Silks</h2>
               </div>
-              <h1>Orders Report</h1>
+              <h1 style="font-size: 18px; margin-top: 8px;">Orders Report</h1>
               <p>Period: ${dateFilter.toUpperCase()}</p>
               <p>Generated on: ${now}</p>
             </div>
@@ -1278,9 +1278,9 @@ const Orders = () => {
           <div class="container">
             <div class="header">
               <div class="logo">
-                <img src="/PicknowLogo.png" alt="Picknow Logo" onerror="this.style.display='none'">
+                <h2 style="font-family: 'Playfair Display', serif; color: #6D1734; margin: 0; font-size: 24px; letter-spacing: 1px;">Shri Deepaalaya Silks</h2>
               </div>
-              <h1>Invoice</h1>
+              <h1 style="font-size: 20px; margin-top: 8px;">Invoice</h1>
               <p>Order ID: ${selectedOrder._id}</p>
               <p>Date: ${orderDate}</p>
             </div>
@@ -1288,10 +1288,10 @@ const Orders = () => {
             <div class="content">
               <div class="from-section">
                 <h3>From</h3>
-                <p><strong>Picknow</strong></p>
-                <p>India</p>
-                <p>Phone: +91 7092770118</p>
-                <p>Email: support@picknow.in</p>
+                <p><strong>Shri Deepaalaya Silks</strong></p>
+                <p>Handpicked Silk Sarees & Heirloom Jewellery</p>
+                <p>Tamil Nadu, India</p>
+                <p>Email: care@shrideepaalayasilks.com</p>
               </div>
 
               <div class="section">
