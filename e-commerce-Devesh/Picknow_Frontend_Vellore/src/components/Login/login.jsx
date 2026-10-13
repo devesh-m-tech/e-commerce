@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import axiosinstance from "../../APi/axiosInstance";
 import { userApi } from "../../APi/userApi";
-import "../Login/login.css";
 import { useSnackbar } from 'notistack';
-import { User, Mail, Lock, Phone, ArrowRight, KeyRound, ShieldCheck, ArrowLeft } from 'lucide-react';
-import { Box, IconButton } from '@mui/material';
-import ModernLoader from "../Loading/ModernLoader";
-import picknowLogo from "../../assets/PicknowLogo.png";
+import { User, Mail, Lock, Phone, KeyRound, Sparkles, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import SdsLogo from "../common/SdsLogo";
+import { DUMMY_CREDENTIALS } from "../../mockData/mockApiHandler";
+import "./login.css";
 
-const Login = ({ onLogin }) => {
+const Login = ({ onLogin, initialForm = "login" }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -20,198 +21,71 @@ const Login = ({ onLogin }) => {
     otp: "",
     newPassword: "",
   });
-  const [activeForm, setActiveForm] = useState("login");
+  const [activeForm, setActiveForm] = useState(
+    location.pathname === "/signup" ? "register" : initialForm || "login"
+  );
   const [resetStep, setResetStep] = useState(1);
   const [activationToken, setActivationToken] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
-  const [googleReady, setGoogleReady] = useState(false);
-
-  const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
-    // Check for existing token
+    // If already logged in, redirect home
     const token = localStorage.getItem("token");
-    if (token) {
+    const isLoggedOut = localStorage.getItem("userLoggedOut") === "true";
+    if (token && !isLoggedOut) {
       navigate("/");
-    }
-
-    // Check for activation token when component mounts
-    const storedToken = localStorage.getItem("activationToken");
-    if (storedToken) {
-      setActivationToken(storedToken);
-      setActiveForm("verify-otp");
     }
   }, [navigate]);
 
-  // Add countdown timer effect
   useEffect(() => {
     let timer;
     if (resendTimer > 0) {
-      timer = setInterval(() => {
-        setResendTimer((prev) => prev - 1);
-      }, 1000);
+      timer = setInterval(() => setResendTimer(prev => prev - 1), 1000);
     }
-    return () => {
-      if (timer) clearInterval(timer);
-    };
+    return () => clearInterval(timer);
   }, [resendTimer]);
-
-  // Load Google Identity Services script once and initialize.
-  useEffect(() => {
-    if (!GOOGLE_CLIENT_ID) return;
-
-    const scriptId = "google-identity-script";
-    const handleInit = () => {
-      if (!window.google?.accounts?.id) return;
-      // Initialize once; renderButton can be called multiple times.
-      window.google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: async (response) => {
-          const credential = response?.credential;
-          if (!credential) return;
-
-          setLoading(true);
-          try {
-            const result = await userApi.googleLogin(credential);
-            localStorage.removeItem("userLoggedOut");
-            localStorage.setItem("token", result.token);
-            localStorage.setItem("user", JSON.stringify(result.user));
-            localStorage.setItem("isLoggedIn", "true");
-            window.dispatchEvent(new Event("loginStateChanged"));
-            if (onLogin) onLogin(true);
-            navigate("/");
-          } catch (error) {
-            const errorMessage =
-              (typeof error === "object" && error !== null && error.message) ||
-              error?.response?.data?.message ||
-              "Google authentication failed";
-            showSnackbar(errorMessage, "error");
-          } finally {
-            setLoading(false);
-          }
-        },
-      });
-
-      setGoogleReady(true);
-    };
-
-    const existing = document.getElementById(scriptId);
-    if (existing) {
-      // Script tag already exists; try initializing immediately.
-      handleInit();
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.id = scriptId;
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    script.onload = handleInit;
-    document.body.appendChild(script);
-  }, [GOOGLE_CLIENT_ID, navigate, onLogin]);
-
-  // Render the Google button whenever the login/register form is active.
-  useEffect(() => {
-    if (!googleReady) return;
-    if (activeForm !== "login") return;
-
-    const renderBtn = () => {
-      const el = document.getElementById("google-signin-button");
-      if (!el || !window.google?.accounts?.id) return;
-
-      // Clear previous rendering when switching forms.
-      el.innerHTML = "";
-      window.google.accounts.id.renderButton(el, {
-        theme: "outline",
-        size: "large",
-        text: "continue_with",
-        shape: "pill",
-        width: 260,
-      });
-    };
-
-    // Use a small timeout to ensure the DOM element is rendered before GSI tries to use it.
-    // This is especially important when switching between login/register forms.
-    const timer = setTimeout(renderBtn, 150);
-    return () => clearTimeout(timer);
-  }, [googleReady, activeForm]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const showSnackbar = (message, variant = 'info') => {
-    enqueueSnackbar(message, {
-      variant,
-      anchorOrigin: {
-        vertical: 'top',
-        horizontal: 'right',
-      },
-      autoHideDuration: 3000
-    });
-  };
-
-  // Registration Handler
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const { name, email, password, contact } = formData;
-      if (!name || !email || !password || !contact) {
-        showSnackbar("All fields are required", "error");
-        return;
-      }
-
-      const response = await axiosinstance.post("/user/register", {
-        name,
-        email,
-        password,
-        contact,
-      });
-
-      showSnackbar(response.data.message, "success");
-      localStorage.setItem("activationToken", response.data.activationToken);
-      localStorage.setItem("userEmail", email);
-      setActivationToken(response.data.activationToken);
-      setActiveForm("verify-otp");
-      setResendTimer(60); // Start countdown after initial OTP is sent
-    } catch (error) {
-      showSnackbar(error.response?.data?.message || "Registration failed", "error");
-    } finally {
-      setLoading(false);
+    if (formErrors[e.target.name]) {
+      setFormErrors({ ...formErrors, [e.target.name]: "" });
     }
   };
 
-  // Login Handler
-  const handleLogin = async (e) => {
+  const showSnackbar = (message, variant = "info") => {
+    enqueueSnackbar(message, { variant, autoHideDuration: 3000, preventDuplicate: true });
+  };
+
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.email || !formData.password) {
+      showSnackbar("Please enter both email and password", "warning");
+      return;
+    }
     setLoading(true);
     try {
       const response = await axiosinstance.post("/user/login", {
         email: formData.email,
         password: formData.password,
       });
-
       localStorage.removeItem("userLoggedOut");
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
       localStorage.setItem("isLoggedIn", "true");
       window.dispatchEvent(new Event("loginStateChanged"));
-      
-      if (onLogin) {
-        onLogin(true);
-      }
-
+      showSnackbar("Signed in successfully", "success");
+      if (onLogin) onLogin(true);
       navigate("/");
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Login failed";
-      showSnackbar(errorMessage, "error");
-
-      if (errorMessage === "Please verify your account first") {
-        const email = formData.email;
-        localStorage.setItem("userEmail", email);
+      const msg = error.response?.data?.message || "Invalid email or password";
+      showSnackbar(msg, "error");
+      if (msg.toLowerCase().includes("email")) setFormErrors(prev => ({ ...prev, email: msg }));
+      else if (msg.toLowerCase().includes("password")) setFormErrors(prev => ({ ...prev, password: msg }));
+      if (msg === "Please verify your account first") {
+        localStorage.setItem("userEmail", formData.email);
         setActiveForm("verify-otp");
       }
     } finally {
@@ -219,409 +93,370 @@ const Login = ({ onLogin }) => {
     }
   };
 
-  // OTP Verification Handler
-  const handleVerifyOTP = async (e) => {
+  const handleRegisterSubmit = async (e) => {
     e.preventDefault();
+    const { name, email, password, contact } = formData;
+    if (!name || !email || !password || !contact) {
+      showSnackbar("All fields are required to register", "warning");
+      return;
+    }
     setLoading(true);
     try {
-      if (!formData.otp || formData.otp.length !== 6 || isNaN(formData.otp)) {
-        showSnackbar("Please enter a valid 6-digit OTP", "error");
-        return;
+      const response = await axiosinstance.post("/user/register", { name, email, password, contact });
+      showSnackbar(response.data.message || "Registration successful! Please verify code", "success");
+      if (response.data.activationToken) {
+        localStorage.setItem("activationToken", response.data.activationToken);
+        setActivationToken(response.data.activationToken);
       }
-
-      const token = localStorage.getItem("activationToken");
-      if (!token) {
-        showSnackbar("Verification token not found. Please register again.", "error");
-        setTimeout(() => setActiveForm("register"), 2000);
-        return;
-      }
-
-      const response = await axiosinstance.post(
-        "/user/verify",
-        { otp: formData.otp },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      showSnackbar(response.data.message, "success");
-      localStorage.removeItem("activationToken");
-      localStorage.removeItem("userEmail");
-
-      setTimeout(() => {
-        setActiveForm("login");
-        setFormData({
-          ...formData,
-          otp: "",
-        });
-      }, 2000);
+      localStorage.setItem("userEmail", email);
+      setActiveForm("verify-otp");
     } catch (error) {
-      if (error.response?.status === 401) {
-        showSnackbar("OTP has expired. Please request a new one.", "error");
-      } else {
-        showSnackbar(error.response?.data?.message || "Verification failed", "error");
-      }
+      const msg = error.response?.data?.message || "Registration failed";
+      showSnackbar(msg, "error");
     } finally {
       setLoading(false);
     }
   };
 
-  // Modified Resend OTP Handler
-  const handleResendOTP = async () => {
-    if (resendTimer > 0) {
-      showSnackbar(`Please wait ${resendTimer} seconds before requesting a new OTP`, "warning");
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    if (!formData.otp) {
+      showSnackbar("Please enter the verification code", "warning");
       return;
     }
-
+    setLoading(true);
     try {
-      const email = localStorage.getItem("userEmail");
-      if (!email) {
-        showSnackbar("Email not found. Please register again.", "error");
-        setTimeout(() => setActiveForm("register"), 2000);
-        return;
-      }
-
-      const response = await axiosinstance.post("/user/resend-otp", { email });
-      localStorage.setItem("activationToken", response.data.activationToken);
-      setActivationToken(response.data.activationToken);
-      showSnackbar("New OTP sent successfully! Please check your email.", "success");
-      setFormData({ ...formData, otp: "" });
-      setResendTimer(60); // Start 60 second countdown
+      const token = activationToken || localStorage.getItem("activationToken");
+      const response = await axiosinstance.post(
+        "/user/verify",
+        { otp: formData.otp },
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+      );
+      showSnackbar(response.data.message || "Account verified! Please sign in", "success");
+      localStorage.removeItem("activationToken");
+      setActiveForm("login");
     } catch (error) {
-      showSnackbar(error.response?.data?.message || "Failed to resend OTP", "error");
+      showSnackbar(error.response?.data?.message || "Verification failed", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Request Password Reset Handler
   const handleRequestReset = async (e) => {
     e.preventDefault();
+    if (!formData.email) {
+      showSnackbar("Please provide your registered email", "warning");
+      return;
+    }
+    setLoading(true);
     try {
-      if (!formData.email) {
-        showSnackbar("Please enter your email address", "error");
-        return;
-      }
-
-      const response = await axiosinstance.post("/user/forgot-password", {
-        email: formData.email,
-      });
-
-      showSnackbar(response.data.message, "success");
+      const response = await axiosinstance.post("/user/forgot-password", { email: formData.email });
+      showSnackbar(response.data.message || "Reset instructions sent to your email", "success");
       setResetStep(2);
+      setResendTimer(60);
     } catch (error) {
-      showSnackbar(error.response?.data?.message || "Failed to request password reset", "error");
+      showSnackbar(error.response?.data?.message || "Failed to send reset code", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Reset Password Handler
   const handleResetPassword = async (e) => {
     e.preventDefault();
+    const { email, otp, newPassword } = formData;
+    if (!otp || !newPassword) {
+      showSnackbar("Both verification code and new password are required", "warning");
+      return;
+    }
+    setLoading(true);
     try {
-      if (!formData.email || !formData.otp || !formData.newPassword) {
-        showSnackbar("Please fill in all fields", "error");
-        return;
-      }
-
-      if (formData.otp.length !== 6 || isNaN(formData.otp)) {
-        showSnackbar("Please enter a valid 6-digit reset code", "error");
-        return;
-      }
-
       const response = await axiosinstance.post("/user/reset-password", {
-        email: formData.email,
-        resetToken: formData.otp,
-        newPassword: formData.newPassword,
+        email,
+        resetToken: otp,
+        newPassword
       });
-
-      showSnackbar(response.data.message, "success");
-      setTimeout(() => {
-        setActiveForm("login");
-        setResetStep(1);
-        setFormData({
-          name: "",
-          email: "",
-          password: "",
-          contact: "",
-          otp: "",
-          newPassword: "",
-        });
-      }, 2000);
+      showSnackbar(response.data.message || "Password updated successfully", "success");
+      setActiveForm("login");
+      setResetStep(1);
     } catch (error) {
-      showSnackbar(error.response?.data?.message || "Failed to reset password", "error");
+      showSnackbar(error.response?.data?.message || "Password reset failed", "error");
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const renderLoginForm = () => (
-    <form onSubmit={handleLogin} className="auth-form login">
-      <div className="form-logo-container">
-        <img src={picknowLogo} alt="PickNow" className="form-logo" />
-      </div>
-      <h2>Welcome Back</h2>
-      <p className="instructions">Sign in to continue to your account</p>
-      
-      <div className="input-group">
-        <input
-          type="email"
-          name="email"
-          placeholder="Email Address"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-        <Mail className="input-icon" size={20} />
-      </div>
-      
-      <div className="input-group">
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-        <Lock className="input-icon" size={20} />
-      </div>
-
-      <button type="submit">
-        Sign In
-        <ArrowRight size={20} className="button-icon" />
-      </button>
-
-      <div className="google-divider">or</div>
-      <div className="google-button-wrap">
-        <div id="google-signin-button" />
-      </div>
-
-      <div className="auth-links">
-        <button type="button" onClick={() => setActiveForm("forgot-password")}>
-          Forgot Password?
-        </button>
-        <button type="button" onClick={() => setActiveForm("register")}>
-          New user? Create an account
-        </button>
-      </div>
-    </form>
-  );
-
-  const renderRegisterForm = () => (
-    <form onSubmit={handleRegister} className="auth-form register">
-      <div className="form-logo-container">
-        <img src={picknowLogo} alt="PickNow" className="form-logo" />
-      </div>
-      <h2>Create Account</h2>
-      <p className="instructions">Join us to start shopping</p>
-
-      <div className="input-group">
-        <input
-          type="text"
-          name="name"
-          placeholder="Full Name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
-        <User className="input-icon" size={20} />
-      </div>
-
-      <div className="input-group">
-        <input
-          type="email"
-          name="email"
-          placeholder="Email Address"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-        <Mail className="input-icon" size={20} />
-      </div>
-
-      <div className="input-group">
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-        <Lock className="input-icon" size={20} />
-      </div>
-
-      <div className="input-group">
-        <input
-          type="text"
-          name="contact"
-          placeholder="Contact Number"
-          value={formData.contact}
-          onChange={handleChange}
-          required
-        />
-        <Phone className="input-icon" size={20} />
-      </div>
-
-      <button type="submit">
-        Create Account
-        <ArrowRight size={20} className="button-icon" />
-      </button>
-
-
-
-      <div className="auth-links">
-        <button type="button" onClick={() => setActiveForm("login")}>
-          Already have an account? Sign in
-        </button>
-      </div>
-    </form>
-  );
-
-  const renderVerifyOTPForm = () => (
-    <form onSubmit={handleVerifyOTP} className="auth-form verify-otp">
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-        <IconButton
-          onClick={() => {
-            setActiveForm('login');
-            localStorage.removeItem('activationToken');
-            localStorage.removeItem('userEmail');
-          }}
-          sx={{
-            color: '#4a5568',
-            '&:hover': {
-              bgcolor: 'rgba(0,0,0,0.04)'
-            }
-          }}
-        >
-          <ArrowLeft size={24} />
-        </IconButton>
-        <h2>Verify Account</h2>
-      </Box>
-      <p className="instructions">
-        Please enter the 6-digit OTP sent to your email address
-      </p>
-
-      <div className="otp-input-container">
-        <div className="input-group">
-          <KeyRound size={20} className="input-icon" />
-          <input
-            type="text"
-            name="otp"
-            placeholder="Enter 6-digit OTP"
-            value={formData.otp}
-            onChange={handleChange}
-            maxLength={6}
-            pattern="[0-9]*"
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            required
-          />
-        </div>
-      </div>
-
-      <button type="submit">
-        Verify OTP
-        <ShieldCheck size={20} className="button-icon" />
-      </button>
-
-      <div className="resend-container">
-        <p>Didn't receive the OTP?</p>
-        <button 
-          type="button" 
-          onClick={handleResendOTP} 
-          className={`resend-btn ${resendTimer > 0 ? 'disabled' : ''}`}
-          disabled={resendTimer > 0}
-        >
-          {resendTimer > 0 
-            ? `Resend OTP in ${resendTimer}s` 
-            : 'Resend OTP'}
-        </button>
-      </div>
-    </form>
-  );
-
-  const renderForgotPasswordForm = () => {
-    if (resetStep === 1) {
-      return (
-        <form onSubmit={handleRequestReset} className="auth-form forgot-password">
-          <h2>Forgot Password</h2>
-          <p className="instructions">Enter your email to receive a reset code</p>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email Address"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <button type="submit">Request Reset Code</button>
-          <div className="auth-links">
-            <button type="button" onClick={() => setActiveForm("login")}>
-              Back to Login
-            </button>
-          </div>
-        </form>
-      );
-    }
-
-    return (
-      <form onSubmit={handleResetPassword} className="auth-form forgot-password">
-        <h2>Reset Password</h2>
-        <p className="instructions">Enter the reset code sent to your email</p>
-        <input
-          type="text"
-          name="otp"
-          placeholder="6-digit Reset Code"
-          value={formData.otp}
-          onChange={handleChange}
-          maxLength={6}
-          pattern="[0-9]*"
-          required
-        />
-        <input
-          type="password"
-          name="newPassword"
-          placeholder="New Password"
-          value={formData.newPassword}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit">Reset Password</button>
-        <div className="auth-links">
-          <button
-            type="button"
-            onClick={() => {
-              setResetStep(1);
-              setFormData({ ...formData, otp: "", newPassword: "" });
-            }}
-          >
-            Request New Code
-          </button>
-          <button type="button" onClick={() => setActiveForm("login")}>
-            Back to Login
-          </button>
-        </div>
-      </form>
-    );
   };
 
   return (
-    <div className="auth-wrapper full-page">
-      {loading && (
-        <div className="loader-container">
-          <ModernLoader 
-            showTiming={false} 
-            animationType="pulse" 
-            size={0.7} 
-            customMessage="Authenticating..."
-            showProgress={false}
-            backgroundColor="rgba(255, 255, 255, 0.95)"
-          />
+    <div className="sds-auth-page">
+      <div className="sds-auth-card">
+        {/* Back to Home Link */}
+        <Link to="/" className="sds-auth-back-link">
+          <ArrowLeft size={16} />
+          <span>Back to Home</span>
+        </Link>
+
+        {/* Brand Header */}
+        <div className="sds-auth-header">
+          <Link to="/" className="sds-auth-logo">
+            <SdsLogo width={200} />
+          </Link>
+          <p className="sds-auth-subtitle">Heritage Silks · Handcrafted Ethnic Couture</p>
         </div>
-      )}
-      {activeForm === "login" && renderLoginForm()}
-      {activeForm === "register" && renderRegisterForm()}
-      {activeForm === "verify-otp" && renderVerifyOTPForm()}
-      {activeForm === "forgot-password" && renderForgotPasswordForm()}
+
+        {/* Tab Switcher */}
+        {(activeForm === "login" || activeForm === "register") && (
+          <div className="sds-auth-tabs">
+            <button
+              type="button"
+              className={`sds-auth-tab ${activeForm === "login" ? "active" : ""}`}
+              onClick={() => setActiveForm("login")}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              className={`sds-auth-tab ${activeForm === "register" ? "active" : ""}`}
+              onClick={() => setActiveForm("register")}
+            >
+              Create Account
+            </button>
+          </div>
+        )}
+
+        {/* Form Body */}
+        <div className="sds-auth-body">
+          {/* ── 1. Sign In ── */}
+          {activeForm === "login" && (
+            <form onSubmit={handleLoginSubmit}>
+              {/* Fast Demo Credentials */}
+              <div
+                className="sds-demo-credentials-banner"
+                onClick={() => setFormData(prev => ({
+                  ...prev,
+                  email: DUMMY_CREDENTIALS.email,
+                  password: DUMMY_CREDENTIALS.password
+                }))}
+                title="Click to fill test credentials"
+              >
+                <div>
+                  <span className="sds-demo-label">✦ Fast Demo Access (Click to Fill)</span>
+                  <span className="sds-demo-email">{DUMMY_CREDENTIALS.email}</span>
+                </div>
+                <Sparkles size={16} color="#C5A15A" />
+              </div>
+
+              <div className="sds-input-wrapper">
+                <span className="sds-input-icon"><Mail size={16} color="#C5A15A" /></span>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email Address"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="sds-input-wrapper">
+                <span className="sds-input-icon"><Lock size={16} color="#C5A15A" /></span>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+                <button
+                  type="button"
+                  className="sds-pwd-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+
+              <div className="sds-auth-actions-row">
+                <button
+                  type="button"
+                  className="sds-auth-link"
+                  onClick={() => setActiveForm("forgot-password")}
+                >
+                  Forgot Password?
+                </button>
+              </div>
+
+              <button type="submit" className="sds-btn-editorial-auth" disabled={loading}>
+                {loading ? "Signing In..." : "Sign In To Account"}
+              </button>
+            </form>
+          )}
+
+          {/* ── 2. Create Account ── */}
+          {activeForm === "register" && (
+            <form onSubmit={handleRegisterSubmit}>
+              <div className="sds-input-grid-2">
+                <div className="sds-input-wrapper">
+                  <span className="sds-input-icon"><User size={15} color="#C5A15A" /></span>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Full Name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="sds-input-wrapper">
+                  <span className="sds-input-icon"><Phone size={15} color="#C5A15A" /></span>
+                  <input
+                    type="tel"
+                    name="contact"
+                    placeholder="Mobile Number"
+                    value={formData.contact}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="sds-input-wrapper">
+                <span className="sds-input-icon"><Mail size={16} color="#C5A15A" /></span>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email Address"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="sds-input-wrapper">
+                <span className="sds-input-icon"><Lock size={16} color="#C5A15A" /></span>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Create Secure Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+                <button
+                  type="button"
+                  className="sds-pwd-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+
+              <button type="submit" className="sds-btn-editorial-auth" disabled={loading}>
+                {loading ? "Creating Account..." : "Create Account"}
+              </button>
+
+              <p className="sds-auth-terms">
+                By joining, you agree to Shri Deepaalaya Silks' Terms of Service & Privacy Policy.
+              </p>
+            </form>
+          )}
+
+          {/* ── 3. Verify OTP ── */}
+          {activeForm === "verify-otp" && (
+            <form onSubmit={handleVerifyOTP}>
+              <p className="sds-auth-notice">
+                Enter the 6-digit verification code sent to your email to verify your account.
+              </p>
+              <div className="sds-input-wrapper">
+                <span className="sds-input-icon"><KeyRound size={16} color="#C5A15A" /></span>
+                <input
+                  type="text"
+                  name="otp"
+                  placeholder="6-Digit Verification Code"
+                  value={formData.otp}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <button type="submit" className="sds-btn-editorial-auth" disabled={loading}>
+                {loading ? "Verifying..." : "Verify & Continue"}
+              </button>
+              <div className="sds-auth-switch-link">
+                <button type="button" onClick={() => setActiveForm("login")}>
+                  ← Back to Sign In
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* ── 4. Forgot Password ── */}
+          {activeForm === "forgot-password" && (
+            <div>
+              {resetStep === 1 ? (
+                <form onSubmit={handleRequestReset}>
+                  <p className="sds-auth-notice">
+                    Enter your registered email address to receive password reset instructions.
+                  </p>
+                  <div className="sds-input-wrapper">
+                    <span className="sds-input-icon"><Mail size={16} color="#C5A15A" /></span>
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Registered Email Address"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <button type="submit" className="sds-btn-editorial-auth" disabled={loading}>
+                    {loading ? "Sending..." : "Send Reset Instructions"}
+                  </button>
+                  <div className="sds-auth-switch-link">
+                    <button type="button" onClick={() => setActiveForm("login")}>
+                      ← Back to Sign In
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <form onSubmit={handleResetPassword}>
+                  <p className="sds-auth-notice">
+                    Enter the reset code sent to your email and your new password.
+                  </p>
+                  <div className="sds-input-wrapper">
+                    <span className="sds-input-icon"><KeyRound size={16} color="#C5A15A" /></span>
+                    <input
+                      type="text"
+                      name="otp"
+                      placeholder="Reset Code"
+                      value={formData.otp}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="sds-input-wrapper">
+                    <span className="sds-input-icon"><Lock size={16} color="#C5A15A" /></span>
+                    <input
+                      type="password"
+                      name="newPassword"
+                      placeholder="New Password"
+                      value={formData.newPassword}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <button type="submit" className="sds-btn-editorial-auth" disabled={loading}>
+                    {loading ? "Updating..." : "Update Password"}
+                  </button>
+                  <div className="sds-auth-switch-link">
+                    <button type="button" onClick={() => setActiveForm("login")}>
+                      ← Back to Sign In
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

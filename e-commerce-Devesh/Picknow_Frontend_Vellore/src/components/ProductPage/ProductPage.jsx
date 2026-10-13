@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronRight, Filter } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import CartPage from "../CartPage/CartPage";
 import ProductDetail from "./ProductDetail";
 import "./ProductPage.css";
-import Nuts from "../../assets/Nuts.jpg";
-import honey from "../../assets/honey.jpg";
 import {
   FaHeart,
   FaShoppingCart,
@@ -17,7 +16,6 @@ import { productApi } from "../../APi/productApi";
 import { cartApi } from "../../APi/cartApi";
 import { useSnackbar } from "notistack";
 import { transformImageUrl } from "../../APi/utils";
-import { useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { categoryApi } from "../../APi/categoryApi";
 import CategoryNav from "../Navbar/CategoryNav";
@@ -120,6 +118,9 @@ const ProductPage = () => {
         break;
       case "rating":
         sortedProducts.sort((a, b) => (b.pRating || 0) - (a.pRating || 0));
+        break;
+      case "newest":
+        sortedProducts.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
         break;
       default:
         // Featured sorting (by popularity/sold count)
@@ -1314,20 +1315,28 @@ const ProductPage = () => {
   return (
     <>
       <Heading
-        title="PickNow | Organic Products Online – Dry Fruits | Spices & Snacks"
-        description="Browse a wide range of organic dry fruits, natural spices, millet mixes, herbal items, and healthy snacks at PickNow. Chemical-free, nutrient-rich products."
-        keywords="organic products online India, herbs and spices organic, healthy snacks India, millet products, organic groceries, PickNow catalog"
+        title="Silk Sarees & Heirloom Ethnic Collections | Shri Deepaalaya Silks"
+        description="Explore handcrafted Kanchipuram silk sarees, Banarasi weaves, bridal couture, and heirloom jewellery at Shri Deepaalaya Silks."
+        keywords="silk sarees online, kanchipuram silks, banarasi saree, bridal saree, ethnic wear, shri deepaalaya silks"
         url={getCanonicalUrl()}
         canonical={getCanonicalUrl()}
       />
-      <div className="best-selling">
-        {/* Background Animation */}
-        <div className="background-animation">
-  
-          <div className="floating-circle circle-1" />
-          <div className="floating-circle circle-2" />
-          <div className="floating-circle circle-3" />
-        </div>
+      <div className="sds-products-page">
+        {/* Editorial Hero Banner */}
+        <section className="sds-catalog-hero" aria-label="Catalog Banner">
+          <div className="sds-container">
+            <nav className="sds-breadcrumb" aria-label="Breadcrumb">
+              <Link to="/">Home</Link>
+              <span>/</span>
+              <span className="current">All Products</span>
+            </nav>
+            <span className="sds-catalog-label">The Royal Saree & Ethnic Collection</span>
+            <h1 className="sds-catalog-title">Handcrafted Silks & Fine Attire</h1>
+            <p className="sds-catalog-subtitle">
+              Discover pure Kanchipuram silk sarees, Banarasi weaves, bridal couture, and heirloom jewellery handpicked with timeless artistry.
+            </p>
+          </div>
+        </section>
 
         <div className="product-layout">
           {/* Filter Overlay */}
@@ -1344,7 +1353,7 @@ const ProductPage = () => {
           </AnimatePresence>
 
           {/* Sidebar Component */}
-          <div className={`filter-sidebar ${isFilterOpen ? "open" : ""}`}>
+          <aside className={`filter-sidebar ${isFilterOpen ? "open" : ""}`} aria-label="Product filters">
             <Sidebar
               selectedCategory={selectedCategory}
               categories={categories}
@@ -1358,26 +1367,41 @@ const ProductPage = () => {
               onResetFilters={resetFilters}
               ratingCounts={ratingCounts}
             />
-          </div>
+          </aside>
 
           {/* Products Container */}
-          <div className="products-container">
+          <main className="products-container" id="products-catalog-main">
             <div className="products-header">
               <div className="header-left-actions">
-                <button className="mobile-toggle" onClick={toggleFilter}>
+                <button className="mobile-toggle" onClick={toggleFilter} aria-label="Toggle filters">
                   <FaFilter className="filter-icon" />
                   <span>Filters</span>
                 </button>
                 <span className="products-count">
                   {loading
-                    ? "Loading..."
-                    : `${products.length} products`}
+                    ? "Loading collection..."
+                    : `Showing ${products.length} handcrafted piece${products.length === 1 ? '' : 's'}`}
                 </span>
               </div>
               <div className="header-right-actions">
-                {/* Sort dropdown could go here */}
+                <div className="sds-sort-wrapper">
+                  <label htmlFor="sds-sort-select" className="sds-sort-label">Sort By:</label>
+                  <select
+                    id="sds-sort-select"
+                    className="sds-sort-select"
+                    value={sortOption}
+                    onChange={(e) => handleSort(e.target.value)}
+                  >
+                    <option value="featured">Featured Collection</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="rating">Customer Rating</option>
+                    <option value="newest">New Arrivals</option>
+                  </select>
+                </div>
               </div>
             </div>
+
             <div
               className={`products-grid ${pageLoading ? "loading" : ""}`}
               style={{
@@ -1393,7 +1417,7 @@ const ProductPage = () => {
                     showTiming={false}
                     animationType="wave"
                     size={0.6}
-                    customMessage="Loading products..."
+                    customMessage="Loading collection..."
                     showProgress={false}
                   />
                 </div>
@@ -1411,28 +1435,18 @@ const ProductPage = () => {
                   );
                 })
               ) : (
-                brandLoading ? (
-                  <div className="loading-overlay">
-                    <ModernLoader
-                      showTiming={false}
-                      animationType="pulse"
-                      size={0.6}
-                      customMessage="Loading products..."
-                      showProgress={false}
-                    />
-                  </div>
-                ) : (
-                  <div className="empty-state">
-                    <h3>No products found</h3>
-                    <p>Try adjusting your filters or search criteria</p>
-                  </div>
-                )
+                <div className="empty-state">
+                  <h3>No Handcrafted Pieces Found</h3>
+                  <p>Try clearing active filters or adjusting your price/category search.</p>
+                  <button type="button" className="empty-state-reset-btn" onClick={resetFilters}>
+                    Reset All Filters
+                  </button>
+                </div>
               )}
             </div>
             <PaginationControls />
-          </div>
+          </main>
         </div>
-        {/* Footer removed to prevent duplication */}
       </div>
     </>
   );

@@ -45,6 +45,7 @@ import BlogDetail from "./components/Blog/BlogDetail";
 import BrandProducts from "./components/Brand/BrandProducts";
 import WishlistPage from "./components/Wishlist/WishlistPage";
 import SdsFooter from "./components/Footer/SdsFooter";
+import Login from "./components/Login/login";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -131,7 +132,12 @@ const App = () => {
   };
 
   return (
-    <SnackbarProvider maxSnack={3} autoHideDuration={3000} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+    <SnackbarProvider
+      maxSnack={1}
+      preventDuplicate
+      autoHideDuration={3000}
+      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+    >
       <div className="app">
         {!shouldHideNavbar() && <AnnouncementBar />}
         {!shouldHideNavbar() && (
@@ -199,12 +205,15 @@ const App = () => {
             <Route path="/brand/:brandId" element={<BrandProducts />} />
             <Route path="/brands" element={<BrandProducts />} />
             <Route path="/wishlist" element={<WishlistPage />} />
+            <Route path="/login" element={<Login onLogin={handleLogin} initialForm="login" />} />
+            <Route path="/signup" element={<Login onLogin={handleLogin} initialForm="register" />} />
           </Routes>
         </div>
         {!shouldHideFooter() && <SdsFooter />}
         <ToastContainer
           position="top-right"
           autoClose={3000}
+          limit={1}
           hideProgressBar={false}
           newestOnTop
           closeOnClick

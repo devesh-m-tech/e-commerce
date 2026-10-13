@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBell, FaCircle } from 'react-icons/fa';
+import { Bell, Check, Sparkles, Inbox } from 'lucide-react';
 import { useNotifications } from '../../context/NotificationContext';
 import { formatDistanceToNow } from 'date-fns';
 import { transformImageUrl } from '../../APi/utils';
@@ -40,72 +40,109 @@ const NotificationBell = () => {
   };
 
   return (
-    <div className="pn-notif-wrapper" ref={dropdownRef}>
-      <button className="pn-notif-bell-btn" onClick={toggleDropdown} aria-label="Notifications">
-        <FaBell size={22} />
+    <div className="sds-notif-wrapper" ref={dropdownRef}>
+      <button
+        className="sds-nav-icon-btn sds-notif-bell-btn"
+        onClick={toggleDropdown}
+        aria-label={`Notifications (${unreadCount} unread)`}
+        aria-expanded={isOpen}
+      >
+        <Bell size={20} />
         {unreadCount > 0 && (
-          <span className="pn-notif-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
+          <span className="sds-notif-badge" aria-hidden="true">
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="pn-notif-dropdown glassmorphism">
-          <div className="pn-notif-header">
-            <h3>Notifications {unreadCount > 0 && <span>({unreadCount})</span>}</h3>
+        <div className="sds-notif-dropdown" role="region" aria-label="Notifications panel">
+          {/* Header */}
+          <div className="sds-notif-header">
+            <div className="sds-notif-title-row">
+              <h3 className="sds-notif-title">Notifications</h3>
+              {unreadCount > 0 && (
+                <span className="sds-notif-count-tag">{unreadCount} New</span>
+              )}
+            </div>
             {notifications.length > 0 && (
-              <button type="button" onClick={handleMarkAllRead} className="pn-notif-clear-btn">
-                Clear All
+              <button
+                type="button"
+                onClick={handleMarkAllRead}
+                className="sds-notif-clear-btn"
+                title="Mark all notifications as read"
+              >
+                <Check size={13} />
+                <span>Mark All Read</span>
               </button>
             )}
           </div>
 
-          <div className="pn-notif-list">
+          {/* List */}
+          <div className="sds-notif-list">
             {loading && notifications.length === 0 ? (
-              <div className="pn-notif-loading">Loading...</div>
+              <div className="sds-notif-loading">
+                <span className="sds-notif-spinner" />
+                <span>Checking updates...</span>
+              </div>
             ) : notifications.filter(n => !n.isRead).length === 0 ? (
-              <div className="pn-notif-empty">
-                <p>No new notifications</p>
+              <div className="sds-notif-empty">
+                <div className="sds-notif-empty-icon">
+                  <Inbox size={28} color="#C5A15A" />
+                </div>
+                <h4>You're All Caught Up</h4>
+                <p>New arrivals, order updates, and royal offers will appear here.</p>
               </div>
             ) : (
               notifications.filter(n => !n.isRead).map((notif) => (
                 <div
                   key={notif._id}
-                  className={`pn-notif-item ${!notif.isRead ? "unread" : ""}`}
+                  className={`sds-notif-item ${!notif.isRead ? "unread" : ""}`}
                   onClick={() => handleNotificationClick(notif)}
+                  role="button"
+                  tabIndex={0}
                 >
-                  <div className="notif-avatar">
+                  <div className="sds-notif-avatar">
                     {notif.metadata?.image ? (
                       <img
                         src={transformImageUrl(notif.metadata.image)}
                         alt="notif"
-                        className="notif-img"
+                        className="sds-notif-img"
                       />
                     ) : (
-                      <div className={`notif-icon-circle ${notif.type.toLowerCase()}`}>
-                        <FaBell size={14} />
+                      <div className="sds-notif-icon-circle">
+                        <Sparkles size={14} color="#C5A15A" />
                       </div>
                     )}
-                    {!notif.isRead && <span className="unread-dot"></span>}
+                    {!notif.isRead && <span className="sds-unread-dot" aria-hidden="true" />}
                   </div>
 
-                  <div className="pn-notif-content-info">
-                    <div className="notif-header-row">
-                      <span className="notif-type">{notif.type}</span>
-                      <span className="notif-time">
+                  <div className="sds-notif-content-info">
+                    <div className="sds-notif-meta-row">
+                      <span className="sds-notif-type">{notif.type || "Collection"}</span>
+                      <span className="sds-notif-time">
                         {formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true })}
                       </span>
                     </div>
-                    <h4 className="notif-title">{notif.title || "Product Update"}</h4>
-                    <p className="notif-message">{notif.message || "A product you were interested in has been updated."}</p>
+                    <h4 className="sds-notif-item-title">{notif.title || "Shri Deepaalaya Silks Update"}</h4>
+                    <p className="sds-notif-item-message">{notif.message || "A new update has been posted to your account."}</p>
                   </div>
                 </div>
               ))
             )}
           </div>
 
-          <div className="pn-notif-footer">
-            <button type="button" onClick={() => { setIsOpen(false); navigate('/profile?tab=notifications'); }}>
-              View All Notifications
+          {/* Footer */}
+          <div className="sds-notif-footer">
+            <button
+              type="button"
+              className="sds-notif-footer-link"
+              onClick={() => {
+                setIsOpen(false);
+                navigate('/profile?tab=notifications');
+              }}
+            >
+              View All in Account Profile →
             </button>
           </div>
         </div>

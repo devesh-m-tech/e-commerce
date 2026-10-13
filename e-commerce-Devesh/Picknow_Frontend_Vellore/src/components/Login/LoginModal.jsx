@@ -8,8 +8,7 @@ import {
   Button,
   CircularProgress,
   InputAdornment,
-  Divider,
-  Zoom,
+  Fade,
   styled
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,117 +21,99 @@ import {
   KeyRound,
   Eye,
   EyeOff,
+  Sparkles,
+  ArrowRight
 } from "lucide-react";
 import { useSnackbar } from "notistack";
 import axiosinstance from "../../APi/axiosInstance";
 import { userApi } from "../../APi/userApi";
 import { DUMMY_CREDENTIALS } from "../../mockData/mockApiHandler";
-import picknowLogo from "../../assets/PicknowLogo.png";
-import headerBg from "./login_modal_header_bg.png";
+import SdsLogo from "../common/SdsLogo";
 
-// Premium Styled Components
-const GlassDialog = styled(Dialog)(({ theme }) => ({
+// ── Luxury Styled Components (Shri Deepaalaya Silks Editorial Standard) ──
+
+const LuxuryDialog = styled(Dialog)({
   '& .MuiBackdrop-root': {
-    backdropFilter: 'blur(3px)',
-    backgroundColor: 'rgba(3, 5, 8, 0.4)',
+    backdropFilter: 'blur(4px)',
+    backgroundColor: 'rgba(26, 22, 21, 0.65)',
   },
   '& .MuiPaper-root': {
-    borderRadius: '24px',
-    width: '380px',
-    maxWidth: '95vw',
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    boxShadow: '0 25px 50px rgba(0,0,0,0.15)',
-    border: '1px solid rgba(255, 255, 255, 0.4)',
+    borderRadius: '2px',
+    width: '430px',
+    maxWidth: '94vw',
+    backgroundColor: '#FCFBF7',
+    boxShadow: '0 24px 60px rgba(40, 35, 33, 0.25)',
+    border: '1px solid #C5A15A',
     overflow: 'hidden',
     position: 'relative',
-  }
-}));
-
-const ModalHeaderHero = styled(Box)({
-  height: '100px',
-  width: '100%',
-  position: 'relative',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  overflow: 'hidden',
-  '& .hero-bg': {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    filter: 'brightness(0.85) saturate(1.2)',
-    zIndex: 0,
-  },
-  '& .hero-overlay': {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(255,255,255,1))',
-    zIndex: 1,
-  },
-  '& .hero-content': {
-    position: 'relative',
-    zIndex: 2,
-    textAlign: 'center',
+    padding: 0,
+    margin: '16px',
   }
 });
 
-const ActionButton = styled(Button)(({ theme }) => ({
-  height: '46px',
-  borderRadius: '12px',
-  textTransform: 'none',
-  fontWeight: 700,
-  fontSize: '0.9rem',
-  background: 'linear-gradient(135deg, #0f172a 0%, #334155 100%)',
-  color: '#fff',
-  boxShadow: '0 8px 16px rgba(15, 23, 42, 0.15)',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  '&:hover': {
-    background: 'linear-gradient(135deg, #1e293b 0%, #475569 100%)',
-    transform: 'translateY(-2px)',
-    boxShadow: '0 12px 24px rgba(15, 23, 42, 0.2)',
-  },
-  '&:disabled': {
-    background: '#e2e8f0',
-    color: '#94a3b8'
-  }
-}));
-
-const PremiumInput = styled(TextField)({
+const LuxuryInput = styled(TextField)({
   '& .MuiOutlinedInput-root': {
-    borderRadius: '12px',
-    backgroundColor: '#f8fafc',
-    transition: 'all 0.2s ease',
-    fontSize: '0.875rem',
-    '&:hover': {
-      backgroundColor: '#f1f5f9',
+    borderRadius: '2px',
+    backgroundColor: '#FFFFFF',
+    fontFamily: "'Karla', sans-serif",
+    fontSize: '0.92rem',
+    color: '#282321',
+    transition: 'all 0.25s ease',
+    '& fieldset': {
+      borderColor: '#EDE2D2',
+      borderWidth: '1px',
     },
-    '&.Mui-focused': {
-      backgroundColor: '#fff',
-      '& .MuiOutlinedInput-notchedOutline': {
-        borderWidth: '2px',
-        borderColor: '#3b82f6',
-      }
+    '&:hover fieldset': {
+      borderColor: '#C5A15A',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#6D1734',
+      borderWidth: '1.5px',
+    },
+  },
+  '& .MuiInputBase-input': {
+    padding: '13px 14px',
+    '&::placeholder': {
+      color: '#9C9189',
+      opacity: 1,
     }
   },
   '& .MuiFormHelperText-root': {
-    fontSize: '0.7rem',
-    marginLeft: 4,
+    marginLeft: '2px',
+    marginTop: '4px',
+    fontSize: '0.75rem',
+    color: '#b91c1c',
+  }
+});
+
+const PrimaryEditorialBtn = styled(Button)({
+  height: '46px',
+  borderRadius: '2px',
+  textTransform: 'uppercase',
+  fontWeight: 700,
+  fontSize: '0.8rem',
+  letterSpacing: '0.18em',
+  fontFamily: "'Karla', sans-serif",
+  backgroundColor: '#211E1D',
+  color: '#FFFFFF',
+  border: '1px solid #211E1D',
+  boxShadow: '0 4px 14px rgba(33, 30, 29, 0.16)',
+  transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+  '&:hover': {
+    backgroundColor: '#6D1734',
+    borderColor: '#C5A15A',
+    boxShadow: '0 6px 20px rgba(109, 23, 52, 0.25)',
+  },
+  '&:disabled': {
+    backgroundColor: '#E5DFD7',
+    color: '#A89F96',
+    borderColor: '#E5DFD7',
   }
 });
 
 const LoginModal = ({ open, onClose, onLoginSuccess }) => {
   const { enqueueSnackbar } = useSnackbar();
-  const [activeForm, setActiveForm] = useState("login");
-  const [loading, setLoading] = useState(false);
-  const [googleReady, setGoogleReady] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [activeForm, setActiveForm] = useState("login"); // 'login' | 'register' | 'verify-otp' | 'forgot-password'
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -141,8 +122,11 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
     otp: "",
   });
   const [formErrors, setFormErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [resetStep, setResetStep] = useState(1);
   const [resendTimer, setResendTimer] = useState(0);
+  const [googleReady, setGoogleReady] = useState(false);
 
   const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -154,7 +138,7 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
   };
 
   const showSnackbar = (message, variant = "info") => {
-    enqueueSnackbar(message, { variant, autoHideDuration: 3000 });
+    enqueueSnackbar(message, { variant, autoHideDuration: 3000, preventDuplicate: true });
   };
 
   useEffect(() => {
@@ -169,16 +153,17 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
           if (!credential) return;
           setLoading(true);
           try {
+            const result = await userApi.googleLogin(credential);
             localStorage.removeItem("userLoggedOut");
             localStorage.setItem("token", result.token);
             localStorage.setItem("user", JSON.stringify(result.user));
             localStorage.setItem("isLoggedIn", "true");
             window.dispatchEvent(new Event("loginStateChanged"));
-            showSnackbar("Login Successful", "success");
+            showSnackbar("Signed in successfully", "success");
             onLoginSuccess(true);
             onClose();
           } catch (error) {
-            showSnackbar(error.response?.data?.message || "Auth failed", "error");
+            showSnackbar(error.response?.data?.message || "Authentication failed", "error");
           } finally {
             setLoading(false);
           }
@@ -201,8 +186,7 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
   }, [open, GOOGLE_CLIENT_ID]);
 
   useEffect(() => {
-    if (!googleReady || !open) return;
-    if (activeForm !== "login") return;
+    if (!googleReady || !open || activeForm !== "login") return;
     const renderBtn = () => {
       const el = document.getElementById("modal-google-btn");
       if (el && window.google?.accounts?.id) {
@@ -211,13 +195,12 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
           theme: "outline",
           size: "large",
           text: "continue_with",
-          shape: "pill",
-          width: 300,
+          shape: "rectangular",
+          width: 320,
         });
       }
     };
-    // Increased timeout to ensure the DOM is ready after framer-motion transitions
-    const timer = setTimeout(renderBtn, 250);
+    const timer = setTimeout(renderBtn, 200);
     return () => clearTimeout(timer);
   }, [googleReady, activeForm, open]);
 
@@ -243,7 +226,7 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
-      showSnackbar("Missing credentials", "warning");
+      showSnackbar("Please enter both email and password", "warning");
       return;
     }
     setLoading(true);
@@ -257,11 +240,11 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
       localStorage.setItem("user", JSON.stringify(response.data.user));
       localStorage.setItem("isLoggedIn", "true");
       window.dispatchEvent(new Event("loginStateChanged"));
-      showSnackbar("Logged in successfully", "success");
+      showSnackbar("Signed in successfully", "success");
       onLoginSuccess(true);
       onClose();
     } catch (error) {
-      const msg = error.response?.data?.message || "Login failed";
+      const msg = error.response?.data?.message || "Invalid email or password";
       showSnackbar(msg, "error");
       if (msg.toLowerCase().includes("email")) setFormErrors(prev => ({ ...prev, email: msg }));
       else if (msg.toLowerCase().includes("password") || msg.toLowerCase().includes("credentials")) setFormErrors(prev => ({ ...prev, password: msg }));
@@ -278,14 +261,16 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
     e.preventDefault();
     const { name, email, password, contact } = formData;
     if (!name || !email || !password || !contact) {
-      showSnackbar("All fields required", "warning");
+      showSnackbar("Please fill in all registration fields", "warning");
       return;
     }
     setLoading(true);
     try {
       const response = await axiosinstance.post("/user/register", { name, email, password, contact });
-      showSnackbar(response.data.message, "success");
-      localStorage.setItem("activationToken", response.data.activationToken);
+      showSnackbar(response.data.message || "Account created! Please verify your OTP", "success");
+      if (response.data.activationToken) {
+        localStorage.setItem("activationToken", response.data.activationToken);
+      }
       localStorage.setItem("userEmail", email);
       setActiveForm("verify-otp");
     } catch (error) {
@@ -299,15 +284,23 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
+    if (!formData.otp) {
+      showSnackbar("Please enter the 6-digit verification code", "warning");
+      return;
+    }
     setLoading(true);
     try {
       const token = localStorage.getItem("activationToken");
-      const response = await axiosinstance.post("/user/verify", { otp: formData.otp }, { headers: { Authorization: `Bearer ${token}` } });
-      showSnackbar(response.data.message, "success");
+      const response = await axiosinstance.post(
+        "/user/verify",
+        { otp: formData.otp },
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+      );
+      showSnackbar(response.data.message || "Account verified successfully", "success");
       localStorage.removeItem("activationToken");
       setActiveForm("login");
     } catch (error) {
-      showSnackbar(error.response?.data?.message || "Failed", "error");
+      showSnackbar(error.response?.data?.message || "Verification failed", "error");
     } finally {
       setLoading(false);
     }
@@ -316,13 +309,13 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
   const handleRequestReset = async (e) => {
     e.preventDefault();
     if (!formData.email) {
-      showSnackbar("Email is required", "warning");
+      showSnackbar("Please provide your registered email", "warning");
       return;
     }
     setLoading(true);
     try {
       const response = await axiosinstance.post("/user/forgot-password", { email: formData.email });
-      showSnackbar(response.data.message, "success");
+      showSnackbar(response.data.message || "Reset code sent to your email", "success");
       setResetStep(2);
       setResendTimer(60);
     } catch (error) {
@@ -336,7 +329,7 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
     e.preventDefault();
     const { email, otp, password } = formData;
     if (!otp || !password) {
-      showSnackbar("All fields are required", "warning");
+      showSnackbar("Verification code and new password are required", "warning");
       return;
     }
     setLoading(true);
@@ -346,328 +339,468 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
         resetToken: otp,
         newPassword: password
       });
-      showSnackbar(response.data.message, "success");
+      showSnackbar(response.data.message || "Password updated successfully", "success");
       setActiveForm("login");
       setResetStep(1);
     } catch (error) {
-      showSnackbar(error.response?.data?.message || "Reset failed", "error");
+      showSnackbar(error.response?.data?.message || "Password reset failed", "error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <GlassDialog open={open} onClose={onClose} TransitionComponent={Zoom}>
-      <ModalHeaderHero>
-        <img 
-          src={headerBg} 
-          className="hero-bg" 
-          alt="Hero Background" 
-          onError={(e) => {
-            e.target.style.display = 'none';
-            e.target.parentElement.style.background = 'linear-gradient(135deg, #0f172a 0%, #3b82f6 100%)';
-          }}
-        />
-        <div className="hero-overlay" />
-        <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 12, color: '#fff', zIndex: 10 }}>
-          <X size={20} />
-        </IconButton>
-        
-        <Box className="hero-content">
-          <img src={picknowLogo} alt="PickNow" style={{ height: '48px', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))' }} />
-        </Box>
-      </ModalHeaderHero>
-
-      <Box sx={{ 
-        px: { xs: 2.5, sm: 3.5 }, 
-        pb: { xs: 3, sm: 4 },
-        pt: 1,
+    <LuxuryDialog open={open} onClose={onClose} TransitionComponent={Fade}>
+      {/* ── Top Header with Brand Logo and Close Button ── */}
+      <Box sx={{
+        pt: 3.5,
+        pb: 2,
+        px: 3.5,
+        textAlign: 'center',
         position: 'relative',
+        backgroundColor: '#FFFFFF',
+        borderBottom: '1px solid #EDE2D2'
       }}>
+        <IconButton
+          onClick={onClose}
+          aria-label="Close dialog"
+          sx={{
+            position: 'absolute',
+            right: 12,
+            top: 12,
+            color: '#6D1734',
+            borderRadius: '2px',
+            p: '6px',
+            '&:hover': { backgroundColor: 'rgba(109, 23, 52, 0.08)' }
+          }}
+        >
+          <X size={18} />
+        </IconButton>
+
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
+          <SdsLogo width={190} />
+        </Box>
+        <Typography
+          variant="caption"
+          sx={{
+            display: 'block',
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontStyle: 'italic',
+            color: '#6E6259',
+            fontSize: '0.82rem',
+            letterSpacing: '0.04em'
+          }}
+        >
+          Heritage Silks · Handcrafted Ethnic Couture
+        </Typography>
+
+        {/* ── Editorial Tabs (Sign In / Create Account) ── */}
+        {(activeForm === 'login' || activeForm === 'register') && (
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: 3,
+            mt: 2.5,
+            pt: 1,
+            borderTop: '1px solid #F0EAE1'
+          }}>
+            <Box
+              onClick={() => setActiveForm('login')}
+              sx={{
+                cursor: 'pointer',
+                pb: 0.75,
+                borderBottom: activeForm === 'login' ? '2px solid #6D1734' : '2px solid transparent',
+                color: activeForm === 'login' ? '#1A1615' : '#8A7E75',
+                fontFamily: "'Karla', sans-serif",
+                fontWeight: activeForm === 'login' ? 700 : 500,
+                fontSize: '0.82rem',
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                transition: 'all 0.2s ease',
+                '&:hover': { color: '#6D1734' }
+              }}
+            >
+              Sign In
+            </Box>
+            <Box
+              onClick={() => setActiveForm('register')}
+              sx={{
+                cursor: 'pointer',
+                pb: 0.75,
+                borderBottom: activeForm === 'register' ? '2px solid #6D1734' : '2px solid transparent',
+                color: activeForm === 'register' ? '#1A1615' : '#8A7E75',
+                fontFamily: "'Karla', sans-serif",
+                fontWeight: activeForm === 'register' ? 700 : 500,
+                fontSize: '0.82rem',
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                transition: 'all 0.2s ease',
+                '&:hover': { color: '#6D1734' }
+              }}
+            >
+              Create Account
+            </Box>
+          </Box>
+        )}
+      </Box>
+
+      {/* ── Main Form Body ── */}
+      <Box sx={{ px: { xs: 2.5, sm: 3.5 }, py: 3, backgroundColor: '#FCFBF7' }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={activeForm}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
           >
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2.5 }}>
-              <Typography variant="h6" sx={{ fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
-                {activeForm === 'login' ? 'Welcome Back' : activeForm === 'register' ? 'Create Account' : activeForm === 'forgot-password' ? 'Reset Password' : 'Verify'}
-              </Typography>
-              <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600, fontSize: '0.75rem', textAlign: 'center' }}>
-                {activeForm === 'forgot-password' ? 'Follow steps to recover access' : 'Join our premium marketplace'}
-              </Typography>
-            </Box>
-
-            {activeForm === 'login' && (
-              <>
-                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2.5, '& > div': { transform: 'scale(0.9) !important' } }}>
-                  <div id="modal-google-btn" />
-                </Box>
-                <Divider sx={{ mb: 2.5 }}>
-                  <Typography variant="caption" sx={{ color: '#cbd5e1', px: 2, fontWeight: 800, fontSize: '0.6rem' }}>OR CONTINUE WITH EMAIL</Typography>
-                </Divider>
-              </>
-            )}
-
+            {/* ═════════ 1. LOGIN FORM ═════════ */}
             {activeForm === 'login' && (
               <form onSubmit={handleLogin}>
-                {/* ── Demo Credentials Banner ── */}
+                {/* Demo Credentials Fast-Fill Card */}
                 <Box
-                  onClick={() => setFormData(prev => ({ ...prev, email: DUMMY_CREDENTIALS.email, password: DUMMY_CREDENTIALS.password }))}
+                  onClick={() => setFormData(prev => ({
+                    ...prev,
+                    email: DUMMY_CREDENTIALS.email,
+                    password: DUMMY_CREDENTIALS.password
+                  }))}
                   sx={{
-                    mb: 2,
+                    mb: 2.5,
                     p: '10px 14px',
-                    borderRadius: '10px',
-                    background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
-                    border: '1px dashed #86efac',
+                    borderRadius: '2px',
+                    backgroundColor: '#FFF8EC',
+                    border: '1px dashed #C5A15A',
                     cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    '&:hover': { background: 'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)', transform: 'translateY(-1px)' }
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    '&:hover': {
+                      backgroundColor: '#FEF3DF',
+                      borderColor: '#6D1734',
+                      transform: 'translateY(-1px)'
+                    }
                   }}
+                  title="Click to fill test credentials"
                 >
-                  <Typography variant="caption" sx={{ display: 'block', color: '#15803d', fontWeight: 800, fontSize: '0.65rem', letterSpacing: '0.08em', mb: 0.5 }}>
-                    🧪 DEMO CREDENTIALS — Click to Auto-fill
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: '#166534', fontSize: '0.72rem', display: 'block' }}>
-                    📧 {DUMMY_CREDENTIALS.email}
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: '#166534', fontSize: '0.72rem', display: 'block' }}>
-                    🔑 {DUMMY_CREDENTIALS.password}
-                  </Typography>
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: 'block',
+                        color: '#6D1734',
+                        fontWeight: 700,
+                        fontSize: '0.68rem',
+                        letterSpacing: '0.12em',
+                        textTransform: 'uppercase',
+                        fontFamily: "'Karla', sans-serif"
+                      }}
+                    >
+                      ✦ Fast Demo Access (Click to Fill)
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: '#554A43', fontSize: '0.72rem', fontFamily: "'Karla', sans-serif" }}>
+                      {DUMMY_CREDENTIALS.email}
+                    </Typography>
+                  </Box>
+                  <Sparkles size={16} color="#C5A15A" />
                 </Box>
 
-                <PremiumInput
+                <LuxuryInput
                   fullWidth
                   name="email"
                   placeholder="Email Address"
                   value={formData.email}
                   onChange={handleChange}
-                  size="medium"
+                  size="small"
                   error={!!formErrors.email}
                   helperText={formErrors.email}
-                  sx={{ mb: 1.5 }}
+                  sx={{ mb: 1.75 }}
                   InputProps={{
-                    startAdornment: <InputAdornment position="start"><Mail size={18} color="#94a3b8" /></InputAdornment>
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Mail size={16} color="#C5A15A" />
+                      </InputAdornment>
+                    )
                   }}
                 />
-                <PremiumInput
+
+                <LuxuryInput
                   fullWidth
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   placeholder="Password"
                   value={formData.password}
                   onChange={handleChange}
-                  size="medium"
+                  size="small"
                   error={!!formErrors.password}
                   helperText={formErrors.password}
                   InputProps={{
-                    startAdornment: <InputAdornment position="start"><Lock size={18} color="#94a3b8" /></InputAdornment>,
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Lock size={16} color="#C5A15A" />
+                      </InputAdornment>
+                    ),
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton onClick={() => setShowPassword(!showPassword)} size="small" sx={{ mr: -0.5 }}>
-                          {showPassword ? <EyeOff size={18} color="#94a3b8" /> : <Eye size={18} color="#94a3b8" />}
+                        <IconButton onClick={() => setShowPassword(!showPassword)} size="small" sx={{ color: '#8A7E75' }}>
+                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                         </IconButton>
                       </InputAdornment>
                     )
                   }}
                 />
-                <Box sx={{ mt: 1.5, textAlign: 'right' }}>
-                  <Typography 
-                    variant="caption" 
+
+                <Box sx={{ mt: 1.25, mb: 2.25, display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography
+                    variant="caption"
                     onClick={() => setActiveForm('forgot-password')}
-                    sx={{ color: '#64748b', fontWeight: 700, cursor: 'pointer', transition: '0.2s', '&:hover': { color: '#3b82f6' } }}
+                    sx={{
+                      color: '#6D1734',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      fontSize: '0.78rem',
+                      fontFamily: "'Karla', sans-serif",
+                      letterSpacing: '0.04em',
+                      '&:hover': { textDecoration: 'underline', color: '#4A1025' }
+                    }}
                   >
                     Forgot Password?
                   </Typography>
                 </Box>
-                <ActionButton fullWidth type="submit" disabled={loading} sx={{ mt: 2.5, height: '48px' }}>
-                  {loading ? <CircularProgress size={22} color="inherit" /> : 'Sign In'}
-                </ActionButton>
-                <Box sx={{ mt: 2.5, textAlign: 'center' }}>
-                  <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600, fontSize: '0.8rem' }}>
-                    Don't have an account? <Typography component="span" onClick={() => setActiveForm('register')} sx={{ color: '#3b82f6', fontWeight: 800, cursor: 'pointer', fontSize: '0.8rem', ml: 0.5 }}>Sign Up</Typography>
-                  </Typography>
+
+                <PrimaryEditorialBtn fullWidth type="submit" disabled={loading}>
+                  {loading ? <CircularProgress size={20} color="inherit" /> : 'Sign In To Account'}
+                </PrimaryEditorialBtn>
+
+                {/* Google Sign In Container */}
+                <Box sx={{ mt: 2.25, display: 'flex', justifyContent: 'center' }}>
+                  <div id="modal-google-btn" />
                 </Box>
               </form>
             )}
 
+            {/* ═════════ 2. REGISTER / SIGN UP FORM ═════════ */}
             {activeForm === 'register' && (
               <form onSubmit={handleRegister}>
-                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, mb: 1 }}>
-                  <PremiumInput
+                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, mb: 1.5 }}>
+                  <LuxuryInput
                     fullWidth
                     name="name"
-                    placeholder="Name"
+                    placeholder="Full Name"
                     value={formData.name}
                     onChange={handleChange}
-                    size="medium"
+                    size="small"
                     error={!!formErrors.name}
-                    InputProps={{ startAdornment: <InputAdornment position="start"><User size={16} color="#94a3b8" /></InputAdornment> }}
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start"><User size={15} color="#C5A15A" /></InputAdornment>
+                    }}
                   />
-                  <PremiumInput
+                  <LuxuryInput
                     fullWidth
                     name="contact"
                     placeholder="Mobile"
                     value={formData.contact}
                     onChange={handleChange}
-                    size="medium"
+                    size="small"
                     error={!!formErrors.contact}
-                    InputProps={{ startAdornment: <InputAdornment position="start"><Phone size={16} color="#94a3b8" /></InputAdornment> }}
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start"><Phone size={15} color="#C5A15A" /></InputAdornment>
+                    }}
                   />
                 </Box>
-                <PremiumInput
+
+                <LuxuryInput
                   fullWidth
                   name="email"
-                  placeholder="Email"
+                  placeholder="Email Address"
                   value={formData.email}
                   onChange={handleChange}
-                  size="medium"
-                  sx={{ mb: 1 }}
+                  size="small"
                   error={!!formErrors.email}
                   helperText={formErrors.email}
-                  InputProps={{ startAdornment: <InputAdornment position="start"><Mail size={18} color="#94a3b8" /></InputAdornment> }}
+                  sx={{ mb: 1.5 }}
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start"><Mail size={16} color="#C5A15A" /></InputAdornment>
+                  }}
                 />
-                <PremiumInput
+
+                <LuxuryInput
                   fullWidth
                   type={showPassword ? 'text' : 'password'}
                   name="password"
-                  placeholder="Password"
+                  placeholder="Create Secure Password"
                   value={formData.password}
                   onChange={handleChange}
-                  size="medium"
+                  size="small"
                   error={!!formErrors.password}
+                  sx={{ mb: 2.5 }}
                   InputProps={{
-                    startAdornment: <InputAdornment position="start"><Lock size={18} color="#94a3b8" /></InputAdornment>,
+                    startAdornment: <InputAdornment position="start"><Lock size={16} color="#C5A15A" /></InputAdornment>,
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton onClick={() => setShowPassword(!showPassword)} size="small" sx={{ mr: -0.5 }}>
-                          {showPassword ? <EyeOff size={18} color="#94a3b8" /> : <Eye size={18} color="#94a3b8" />}
+                        <IconButton onClick={() => setShowPassword(!showPassword)} size="small" sx={{ color: '#8A7E75' }}>
+                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                         </IconButton>
                       </InputAdornment>
                     )
                   }}
                 />
-                <ActionButton fullWidth type="submit" disabled={loading} sx={{ mt: 2.5, height: '48px' }}>
-                  {loading ? <CircularProgress size={22} color="inherit" /> : 'Register Now'}
-                </ActionButton>
-                <Box sx={{ mt: 2.5, textAlign: 'center' }}>
-                  <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600, fontSize: '0.8rem' }}>
-                    Joined already? <Typography component="span" onClick={() => setActiveForm('login')} sx={{ color: '#3b82f6', fontWeight: 800, cursor: 'pointer', fontSize: '0.8rem', ml: 0.5 }}>Log In</Typography>
+
+                <PrimaryEditorialBtn fullWidth type="submit" disabled={loading}>
+                  {loading ? <CircularProgress size={20} color="inherit" /> : 'Create Account'}
+                </PrimaryEditorialBtn>
+
+                <Box sx={{ mt: 2, textAlign: 'center' }}>
+                  <Typography variant="caption" sx={{ color: '#7A6E65', fontSize: '0.78rem' }}>
+                    By joining, you agree to our Terms & Privacy Policy.
                   </Typography>
                 </Box>
               </form>
             )}
 
+            {/* ═════════ 3. VERIFY OTP FORM ═════════ */}
             {activeForm === 'verify-otp' && (
               <form onSubmit={handleVerifyOTP}>
-                <Typography variant="body2" sx={{ color: '#64748b', mb: 3, textAlign: 'center', fontSize: '0.85rem' }}>
-                  Please enter the 6-digit code sent to your email.
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: '#554A43',
+                    mb: 2.5,
+                    textAlign: 'center',
+                    fontFamily: "'Karla', sans-serif",
+                    fontSize: '0.88rem'
+                  }}
+                >
+                  Enter the 6-digit verification code sent to your email to activate your account.
                 </Typography>
-                <PremiumInput
+
+                <LuxuryInput
                   fullWidth
                   name="otp"
-                  placeholder="6-Digit Code"
+                  placeholder="6-Digit Verification Code"
                   value={formData.otp}
                   onChange={handleChange}
-                  size="medium"
+                  size="small"
                   sx={{ mb: 2.5 }}
-                  InputProps={{ startAdornment: <InputAdornment position="start"><KeyRound size={18} color="#94a3b8" /></InputAdornment> }}
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start"><KeyRound size={16} color="#C5A15A" /></InputAdornment>
+                  }}
                 />
-                <ActionButton fullWidth type="submit" disabled={loading} sx={{ height: '48px' }}>
-                  {loading ? <CircularProgress size={22} color="inherit" /> : 'Verify Account'}
-                </ActionButton>
+
+                <PrimaryEditorialBtn fullWidth type="submit" disabled={loading} sx={{ mb: 2 }}>
+                  {loading ? <CircularProgress size={20} color="inherit" /> : 'Verify & Continue'}
+                </PrimaryEditorialBtn>
+
+                <Box sx={{ textAlign: 'center' }}>
+                  <Typography
+                    variant="caption"
+                    onClick={() => setActiveForm('login')}
+                    sx={{ color: '#6D1734', cursor: 'pointer', fontWeight: 600 }}
+                  >
+                    ← Back to Sign In
+                  </Typography>
+                </Box>
               </form>
             )}
 
+            {/* ═════════ 4. FORGOT PASSWORD FORM ═════════ */}
             {activeForm === 'forgot-password' && (
               <Box>
                 {resetStep === 1 ? (
                   <form onSubmit={handleRequestReset}>
-                    <Typography variant="body2" sx={{ color: '#64748b', mb: 2, textAlign: 'center', fontSize: '0.8rem' }}>
-                      Enter your registered email to receive a password reset code.
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: '#554A43',
+                        mb: 2.5,
+                        textAlign: 'center',
+                        fontFamily: "'Karla', sans-serif",
+                        fontSize: '0.88rem'
+                      }}
+                    >
+                      Enter your registered email address to receive password reset instructions.
                     </Typography>
-                    <PremiumInput
+
+                    <LuxuryInput
                       fullWidth
                       name="email"
-                      placeholder="Email Address"
+                      placeholder="Registered Email"
                       value={formData.email}
                       onChange={handleChange}
-                      size="medium"
+                      size="small"
                       sx={{ mb: 2.5 }}
                       InputProps={{
-                        startAdornment: <InputAdornment position="start"><Mail size={18} color="#94a3b8" /></InputAdornment>
+                        startAdornment: <InputAdornment position="start"><Mail size={16} color="#C5A15A" /></InputAdornment>
                       }}
                     />
-                    <ActionButton fullWidth type="submit" disabled={loading} sx={{ height: '48px' }}>
-                      {loading ? <CircularProgress size={22} color="inherit" /> : 'Send Reset Code'}
-                    </ActionButton>
-                    <Box sx={{ mt: 2.5, textAlign: 'center' }}>
-                      <Typography 
-                        variant="body2" 
-                        onClick={() => setActiveForm('login')} 
-                        sx={{ color: '#3b82f6', fontWeight: 800, cursor: 'pointer', fontSize: '0.85rem' }}
+
+                    <PrimaryEditorialBtn fullWidth type="submit" disabled={loading} sx={{ mb: 2 }}>
+                      {loading ? <CircularProgress size={20} color="inherit" /> : 'Send Reset Instructions'}
+                    </PrimaryEditorialBtn>
+
+                    <Box sx={{ textAlign: 'center' }}>
+                      <Typography
+                        variant="caption"
+                        onClick={() => setActiveForm('login')}
+                        sx={{ color: '#6D1734', cursor: 'pointer', fontWeight: 600 }}
                       >
-                        Back to Login
+                        ← Back to Sign In
                       </Typography>
                     </Box>
                   </form>
                 ) : (
                   <form onSubmit={handleResetPassword}>
-                    <Typography variant="body2" sx={{ color: '#64748b', mb: 2, textAlign: 'center', fontSize: '0.8rem' }}>
-                      A reset code has been sent to your email.
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: '#554A43',
+                        mb: 2.5,
+                        textAlign: 'center',
+                        fontFamily: "'Karla', sans-serif",
+                        fontSize: '0.88rem'
+                      }}
+                    >
+                      Enter the reset code sent to your email and your new password.
                     </Typography>
-                    <PremiumInput
+
+                    <LuxuryInput
                       fullWidth
                       name="otp"
-                      placeholder="6-Digit Reset Code"
+                      placeholder="Reset Code"
                       value={formData.otp}
                       onChange={handleChange}
-                      size="medium"
+                      size="small"
                       sx={{ mb: 1.5 }}
                       InputProps={{
-                        startAdornment: <InputAdornment position="start"><KeyRound size={18} color="#94a3b8" /></InputAdornment>
+                        startAdornment: <InputAdornment position="start"><KeyRound size={16} color="#C5A15A" /></InputAdornment>
                       }}
                     />
-                    <PremiumInput
+
+                    <LuxuryInput
                       fullWidth
-                      type={showPassword ? 'text' : 'password'}
+                      type="password"
                       name="password"
                       placeholder="New Password"
                       value={formData.password}
                       onChange={handleChange}
-                      size="medium"
+                      size="small"
+                      sx={{ mb: 2.5 }}
                       InputProps={{
-                        startAdornment: <InputAdornment position="start"><Lock size={18} color="#94a3b8" /></InputAdornment>,
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton onClick={() => setShowPassword(!showPassword)} size="small">
-                              {showPassword ? <EyeOff size={18} color="#94a3b8" /> : <Eye size={18} color="#94a3b8" />}
-                            </IconButton>
-                          </InputAdornment>
-                        )
+                        startAdornment: <InputAdornment position="start"><Lock size={16} color="#C5A15A" /></InputAdornment>
                       }}
                     />
-                    <ActionButton fullWidth type="submit" disabled={loading} sx={{ mt: 2.5, height: '48px' }}>
-                      {loading ? <CircularProgress size={22} color="inherit" /> : 'Reset Password'}
-                    </ActionButton>
-                    <Box sx={{ mt: 2.5, textAlign: 'center' }}>
-                      <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600, fontSize: '0.8rem' }}>
-                        Didn't get code?{' '}
-                        <Typography 
-                          component="span" 
-                          onClick={resendTimer === 0 ? handleRequestReset : undefined} 
-                          sx={{ 
-                            color: resendTimer === 0 ? '#3b82f6' : '#cbd5e1', 
-                            fontWeight: 800, 
-                            cursor: resendTimer === 0 ? 'pointer' : 'default',
-                            fontSize: '0.8rem' 
-                          }}
-                        >
-                          {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend Now'}
-                        </Typography>
+
+                    <PrimaryEditorialBtn fullWidth type="submit" disabled={loading} sx={{ mb: 2 }}>
+                      {loading ? <CircularProgress size={20} color="inherit" /> : 'Update Password'}
+                    </PrimaryEditorialBtn>
+
+                    <Box sx={{ textAlign: 'center' }}>
+                      <Typography
+                        variant="caption"
+                        onClick={() => setActiveForm('login')}
+                        sx={{ color: '#6D1734', cursor: 'pointer', fontWeight: 600 }}
+                      >
+                        ← Back to Sign In
                       </Typography>
                     </Box>
                   </form>
@@ -677,7 +810,7 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
           </motion.div>
         </AnimatePresence>
       </Box>
-    </GlassDialog>
+    </LuxuryDialog>
   );
 };
 

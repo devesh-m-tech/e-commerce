@@ -474,7 +474,6 @@ const UserProfile = () => {
       ].forEach((key) => localStorage.removeItem(key));
       window.dispatchEvent(new Event("loginStateChanged"));
       setShowLogoutConfirm(false);
-      toast.warning('Session cleared');
       navigate('/');
     }
   };
