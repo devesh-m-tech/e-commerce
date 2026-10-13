@@ -57,11 +57,21 @@ const App = () => {
     window.scrollTo(0, 0);
   }, [location]);
 
+  const syncAuthState = () => {
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user") || localStorage.getItem("currentUser");
+    const isLoggedOut = localStorage.getItem("userLoggedOut") === "true";
+    setIsLoggedIn(Boolean(token && user && !isLoggedOut));
+  };
+
   useEffect(() => {
-    const user = localStorage.getItem("currentUser");
-    if (user) {
-      setIsLoggedIn(true);
-    }
+    syncAuthState();
+    window.addEventListener("storage", syncAuthState);
+    window.addEventListener("loginStateChanged", syncAuthState);
+    return () => {
+      window.removeEventListener("storage", syncAuthState);
+      window.removeEventListener("loginStateChanged", syncAuthState);
+    };
   }, []);
 
   // AOS removed: replaced with Framer Motion animations in new components
@@ -75,8 +85,22 @@ const App = () => {
   const handleLogin = (status) => {
     setIsLoggedIn(status);
     if (!status) {
-      localStorage.removeItem("currentUser");
+      localStorage.setItem("userLoggedOut", "true");
+      [
+        "token",
+        "user",
+        "currentUser",
+        "isLoggedIn",
+        "authToken",
+        "activeTab",
+        "isVendor",
+        "userEmail",
+        "activationToken",
+        "activeCartItems"
+      ].forEach((k) => localStorage.removeItem(k));
       navigate("/");
+    } else {
+      localStorage.removeItem("userLoggedOut");
     }
     // Dispatch event to notify other components
     window.dispatchEvent(new Event("loginStateChanged"));

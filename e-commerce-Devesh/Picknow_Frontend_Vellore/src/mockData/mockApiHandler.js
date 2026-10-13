@@ -60,6 +60,11 @@ export const seedDummyAddress = () => {
   }
   saveLocalAddresses(addresses);
 
+  // If user explicitly logged out, do not auto-seed token or user
+  if (localStorage.getItem("userLoggedOut") === "true") {
+    return;
+  }
+
   if (!localStorage.getItem("token")) {
     localStorage.setItem("token", "mock_local_jwt_token_12345");
   }

@@ -74,8 +74,11 @@ const Login = ({ onLogin }) => {
           setLoading(true);
           try {
             const result = await userApi.googleLogin(credential);
+            localStorage.removeItem("userLoggedOut");
             localStorage.setItem("token", result.token);
             localStorage.setItem("user", JSON.stringify(result.user));
+            localStorage.setItem("isLoggedIn", "true");
+            window.dispatchEvent(new Event("loginStateChanged"));
             if (onLogin) onLogin(true);
             navigate("/");
           } catch (error) {
@@ -191,8 +194,11 @@ const Login = ({ onLogin }) => {
         password: formData.password,
       });
 
+      localStorage.removeItem("userLoggedOut");
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
+      localStorage.setItem("isLoggedIn", "true");
+      window.dispatchEvent(new Event("loginStateChanged"));
       
       if (onLogin) {
         onLogin(true);

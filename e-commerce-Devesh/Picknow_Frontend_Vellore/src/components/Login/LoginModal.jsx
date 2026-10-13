@@ -169,9 +169,11 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
           if (!credential) return;
           setLoading(true);
           try {
-            const result = await userApi.googleLogin(credential);
+            localStorage.removeItem("userLoggedOut");
             localStorage.setItem("token", result.token);
             localStorage.setItem("user", JSON.stringify(result.user));
+            localStorage.setItem("isLoggedIn", "true");
+            window.dispatchEvent(new Event("loginStateChanged"));
             showSnackbar("Login Successful", "success");
             onLoginSuccess(true);
             onClose();
@@ -250,8 +252,11 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
         email: formData.email,
         password: formData.password,
       });
+      localStorage.removeItem("userLoggedOut");
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
+      localStorage.setItem("isLoggedIn", "true");
+      window.dispatchEvent(new Event("loginStateChanged"));
       showSnackbar("Logged in successfully", "success");
       onLoginSuccess(true);
       onClose();

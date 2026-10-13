@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Heart, ShieldCheck, Truck, RotateCcw, Award } from 'lucide-react';
+import { Heart, ShieldCheck, Truck, RotateCcw, Award, Sparkles, ArrowRight } from 'lucide-react';
 import { productApi } from '../../APi/productApi';
 import { categoryApi } from '../../APi/categoryApi';
 import axiosInstance from '../../APi/axiosInstance';
@@ -177,42 +177,104 @@ const SdsHomePage = () => {
 
       {/* ── 1. HERO ─────────────────────────────────────────── */}
       <section className="sds-hero" aria-label="Hero banner">
+        {/* Floating Ambient Zari Shimmer Orbs */}
+        <div className="sds-hero-ambient" aria-hidden="true">
+          <motion.div
+            className="sds-hero-orb sds-hero-orb-1"
+            animate={{
+              x: [0, 25, -20, 0],
+              y: [0, -20, 15, 0],
+              scale: [1, 1.12, 0.96, 1],
+              opacity: [0.35, 0.55, 0.4, 0.35]
+            }}
+            transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="sds-hero-orb sds-hero-orb-2"
+            animate={{
+              x: [0, -30, 20, 0],
+              y: [0, 18, -25, 0],
+              scale: [1, 0.92, 1.08, 1],
+              opacity: [0.3, 0.48, 0.35, 0.3]
+            }}
+            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          />
+          <div className="sds-hero-mesh-overlay" />
+        </div>
+
         <div className="sds-hero-content">
-          <motion.span
-            className="sds-hero-eyebrow"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
+          <motion.div
+            className="sds-hero-badge-wrap"
+            initial={{ opacity: 0, y: -14, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            Handpicked · Handwoven · Heirloom
-          </motion.span>
+            <span className="sds-hero-badge">
+              <Sparkles size={13} className="sds-hero-sparkle" />
+              <span>HANDPICKED · HANDWOVEN · SILK MARK CERTIFIED</span>
+              <Sparkles size={13} className="sds-hero-sparkle" />
+            </span>
+          </motion.div>
 
           <motion.h1
             className="sds-hero-heading"
-            initial={{ opacity: 0, y: 32 }}
+            initial={{ opacity: 0, y: 26 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
+            transition={{ duration: 0.8, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
           >
-            Timeless <strong>Elegance</strong>,<br />Woven in Tradition.
+            Timeless <strong className="sds-hero-emphasis">Elegance</strong>,<br />
+            Woven in Tradition.
           </motion.h1>
 
           <motion.p
             className="sds-hero-subheading"
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.24, ease: [0.16, 1, 0.3, 1] }}
           >
-            Handpicked silk sarees, festive wear and heirloom jewellery.
+            Pure mulberry silk sarees handwoven by master artisans, temple jewellery, and festive heirlooms crafted for life's most cherished occasions.
           </motion.p>
 
           <motion.div
             className="sds-hero-cta-row"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35 }}
+            transition={{ duration: 0.7, delay: 0.36, ease: [0.16, 1, 0.3, 1] }}
           >
-            <Link to="/products" className="sds-btn sds-btn-primary">Shop The Collection</Link>
-            <Link to="/category/cat_silk_sarees" className="sds-btn sds-btn-secondary">Explore Sarees</Link>
+            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
+              <Link to="/products" className="sds-btn sds-btn-primary sds-hero-cta-main">
+                <span>Shop The Collection</span>
+                <ArrowRight size={16} className="sds-cta-arrow" />
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
+              <Link to="/category/cat_silk_sarees" className="sds-btn sds-btn-secondary sds-hero-cta-sub">
+                Explore Pure Silks
+              </Link>
+            </motion.div>
+          </motion.div>
+
+          {/* Quick Luxury Highlights */}
+          <motion.div
+            className="sds-hero-highlights"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.48 }}
+          >
+            <div className="sds-hero-highlight-item">
+              <span className="sds-highlight-bullet">✦</span>
+              <span>100% Pure Kanchipuram Silk</span>
+            </div>
+            <div className="sds-hero-highlight-divider" />
+            <div className="sds-hero-highlight-item">
+              <span className="sds-highlight-bullet">✦</span>
+              <span>Zari Weaves by Master Artisans</span>
+            </div>
+            <div className="sds-hero-highlight-divider" />
+            <div className="sds-hero-highlight-item">
+              <span className="sds-highlight-bullet">✦</span>
+              <span>Complimentary Insured Shipping</span>
+            </div>
           </motion.div>
 
           <div className="sds-hero-ornament" aria-hidden="true">
@@ -226,7 +288,7 @@ const SdsHomePage = () => {
       {/* ── 2. SHOP BY CATEGORY ─────────────────────────────── */}
       <section className="sds-section" aria-label="Shop by category">
         <div className="sds-container">
-          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
             <span className="sds-section-label">Browse Collections</span>
             <h2 className="sds-section-title">Shop by Category</h2>
           </div>

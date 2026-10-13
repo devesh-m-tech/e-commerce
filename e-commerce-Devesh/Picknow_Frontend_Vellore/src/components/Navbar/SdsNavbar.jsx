@@ -200,11 +200,17 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
   // Auth state sync
   useEffect(() => {
     const syncAuth = () => {
+      const isLoggedOut = localStorage.getItem('userLoggedOut') === 'true';
       const token = localStorage.getItem('token');
-      const user  = localStorage.getItem('user');
-      if (token && user) {
+      const user  = localStorage.getItem('user') || localStorage.getItem('currentUser');
+      if (token && user && !isLoggedOut) {
         setIsLoggedIn(true);
-        try { setUsername(JSON.parse(user).name || ''); } catch { setUsername(''); }
+        try {
+          const parsed = typeof user === 'string' ? JSON.parse(user) : user;
+          setUsername(parsed.name || '');
+        } catch {
+          setUsername('');
+        }
       } else {
         setIsLoggedIn(false);
         setUsername('');
@@ -265,7 +271,8 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
   };
 
   const handleLogoutConfirm = () => {
-    ['user', 'token', 'isLoggedIn', 'authToken', 'activeTab', 'isVendor'].forEach((k) =>
+    localStorage.setItem('userLoggedOut', 'true');
+    ['user', 'currentUser', 'token', 'isLoggedIn', 'authToken', 'activeTab', 'isVendor', 'userEmail', 'activationToken', 'activeCartItems'].forEach((k) =>
       localStorage.removeItem(k)
     );
     setIsLoggedIn(false);

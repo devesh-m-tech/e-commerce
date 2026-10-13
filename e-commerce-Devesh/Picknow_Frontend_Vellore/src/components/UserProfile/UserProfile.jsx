@@ -244,10 +244,18 @@ const UserProfile = () => {
     }
   };
 
-  // Fetch user profile
+  // Guard profile page & fetch user profile
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    const isLoggedOut = localStorage.getItem('userLoggedOut') === 'true';
+    if (!token || isLoggedOut) {
+      toast.info('Please sign in to access your profile');
+      window.dispatchEvent(new Event('openLogin'));
+      navigate('/');
+      return;
+    }
     fetchProfile();
-  }, []);
+  }, [navigate]);
 
   // Persist active tab to localStorage
   useEffect(() => {
@@ -420,13 +428,19 @@ const UserProfile = () => {
 
   const handleLogout = async () => {
     try {
-      // Clear all possible tokens and flags from localStorage
-      localStorage.removeItem('token');
-      localStorage.removeItem('isLoggedIn');
-      localStorage.removeItem('user');
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('activeTab');
-      localStorage.removeItem('isVendor');
+      localStorage.setItem('userLoggedOut', 'true');
+      [
+        'token',
+        'isLoggedIn',
+        'user',
+        'currentUser',
+        'authToken',
+        'activeTab',
+        'isVendor',
+        'userEmail',
+        'activationToken',
+        'activeCartItems'
+      ].forEach((key) => localStorage.removeItem(key));
 
       // Dispatch global event for other components (like Navbar) to sync
       window.dispatchEvent(new Event("loginStateChanged"));
@@ -445,8 +459,19 @@ const UserProfile = () => {
       navigate('/');
     } catch (error) {
       console.error('Logout error:', error);
-      // Even if something fails, clear everything and redirect
-      localStorage.clear(); // Nuclear option
+      localStorage.setItem('userLoggedOut', 'true');
+      [
+        'token',
+        'isLoggedIn',
+        'user',
+        'currentUser',
+        'authToken',
+        'activeTab',
+        'isVendor',
+        'userEmail',
+        'activationToken',
+        'activeCartItems'
+      ].forEach((key) => localStorage.removeItem(key));
       window.dispatchEvent(new Event("loginStateChanged"));
       setShowLogoutConfirm(false);
       toast.warning('Session cleared');
@@ -842,8 +867,8 @@ const UserProfile = () => {
         <div class="invoice-card">
           <div class="header">
             <div class="logo-box">
-              <img src="${window.location.origin}${PicknowLogo}" alt="PickNow Logo" onerror="this.src='https://via.placeholder.com/200x60?text=PickNow'">
-              <div style="font-size:11px; color:#666; margin-top:-10px; font-weight:500;">Your one-stop destination for 100% organic products. Shop natural, live healthy!</div>
+              <h2 style="font-family:'Playfair Display',serif; color:#6D1734; margin:0 0 4px 0; font-size:22px;">Shri Deepaalaya Silks</h2>
+              <div style="font-size:11px; color:#666; font-weight:500;">Timeless Elegance, Woven in Tradition · Authentic Kanchipuram Silks</div>
             </div>
             <div class="invoice-txt">
               <h1>Tax Invoice</h1>
@@ -854,9 +879,8 @@ const UserProfile = () => {
           <div class="address-container">
             <div class="addr-box">
               <h3>Sold By:</h3>
-              <p><strong>PickNow Quick Commerce</strong></p>
-              <p>34, T M Nagar 1st Cross, Saravana Stores,</p>
-              <p>Mattuthavani, Madurai, TN - 625107</p>
+              <p><strong>Shri Deepaalaya Silks</strong></p>
+              <p>Anna Salai, Vellore, Tamil Nadu - 632001</p>
               <p style="margin-top:5px;"><span style="color:#878787;">GSTIN:</span> 33AABCXXXXX</p>
             </div>
             <div class="addr-box">
@@ -970,7 +994,7 @@ const UserProfile = () => {
           <div class="footer">
             <p>This is a computer generated invoice and does not require a signature.</p>
             <p>Certified that the particulars given above are true and correct.</p>
-            <p style="margin-top:10px; font-weight:600; color:#000; font-size:13px;">Thank you for shopping with PickNow!</p>
+            <p style="margin-top:10px; font-weight:600; color:#000; font-size:13px;">Thank you for shopping with Shri Deepaalaya Silks!</p>
           </div>
         </div>
       </body>
@@ -1360,7 +1384,7 @@ const UserProfile = () => {
         <div className="user-info-card">
           <div className="avatar-section">
             <div className="avatar-wrapper">
-              <FaUser size={24} color="#2874f0" />
+              <FaUser size={24} color="#C5A15A" />
             </div>
             <div className="user-text">
               <span className="greeting">Hello,</span>
@@ -1633,7 +1657,7 @@ const UserProfile = () => {
                       <FaSave
                         style={{
                           fontSize: '3rem',
-                          color: '#2874f0',
+                          color: '#6D1734',
                           marginBottom: '1.5rem'
                         }}
                       />
@@ -1689,7 +1713,7 @@ const UserProfile = () => {
             <div className="wishlist-section-v2">
               <div className="wishlist-page-container">
                 <Helmet>
-                  <title>My Favorites | Picknow</title>
+                  <title>My Wishlist | Shri Deepaalaya Silks</title>
                 </Helmet>
 
                 <div className="wishlist-minimal-header11">
@@ -2747,7 +2771,7 @@ const UserProfile = () => {
                         <FaLock
                           style={{
                             fontSize: '3rem',
-                            color: '#2874f0',
+                            color: '#6D1734',
                             marginBottom: '1.5rem'
                           }}
                         />
@@ -2821,11 +2845,11 @@ const UserProfile = () => {
                       ₹{walletBalance.toLocaleString()}
                     </span>
                   )}
-                  <span className="fk-wallet-sub">Picknow Wallet</span>
+                  <span className="fk-wallet-sub">Royal Silks Wallet</span>
                 </div>
                 <div className="fk-wallet-right">
                   <div className="fk-wallet-icon-wrap">
-                    <FaWallet size={26} color="#2874f0" />
+                    <FaWallet size={26} color="#6D1734" />
                   </div>
                 </div>
               </div>

@@ -432,7 +432,7 @@ input:checked+.user-slider:before {
   .avatar-wrapper {
     width: 54px !important;
     height: 54px !important;
-    background: linear-gradient(135deg, #2874f0 0%, #1259cc 100%) !important;
+    background: linear-gradient(135deg, #6D1734 0%, #4A1025 100%) !important;
     border-radius: 16px !important;
     display: flex;
     align-items: center;
@@ -505,8 +505,8 @@ input:checked+.user-slider:before {
   .nav-group-header.active,
   .nav-group-items button.active {
     background: #fff !important;
-    color: #2874f0 !important;
-    border-color: #2874f0 !important;
+    color: #6D1734 !important;
+    border-color: #6D1734 !important;
     box-shadow: 0 8px 20px rgba(40, 116, 240, 0.1);
     transform: translateY(-2px) scale(1.05);
   }
@@ -520,9 +520,9 @@ input:checked+.user-slider:before {
     transform: translateX(-50%);
     width: 4px;
     height: 4px;
-    background: #2874f0;
+    background: #6D1734;
     border-radius: 50%;
-    box-shadow: 0 0 10px #2874f0;
+    box-shadow: 0 0 10px #6D1734;
   }
 
   .header-icon {
@@ -649,7 +649,7 @@ input:checked+.user-slider:before {
   }
 
   .mobile-nav-dropdown-menu button.active {
-    background: linear-gradient(135deg, #2874f0 0%, #1259cc 100%);
+    background: linear-gradient(135deg, #6D1734 0%, #4A1025 100%);
     color: #fff;
     box-shadow: 0 8px 15px rgba(40, 116, 240, 0.25);
   }
@@ -737,7 +737,7 @@ input:checked+.user-slider:before {
   }
 
   .premium-input-v21:focus {
-    border-bottom-color: #2874f0 !important;
+    border-bottom-color: #6D1734 !important;
     padding-left: 5px !important;
   }
 
@@ -757,7 +757,7 @@ input:checked+.user-slider:before {
   }
 
   .address-tile-v3:hover {
-    border-color: #2874f0 !important;
+    border-color: #6D1734 !important;
     background: #fff !important;
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(40, 116, 240, 0.05);
@@ -880,7 +880,7 @@ input:checked+.user-slider:before {
   .current-price {
     font-size: 16px !important;
     font-weight: 900 !important;
-    color: #2874f0 !important;
+    color: #6D1734 !important;
   }
 
   .original-price {
@@ -909,7 +909,7 @@ input:checked+.user-slider:before {
   .shop-now-button {
     margin-top: 20px;
     padding: 12px 30px;
-    background: #2874f0;
+    background: #6D1734;
     color: #fff;
     border: none;
     border-radius: 50px;
@@ -1571,7 +1571,7 @@ input:checked+.user-slider:before {
 
 .eye-toggle:hover {
   background: rgba(0, 0, 0, 0.05);
-  color: #2874f0;
+  color: #6D1734;
 }
 
 
@@ -1801,7 +1801,7 @@ input:checked+.user-slider:before {
 
 /* ── Header ── */
 .premium-modal-header-v3 {
-  background: #2874f0;
+  background: #6D1734;
   padding: 20px 24px;
   border-radius: 4px 4px 0 0;
   display: flex;
@@ -1873,8 +1873,8 @@ input:checked+.user-slider:before {
 
 .address-type-btn.active,
 .address-type-btn:hover {
-  border-color: #2874f0;
-  color: #2874f0;
+  border-color: #6D1734;
+  color: #6D1734;
   background: rgba(40, 116, 240, 0.05);
 }
 
@@ -1915,7 +1915,7 @@ input:checked+.user-slider:before {
 }
 
 .premium-input-v2:focus {
-  border-color: #2874f0;
+  border-color: #6D1734;
 }
 
 .premium-input-v2:disabled {
@@ -1942,7 +1942,7 @@ input:checked+.user-slider:before {
 .premium-input-v2:not(:placeholder-shown)+label {
   top: 6px;
   font-size: 11px;
-  color: #2874f0;
+  color: #6D1734;
 }
 
 /* Premium Input */
@@ -2005,7 +2005,7 @@ input:checked+.user-slider:before {
 }
 
 .premium-select-v3:focus {
-  border-color: #2874f0;
+  border-color: #6D1734;
 }
 
 /* ── PIN Code Loader ── */
@@ -2016,7 +2016,7 @@ input:checked+.user-slider:before {
   width: 14px;
   height: 14px;
   border: 2px solid #e0e0e0;
-  border-top-color: #2874f0;
+  border-top-color: #6D1734;
   border-radius: 50%;
   animation: fk-spin 0.7s linear infinite;
   display: inline-block;
@@ -2039,7 +2039,7 @@ input:checked+.user-slider:before {
 .default-address-row input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #2874f0;
+  accent-color: #6D1734;
   cursor: pointer;
 }
 
@@ -2060,7 +2060,7 @@ input:checked+.user-slider:before {
 
 .premium-save-btn-v3 {
   flex: 1;
-  background: #fb641b;
+  background: #C5A15A;
   border: none;
   color: #fff;
   font-size: 14px;
@@ -2168,21 +2168,21 @@ input:checked+.user-slider:before {
   background: none;
   font-size: 13px;
   font-weight: 500;
-  color: #2874f0;
+  color: #6D1734;
   cursor: pointer;
   transition: all 0.15s;
   white-space: nowrap;
 }
 
 .quick-amount-chip:hover {
-  border-color: #2874f0;
+  border-color: #6D1734;
   background: rgba(40, 116, 240, 0.05);
 }
 
 .quick-amount-chip.active {
-  border-color: #2874f0;
+  border-color: #6D1734;
   background: rgba(40, 116, 240, 0.08);
-  color: #2874f0;
+  color: #6D1734;
 }
 
 /* ── Hide number input arrows ── */
@@ -2277,21 +2277,21 @@ input:checked+.user-slider:before {
 .review-star-btn:hover,
 .review-star-btn.hover {
   background: #fff3e0;
-  border-color: #fb641b;
-  color: #fb641b;
+  border-color: #C5A15A;
+  color: #C5A15A;
   transform: scale(1.1);
 }
 
 .review-star-btn.active {
   background: #fff3e0;
-  border-color: #fb641b;
-  color: #fb641b;
+  border-color: #C5A15A;
+  color: #C5A15A;
 }
 
 .review-rating-label {
   font-size: 14px;
   font-weight: 500;
-  color: #fb641b;
+  color: #C5A15A;
   margin-left: 8px;
 }
 
@@ -2299,7 +2299,7 @@ input:checked+.user-slider:before {
   margin-top: 10px;
   padding: 10px 14px;
   background: #f0f7ff;
-  border-left: 3px solid #2874f0;
+  border-left: 3px solid #6D1734;
   border-radius: 0 2px 2px 0;
   font-size: 13px;
   color: #1a5fb4;
@@ -2331,7 +2331,7 @@ input:checked+.user-slider:before {
 }
 
 .review-textarea:focus {
-  border-color: #2874f0;
+  border-color: #6D1734;
 }
 
 .review-textarea::placeholder {
@@ -2349,7 +2349,7 @@ input:checked+.user-slider:before {
 }
 
 .review-char-count.warn {
-  color: #fb641b;
+  color: #C5A15A;
   font-weight: 500;
 }
 
@@ -2384,15 +2384,15 @@ input:checked+.user-slider:before {
   line-height: 1.8;
 }
 
-/* Modern Flipkart-inspired Design System */
+/* Shri Deepaalaya Silks — Luxury Editorial Design System */
 :root {
-  --fk-blue: #2874f0;
-  --fk-orange: #fb641b;
-  --fk-bg: #f1f3f6;
-  --fk-text-dark: #212121;
-  --fk-text-grey: #878787;
-  --fk-border: #e0e0e0;
-  --fk-shadow: 0 2px 4px 0 rgba(0, 0, 0, .08);
+  --fk-blue: #6D1734;
+  --fk-orange: #C5A15A;
+  --fk-bg: #FAF7F2;
+  --fk-text-dark: #282321;
+  --fk-text-grey: #6E6259;
+  --fk-border: #EDE2D2;
+  --fk-shadow: 0 4px 16px rgba(40, 35, 33, 0.05);
 }
 
 .profile-container {
@@ -2912,7 +2912,7 @@ input:checked+.user-slider:before {
 }
 
 .delete-btn {
-  color: #fb641b;
+  color: #C5A15A;
 }
 
 .empty-addresses {
@@ -3024,7 +3024,7 @@ input:checked+.user-slider:before {
 
 /* Header — Flipkart blue */
 .prime-modal-header {
-  background: #2874f0;
+  background: #6D1734;
   padding: 20px 24px;
   display: flex;
   align-items: center;
@@ -3261,7 +3261,7 @@ input:checked+.user-slider:before {
 }
 
 .prime-btn-primary {
-  background: #fb641b;
+  background: #C5A15A;
   color: #fff;
   box-shadow: 0 2px 4px rgba(251, 100, 27, 0.3);
 }
@@ -3842,7 +3842,7 @@ input:checked+.user-slider:before {
   align-items: center;
   justify-content: center;
 
-  background: #fb641b;
+  background: #C5A15A;
   /* Flipkart orange */
   color: #fff;
   border: none;
@@ -3970,7 +3970,7 @@ input:checked+.user-slider:before {
   padding: 1.25rem 1.5rem;
   margin: 0;
   border-bottom: 1px solid #f0f0f0;
-  color: #2874f0;
+  color: #6D1734;
   font-size: 1.25rem;
   font-weight: 500;
 }
@@ -4173,7 +4173,7 @@ input:checked+.user-slider:before {
 }
 
 .edit-address {
-  background: #2874f0;
+  background: #6D1734;
   color: white;
   border: none;
 }
@@ -4194,8 +4194,8 @@ input:checked+.user-slider:before {
 
 .set-default {
   background: white;
-  color: #2874f0;
-  border: 1px solid #2874f0;
+  color: #6D1734;
+  border: 1px solid #6D1734;
 }
 
 .set-default:hover {
@@ -5943,7 +5943,7 @@ input:checked+.user-slider:before {
   height: 36px;
 
   background: transparent;
-  color: #2874f0;
+  color: #6D1734;
   border: 1px solid #e0e0e0;
   border-radius: 50%;
   /* circle */
@@ -5960,7 +5960,7 @@ input:checked+.user-slider:before {
 /* Hover */
 .download-invoice-btn-v3:hover {
   background: #f5faff;
-  border-color: #2874f0;
+  border-color: #6D1734;
 }
 
 /* Click */
@@ -6263,7 +6263,7 @@ input:checked+.user-slider:before {
 }
 
 .add-to-cart-btn-v2 {
-  background: linear-gradient(135deg, #2874f0 0%, #0a58ca 100%);
+  background: linear-gradient(135deg, #6D1734 0%, #4A1025 100%);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -6484,7 +6484,7 @@ input:checked+.user-slider:before {
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
-  border-top: 4px solid #2874f0;
+  border-top: 4px solid #6D1734;
   padding: 20px 24px;
   margin-bottom: 20px;
 }
@@ -6513,7 +6513,7 @@ input:checked+.user-slider:before {
 
 .fk-wallet-sub {
   font-size: 12px;
-  color: #2874f0;
+  color: #6D1734;
   font-weight: 500;
   margin-top: 2px;
 }
@@ -7162,7 +7162,7 @@ input:checked+.user-slider:before {
   position: absolute;
   width: 60px;
   height: 60px;
-  background: #2874f0;
+  background: #6D1734;
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -7529,12 +7529,12 @@ input:checked+.user-slider:before {
 }
 
 .wishlist-header-modern {
-  background: linear-gradient(135deg, #2874f0 0%, #1c4fb8 100%);
+  background: linear-gradient(135deg, #6D1734 0%, #4A1025 100%);
   padding: 20px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 3px solid #fb641b;
+  border-bottom: 3px solid #C5A15A;
 }
 
 .wishlist-title-area {
@@ -7599,7 +7599,7 @@ input:checked+.user-slider:before {
   width: 48px;
   height: 48px;
   border: 4px solid #f0f0f0;
-  border-top: 4px solid #2874f0;
+  border-top: 4px solid #6D1734;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -7639,7 +7639,7 @@ input:checked+.user-slider:before {
 .wishlist-card-modern:hover {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
   transform: translateY(-4px);
-  border-color: #2874f0;
+  border-color: #6D1734;
 }
 
 .wishlist-card-image-wrapper {
@@ -7766,7 +7766,7 @@ input:checked+.user-slider:before {
   align-items: center;
   gap: 4px;
   background: #f0f0f0;
-  color: #fb641b;
+  color: #C5A15A;
   padding: 4px 6px;
   border-radius: 3px;
   font-size: 11px;
@@ -7813,7 +7813,7 @@ input:checked+.user-slider:before {
 }
 
 .add-to-cart-btn-modern {
-  background: #2874f0;
+  background: #6D1734;
   color: #fff;
   border: none;
   padding: 10px 12px;
@@ -7830,7 +7830,7 @@ input:checked+.user-slider:before {
 }
 
 .add-to-cart-btn-modern:hover:not(:disabled) {
-  background: #1c4fb8;
+  background: #4A1025;
   box-shadow: 0 4px 12px rgba(40, 116, 240, 0.3);
   transform: translateY(-2px);
 }
@@ -7919,12 +7919,12 @@ input:checked+.user-slider:before {
 }
 
 .suggestion-item:hover {
-  border-color: #2874f0;
+  border-color: #6D1734;
   box-shadow: 0 2px 8px rgba(40, 116, 240, 0.1);
 }
 
 .suggestion-icon {
-  color: #2874f0;
+  color: #6D1734;
   font-size: 24px;
 }
 
@@ -7935,7 +7935,7 @@ input:checked+.user-slider:before {
 }
 
 .continue-shopping-btn {
-  background: #2874f0;
+  background: #6D1734;
   color: #fff;
   border: none;
   padding: 12px 32px;
@@ -7951,7 +7951,7 @@ input:checked+.user-slider:before {
 }
 
 .continue-shopping-btn:hover {
-  background: #1c4fb8;
+  background: #4A1025;
   box-shadow: 0 4px 12px rgba(40, 116, 240, 0.3);
   transform: translateY(-2px);
 }
@@ -8109,7 +8109,7 @@ input:checked+.user-slider:before {
   align-items: center;
   justify-content: center;
 
-  background: #2874f0;
+  background: #6D1734;
   /* Flipkart blue */
   color: #fff;
   border: none;
@@ -8219,7 +8219,7 @@ input:checked+.user-slider:before {
 
 .status-indicator-fk.shipped,
 .status-indicator-fk.dispatched {
-  background: #2874f0;
+  background: #6D1734;
   box-shadow: 0 0 8px rgba(40, 116, 240, 0.4);
 }
 
@@ -8250,7 +8250,7 @@ input:checked+.user-slider:before {
 .status-text-fk.shipped,
 .status-text-fk.dispatched,
 .status-text-fk.order-placed {
-  color: #2874f0;
+  color: #6D1734;
 }
 
 .status-text-fk.cancelled,
@@ -8452,7 +8452,7 @@ input:checked+.user-slider:before {
   padding: 13px 20px;
   font-size: 12px;
   font-weight: 500;
-  color: #2874f0;
+  color: #6D1734;
   background: none;
   border: none;
   border-bottom: 0.5px solid #f0f0f0;
@@ -8512,7 +8512,7 @@ input:checked+.user-slider:before {
 .download-invoice-btn-v3 {
   background: #fff;
   border: 1px solid #e0e0e0;
-  color: #2874f0;
+  color: #6D1734;
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -8526,7 +8526,7 @@ input:checked+.user-slider:before {
 
 .download-invoice-btn-v3:hover {
   background: #f5f9ff;
-  border-color: #2874f0;
+  border-color: #6D1734;
   color: #1c5fd1;
   transform: scale(1.05);
 }
@@ -8931,8 +8931,8 @@ input:checked+.user-slider:before {
   align-self: right;
   /* center horizontally */
 
-  border: 1px solid #2874f0;
-  color: #2874f0;
+  border: 1px solid #6D1734;
+  color: #6D1734;
   background: none;
 
   padding: 6px 14px;
@@ -9069,11 +9069,11 @@ input:checked+.user-slider:before {
 }
 
 .order-search-input-fk:focus {
-  border-color: #2874f0;
+  border-color: #6D1734;
 }
 
 .order-search-btn-fk {
-  background: #2874f0;
+  background: #6D1734;
   color: #fff;
   border: none;
   padding: 0 16px;
@@ -9088,7 +9088,7 @@ input:checked+.user-slider:before {
 }
 
 .order-search-btn-fk:hover {
-  background: #1259cc;
+  background: #4A1025;
 }
 
 /* Cancelled Tracking Styles */
@@ -9177,7 +9177,7 @@ input:checked+.user-slider:before {
 }
 
 .order-search-btn-fk {
-  background: #2874f0;
+  background: #6D1734;
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -9608,7 +9608,7 @@ input:checked+.user-slider:before {
   }
 
   .premium-input-v21:focus {
-    border-bottom-color: #2874f0 !important;
+    border-bottom-color: #6D1734 !important;
   }
 }
 
@@ -9627,7 +9627,7 @@ input:checked+.user-slider:before {
 
   .premium-add-card-v3 {
     background: #eff6ff !important;
-    border: 1.5px dashed #2874f0 !important;
+    border: 1.5px dashed #6D1734 !important;
     border-radius: 16px !important;
     padding: 16px !important;
     margin: 4px 0 16px 0 !important;
@@ -9640,13 +9640,13 @@ input:checked+.user-slider:before {
 
   .plus-icon-v3 {
     font-size: 14px !important;
-    color: #2874f0 !important;
+    color: #6D1734 !important;
   }
 
   .add-label-v3 {
     font-size: 13px !important;
     font-weight: 800 !important;
-    color: #2874f0 !important;
+    color: #6D1734 !important;
     letter-spacing: 0.5px !important;
   }
 
@@ -9727,7 +9727,7 @@ input:checked+.user-slider:before {
 
   .tile-btn.edit {
     background: #f0f7ff !important;
-    color: #2874f0 !important;
+    color: #6D1734 !important;
   }
 
   .tile-btn.delete {
@@ -9905,7 +9905,7 @@ input:checked+.user-slider:before {
 }
 
 .logout-btn-confirm {
-  background: linear-gradient(135deg, #2874f0 0%, #1259cc 100%) !important;
+  background: linear-gradient(135deg, #6D1734 0%, #4A1025 100%) !important;
   color: #fff !important;
   box-shadow: 0 8px 20px rgba(40, 116, 240, 0.2);
 }
@@ -10167,9 +10167,321 @@ input:checked+.user-slider:before {
   background: #6D1734 !important;
   color: #ffffff !important;
   border-radius: 2px !important;
+  font-family: 'Karla', sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+  transition: all 0.2s ease !important;
+}
+
+.logout-btn-confirm:hover {
+  background: #4A1025 !important;
 }
 
 .logout-btn-cancel {
   border-radius: 2px !important;
   border: 1px solid #EDE2D2 !important;
+  font-family: 'Karla', sans-serif !important;
+  font-weight: 600 !important;
+  color: #282321 !important;
+  background: #FAF7F2 !important;
+}
+
+.logout-btn-cancel:hover {
+  border-color: #6D1734 !important;
+  color: #6D1734 !important;
+}
+
+/* ============================================================
+   SHRI DEEPAALAYA SILKS — PROFILE OVERHAUL LUXURY TOKENS
+   ============================================================ */
+.profile-container,
+.user-profile-container {
+  background: #ffffff !important;
+  border: 1px solid #EDE2D2 !important;
+  border-radius: 2px !important;
+  box-shadow: 0 4px 24px rgba(40, 35, 33, 0.04) !important;
+}
+
+.profile-sidebar,
+.user-sidebar {
+  background: #ffffff !important;
+  border-right: 1px solid #EDE2D2 !important;
+  border-radius: 2px 0 0 2px !important;
+}
+
+.user-info-card {
+  background: #FAF7F2 !important;
+  border-bottom: 1px solid #EDE2D2 !important;
+  border-radius: 2px !important;
+  padding: 16px 20px !important;
+}
+
+.avatar-wrapper {
+  background: rgba(109, 23, 52, 0.06) !important;
+  border: 1.5px solid #C5A15A !important;
+  border-radius: 2px !important;
+}
+
+.greeting {
+  font-family: 'Karla', sans-serif !important;
+  color: #6E6259 !important;
+  font-size: 12px !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+}
+
+.user-name {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  color: #282321 !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
+}
+
+.sidebar-nav-container .nav-group-header {
+  font-family: 'Karla', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  color: #6E6259 !important;
+  border-radius: 2px !important;
+}
+
+.sidebar-nav-container .nav-group-header.active {
+  color: #6D1734 !important;
+  background: rgba(109, 23, 52, 0.05) !important;
+  border-left: 3px solid #6D1734 !important;
+}
+
+.sidebar-nav-container .nav-group-items button {
+  font-family: 'Karla', sans-serif !important;
+  font-size: 13.5px !important;
+  color: #282321 !important;
+  border-radius: 2px !important;
+  transition: all 0.2s ease !important;
+}
+
+.sidebar-nav-container .nav-group-items button:hover {
+  color: #6D1734 !important;
+  background: rgba(109, 23, 52, 0.04) !important;
+}
+
+.sidebar-nav-container .nav-group-items button.active {
+  color: #6D1734 !important;
+  font-weight: 700 !important;
+  background: rgba(109, 23, 52, 0.07) !important;
+  border-left: 3px solid #6D1734 !important;
+}
+
+.logout-nav-btn {
+  font-family: 'Karla', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  color: #A33B3B !important;
+  border-radius: 2px !important;
+  transition: all 0.2s ease !important;
+}
+
+.logout-nav-btn:hover {
+  background: rgba(163, 59, 59, 0.08) !important;
+  color: #6D1734 !important;
+}
+
+/* Content Headings & Titles */
+.content-header {
+  border-bottom: 1px solid #EDE2D2 !important;
+  padding-bottom: 16px !important;
+  margin-bottom: 24px !important;
+}
+
+.content-title {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  color: #282321 !important;
+  font-weight: 700 !important;
+  font-size: 24px !important;
+  letter-spacing: -0.01em !important;
+}
+
+.edit-link-btn {
+  font-family: 'Karla', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  color: #6D1734 !important;
+}
+
+.edit-link-btn:hover {
+  color: #4A1025 !important;
+}
+
+/* Form inputs */
+.premium-input-v21,
+.address-form-group input,
+.address-form-group select,
+.password-form-group input {
+  border: 1px solid #EDE2D2 !important;
+  border-radius: 2px !important;
+  background: #ffffff !important;
+  font-family: 'Karla', sans-serif !important;
+  color: #282321 !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.premium-input-v21:focus,
+.address-form-group input:focus,
+.address-form-group select:focus,
+.password-form-group input:focus {
+  border-color: #6D1734 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(109, 23, 52, 0.08) !important;
+}
+
+/* Buttons */
+.premium-save-btn,
+.primary-action-btn,
+.password-submit-btn,
+.address-save-btn {
+  background: #6D1734 !important;
+  color: #ffffff !important;
+  border-radius: 2px !important;
+  font-family: 'Karla', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(109, 23, 52, 0.15) !important;
+  transition: all 0.2s ease !important;
+}
+
+.premium-save-btn:hover,
+.primary-action-btn:hover,
+.password-submit-btn:hover,
+.address-save-btn:hover {
+  background: #4A1025 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(109, 23, 52, 0.25) !important;
+}
+
+/* Add New Address Card & Add Money Card */
+.premium-add-card-v3 {
+  border: 1.5px dashed #C5A15A !important;
+  border-radius: 2px !important;
+  background: #FAF7F2 !important;
+  color: #6D1734 !important;
+  font-family: 'Karla', sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+  transition: all 0.2s ease !important;
+}
+
+.premium-add-card-v3:hover {
+  background: rgba(197, 161, 90, 0.12) !important;
+  border-color: #6D1734 !important;
+}
+
+.plus-icon-v3 {
+  color: #6D1734 !important;
+}
+
+.add-label-v3 {
+  color: #6D1734 !important;
+  font-weight: 700 !important;
+}
+
+/* Address Tiles */
+.address-tile-v3 {
+  border: 1px solid #EDE2D2 !important;
+  border-radius: 2px !important;
+  background: #ffffff !important;
+  transition: border-color 0.2s ease !important;
+}
+
+.address-tile-v3:hover {
+  border-color: #C5A15A !important;
+}
+
+.default-pill-v3 {
+  background: rgba(109, 23, 52, 0.08) !important;
+  color: #6D1734 !important;
+  border-radius: 2px !important;
+  font-family: 'Karla', sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+}
+
+.type-badge-v3 {
+  background: #FAF7F2 !important;
+  color: #6E6259 !important;
+  border: 1px solid #EDE2D2 !important;
+  border-radius: 2px !important;
+}
+
+/* Wallet Card Luxury */
+.fk-wallet-card {
+  background: linear-gradient(135deg, #6D1734 0%, #4A1025 100%) !important;
+  border: 1px solid rgba(197, 161, 90, 0.4) !important;
+  border-radius: 2px !important;
+  box-shadow: 0 8px 24px rgba(74, 16, 37, 0.18) !important;
+  color: #ffffff !important;
+}
+
+.fk-wallet-card .fk-wallet-amount {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+}
+
+.fk-wallet-card .fk-wallet-label,
+.fk-wallet-card .fk-wallet-sub {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-family: 'Karla', sans-serif !important;
+}
+
+.fk-wallet-card .fk-wallet-icon-wrap {
+  background: rgba(197, 161, 90, 0.2) !important;
+  border: 1px solid #C5A15A !important;
+  border-radius: 2px !important;
+}
+
+.fk-wallet-card .fk-wallet-icon-wrap svg {
+  color: #C5A15A !important;
+}
+
+/* Modals & Dialogs */
+.prime-modal,
+.modal-content,
+.dialog-content {
+  border: 1px solid #EDE2D2 !important;
+  border-radius: 2px !important;
+  background: #ffffff !important;
+  box-shadow: 0 16px 48px rgba(40, 35, 33, 0.15) !important;
+}
+
+.prime-modal-header h3,
+.logout-title-v2 {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  font-weight: 700 !important;
+  color: #282321 !important;
+}
+
+.prime-btn-primary {
+  background: #6D1734 !important;
+  color: #ffffff !important;
+  border-radius: 2px !important;
+  font-family: 'Karla', sans-serif !important;
+  font-weight: 700 !important;
+}
+
+.prime-btn-primary:hover {
+  background: #4A1025 !important;
+}
+
+.prime-btn-secondary {
+  border: 1px solid #EDE2D2 !important;
+  border-radius: 2px !important;
+  background: #FAF7F2 !important;
+  color: #282321 !important;
 }

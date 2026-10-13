@@ -12,9 +12,13 @@ export const DUMMY_DEFAULT_ADDRESS = {
   isDefault: true
 };
 
-// Ensure dummy credentials and address are always available locally
+// Ensure dummy credentials and address are always available locally (unless explicitly logged out)
 export const ensureDemoCredentialsAndAddress = () => {
   if (typeof window === 'undefined') return;
+  // If user explicitly logged out, do not auto-seed credentials or mock token
+  if (localStorage.getItem('userLoggedOut') === 'true') {
+    return;
+  }
   try {
     // 1. Ensure token
     if (!localStorage.getItem('token')) {
@@ -62,19 +66,18 @@ ensureDemoCredentialsAndAddress();
 // Get token from localStorage
 export const getToken = () => {
   let token = localStorage.getItem('token');
-  if (!token) {
+  if (!token && localStorage.getItem('userLoggedOut') !== 'true') {
     ensureDemoCredentialsAndAddress();
-    token = localStorage.getItem('token') || 'mock_local_jwt_token_12345';
+    token = localStorage.getItem('token') || null;
   }
-  return token;
+  return token || null;
 };
 
 // Check if user is logged in
 export const checkUserAccess = () => {
-  let token = getToken();
+  const token = getToken();
   if (!token) {
-    ensureDemoCredentialsAndAddress();
-    token = getToken();
+    throw new Error('Unauthorized access. Please login.');
   }
   return token;
 };
