@@ -257,13 +257,38 @@ const Deals = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4">Deals Management</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+        <Box>
+          <Typography 
+            variant="h4" 
+            sx={{ 
+              fontFamily: '"Playfair Display", Georgia, serif', 
+              fontWeight: 700, 
+              color: '#6D1734', 
+              letterSpacing: '0.5px',
+              mb: 0.5 
+            }}
+          >
+            Exclusive Deals & Promotions
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#7D7571' }}>
+            Curate limited-time bridal showcases, festive offers, and heirloom silk bundles
+          </Typography>
+        </Box>
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Button
             variant="outlined"
             onClick={handleExportToExcel}
             startIcon={<FileDownloadIcon />}
+            sx={{
+              borderRadius: 0,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              fontSize: '0.78rem',
+              borderColor: '#EDE2D2',
+              color: '#6D1734',
+              '&:hover': { borderColor: '#6D1734', backgroundColor: '#FAF7F2' }
+            }}
           >
             Export to Excel
           </Button>
@@ -271,6 +296,14 @@ const Deals = () => {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => handleOpen()}
+            sx={{
+              borderRadius: 0,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              fontSize: '0.78rem',
+              backgroundColor: '#6D1734',
+              '&:hover': { backgroundColor: '#4A1025' }
+            }}
           >
             Add Deal
           </Button>
@@ -278,7 +311,7 @@ const Deals = () => {
       </Box>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ mb: 2, borderRadius: 0 }}>
           {error}
         </Alert>
       )}
@@ -286,40 +319,61 @@ const Deals = () => {
       <Grid container spacing={3}>
         {deals.map((deal) => (
           <Grid item xs={12} sm={6} md={4} key={deal._id}>
-            <Card>
+            <Card sx={{ 
+              borderRadius: 0, 
+              border: '1px solid #EDE2D2', 
+              boxShadow: '0 4px 15px rgba(109,23,52,0.04)',
+              transition: 'all 0.3s ease',
+              '&:hover': { borderColor: '#C5A15A', transform: 'translateY(-2px)' }
+            }}>
               <CardMedia
                 component="img"
-                height="200"
+                height="220"
                 image={deal.image}
                 alt={deal.title}
+                sx={{ borderRadius: 0, objectFit: 'cover' }}
               />
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="h6" component="div">
+              <CardContent sx={{ p: 2.5 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+                  <Typography 
+                    variant="h6" 
+                    component="div"
+                    sx={{ 
+                      fontFamily: '"Playfair Display", Georgia, serif', 
+                      fontWeight: 600, 
+                      color: '#282321' 
+                    }}
+                  >
                     {deal.title}
                   </Typography>
                   <Chip
                     label={deal.status.toUpperCase()}
                     color={getStatusColor(deal.status)}
                     size="small"
+                    sx={{ borderRadius: 0, fontSize: '0.7rem', fontWeight: 600 }}
                   />
                 </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2, minHeight: 40, lineHeight: 1.6 }}>
                   {deal.content}
                 </Typography>
-                <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                  {new Date(deal.startDate).toLocaleDateString()} - {new Date(deal.endDate).toLocaleDateString()}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Products: {deal.products.length}
+                <Box sx={{ p: 1.5, backgroundColor: '#FAF7F2', border: '1px solid #EDE2D2', mb: 1 }}>
+                  <Typography variant="caption" display="block" sx={{ color: '#6D1734', fontWeight: 600, letterSpacing: '0.5px' }}>
+                    VALIDITY
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#282321', fontSize: '0.8rem' }}>
+                    {new Date(deal.startDate).toLocaleDateString()} — {new Date(deal.endDate).toLocaleDateString()}
+                  </Typography>
+                </Box>
+                <Typography variant="caption" sx={{ color: '#7D7571', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Linked Products: {deal.products.length}
                 </Typography>
               </CardContent>
-              <CardActions sx={{ justifyContent: 'flex-end' }}>
+              <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 2, pt: 0, borderTop: '1px solid #EDE2D2' }}>
                 <IconButton onClick={() => handleOpen(deal)} color="primary" size="small">
-                  <EditIcon />
+                  <EditIcon fontSize="small" />
                 </IconButton>
                 <IconButton onClick={() => handleDelete(deal._id)} color="error" size="small">
-                  <DeleteIcon />
+                  <DeleteIcon fontSize="small" />
                 </IconButton>
               </CardActions>
             </Card>
@@ -327,9 +381,21 @@ const Deals = () => {
         ))}
       </Grid>
 
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {loading ? <CircularProgress size={24} /> : (editDeal ? 'Edit Deal' : 'Add Deal')}
+      <Dialog 
+        open={open} 
+        onClose={handleClose} 
+        maxWidth="sm" 
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 0, border: '1px solid #EDE2D2' } }}
+      >
+        <DialogTitle sx={{ 
+          fontFamily: '"Playfair Display", Georgia, serif', 
+          fontWeight: 700, 
+          color: '#6D1734',
+          borderBottom: '1px solid #EDE2D2',
+          pb: 2
+        }}>
+          {loading ? <CircularProgress size={24} /> : (editDeal ? 'Edit Deal' : 'Add Exclusive Deal')}
         </DialogTitle>
         <DialogContent>
           <Box component="form" sx={{ pt: 2 }}>
@@ -474,10 +540,31 @@ const Deals = () => {
             </List>
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit} variant="contained" disabled={loading}>
-            {editDeal ? 'Update' : 'Add'}
+        <DialogActions sx={{ p: 2.5, borderTop: '1px solid #EDE2D2', gap: 1 }}>
+          <Button 
+            onClick={handleClose}
+            sx={{
+              borderRadius: 0,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              color: '#7D7571'
+            }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleSubmit} 
+            variant="contained" 
+            disabled={loading}
+            sx={{
+              borderRadius: 0,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              backgroundColor: '#6D1734',
+              '&:hover': { backgroundColor: '#4A1025' }
+            }}
+          >
+            {editDeal ? 'Update Deal' : 'Create Deal'}
           </Button>
         </DialogActions>
       </Dialog>

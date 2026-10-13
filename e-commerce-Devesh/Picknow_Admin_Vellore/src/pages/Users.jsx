@@ -298,7 +298,7 @@ const Users = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
               <PersonIcon sx={{ fontSize: 40 }} />
               <Box>
-                <Typography variant="h4" sx={{ fontWeight: 600 }}>
+                <Typography variant="h4" sx={{ fontWeight: 600, fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: '0.5px' }}>
                   Users
                 </Typography>
                 <Typography variant="body1" sx={{ mt: 0.5, opacity: 0.8 }}>

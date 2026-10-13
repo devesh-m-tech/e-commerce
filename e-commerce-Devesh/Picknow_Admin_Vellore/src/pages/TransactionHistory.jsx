@@ -195,14 +195,39 @@ const TransactionHistory = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4">Transaction History</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+        <Box>
+          <Typography 
+            variant="h4" 
+            sx={{ 
+              fontFamily: '"Playfair Display", Georgia, serif', 
+              fontWeight: 700, 
+              color: '#6D1734', 
+              letterSpacing: '0.5px',
+              mb: 0.5 
+            }}
+          >
+            Ledger & Transaction History
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#7D7571' }}>
+            Comprehensive audit of customer wallet balances, order payments, and debit adjustments
+          </Typography>
+        </Box>
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Button
             variant="outlined"
             onClick={handleExportToExcel}
             startIcon={<FileDownloadIcon />}
             disabled={transactions.length === 0}
+            sx={{
+              borderRadius: 0,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              fontSize: '0.78rem',
+              borderColor: '#EDE2D2',
+              color: '#6D1734',
+              '&:hover': { borderColor: '#6D1734', backgroundColor: '#FAF7F2' }
+            }}
           >
             Export to Excel
           </Button>
@@ -211,6 +236,15 @@ const TransactionHistory = () => {
             onClick={fetchTransactions}
             startIcon={<RefreshIcon />}
             disabled={loading}
+            sx={{
+              borderRadius: 0,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              fontSize: '0.78rem',
+              borderColor: '#EDE2D2',
+              color: '#6D1734',
+              '&:hover': { borderColor: '#6D1734', backgroundColor: '#FAF7F2' }
+            }}
           >
             Refresh
           </Button>
@@ -220,49 +254,49 @@ const TransactionHistory = () => {
       {/* Summary Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
+          <Card sx={{ borderRadius: 0, border: '1px solid #EDE2D2', boxShadow: 'none', backgroundColor: '#FAF7F2' }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Typography sx={{ color: '#7D7571', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }} gutterBottom>
                 Total Credit
               </Typography>
-              <Typography variant="h5" color="success.main">
-                ₹{summary.totalCredit.toLocaleString()}
+              <Typography variant="h5" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 700, color: '#2e7d32' }}>
+                ₹{summary.totalCredit.toLocaleString('en-IN')}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
+          <Card sx={{ borderRadius: 0, border: '1px solid #EDE2D2', boxShadow: 'none', backgroundColor: '#FAF7F2' }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Typography sx={{ color: '#7D7571', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }} gutterBottom>
                 Total Debit
               </Typography>
-              <Typography variant="h5" color="error.main">
-                ₹{summary.totalDebit.toLocaleString()}
+              <Typography variant="h5" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 700, color: '#d32f2f' }}>
+                ₹{summary.totalDebit.toLocaleString('en-IN')}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Net Amount
+          <Card sx={{ borderRadius: 0, border: '1px solid #EDE2D2', boxShadow: 'none', backgroundColor: '#FAF7F2' }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Typography sx={{ color: '#7D7571', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }} gutterBottom>
+                Net Balance
               </Typography>
-              <Typography variant="h5" color={summary.netAmount >= 0 ? "success.main" : "error.main"}>
-                ₹{summary.netAmount.toLocaleString()}
+              <Typography variant="h5" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 700, color: summary.netAmount >= 0 ? "#2e7d32" : "#d32f2f" }}>
+                ₹{summary.netAmount.toLocaleString('en-IN')}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
+          <Card sx={{ borderRadius: 0, border: '1px solid #EDE2D2', boxShadow: 'none', backgroundColor: '#FAF7F2' }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Typography sx={{ color: '#7D7571', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }} gutterBottom>
                 Total Transactions
               </Typography>
-              <Typography variant="h5">
-                {summary.totalTransactions.toLocaleString()}
+              <Typography variant="h5" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 700, color: '#6D1734' }}>
+                {summary.totalTransactions.toLocaleString('en-IN')}
               </Typography>
             </CardContent>
           </Card>
@@ -270,10 +304,12 @@ const TransactionHistory = () => {
       </Grid>
 
       {/* Filters */}
-      <Paper sx={{ p: 2, mb: 3 }}>
+      <Paper sx={{ p: 2.5, mb: 3, borderRadius: 0, border: '1px solid #EDE2D2', backgroundColor: '#FAF7F2' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <FilterListIcon sx={{ mr: 1 }} />
-          <Typography variant="h6">Filters</Typography>
+          <FilterListIcon sx={{ mr: 1, color: '#6D1734' }} />
+          <Typography variant="subtitle1" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 600, color: '#6D1734' }}>
+            Filter Transactions
+          </Typography>
         </Box>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6} md={3}>
@@ -283,10 +319,11 @@ const TransactionHistory = () => {
               value={filters.userId}
               onChange={(e) => handleFilterChange('userId', e.target.value)}
               size="small"
+              sx={{ backgroundColor: '#FFFFFF' }}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth size="small">
+            <FormControl fullWidth size="small" sx={{ backgroundColor: '#FFFFFF' }}>
               <InputLabel>Transaction Type</InputLabel>
               <Select
                 value={filters.type}
@@ -300,7 +337,7 @@ const TransactionHistory = () => {
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth size="small">
+            <FormControl fullWidth size="small" sx={{ backgroundColor: '#FFFFFF' }}>
               <InputLabel>Status</InputLabel>
               <Select
                 value={filters.status}
@@ -315,7 +352,7 @@ const TransactionHistory = () => {
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth size="small">
+            <FormControl fullWidth size="small" sx={{ backgroundColor: '#FFFFFF' }}>
               <InputLabel>Items per page</InputLabel>
               <Select
                 value={filters.limit}
@@ -338,6 +375,7 @@ const TransactionHistory = () => {
               onChange={(e) => handleFilterChange('startDate', e.target.value)}
               size="small"
               InputLabelProps={{ shrink: true }}
+              sx={{ backgroundColor: '#FFFFFF' }}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -349,6 +387,7 @@ const TransactionHistory = () => {
               onChange={(e) => handleFilterChange('endDate', e.target.value)}
               size="small"
               InputLabelProps={{ shrink: true }}
+              sx={{ backgroundColor: '#FFFFFF' }}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -356,6 +395,16 @@ const TransactionHistory = () => {
               variant="outlined"
               onClick={clearFilters}
               fullWidth
+              sx={{
+                borderRadius: 0,
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                fontSize: '0.78rem',
+                borderColor: '#EDE2D2',
+                color: '#6D1734',
+                height: 40,
+                '&:hover': { borderColor: '#6D1734', backgroundColor: '#FAF7F2' }
+              }}
             >
               Clear Filters
             </Button>
@@ -365,23 +414,23 @@ const TransactionHistory = () => {
 
       {/* Error Alert */}
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ mb: 2, borderRadius: 0 }}>
           {error}
         </Alert>
       )}
 
       {/* Transactions Table */}
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ borderRadius: 0, border: '1px solid #EDE2D2', boxShadow: 'none' }}>
         <Table>
-          <TableHead>
+          <TableHead sx={{ backgroundColor: '#FAF7F2' }}>
             <TableRow>
-              <TableCell>Transaction ID</TableCell>
-              <TableCell>User Details</TableCell>
-              <TableCell>Amount</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Date</TableCell>
+              <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Transaction ID</TableCell>
+              <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>User Details</TableCell>
+              <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Amount</TableCell>
+              <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Type</TableCell>
+              <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Description</TableCell>
+              <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Status</TableCell>
+              <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Date</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -428,10 +477,11 @@ const TransactionHistory = () => {
                       label={transaction.type.toUpperCase()}
                       color={getTypeColor(transaction.type)}
                       size="small"
+                      sx={{ borderRadius: 0, fontWeight: 600, fontSize: '0.7rem' }}
                     />
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" sx={{ maxWidth: 200 }}>
+                    <Typography variant="body2" sx={{ maxWidth: 200, color: '#282321' }}>
                       {transaction.description}
                     </Typography>
                   </TableCell>
@@ -440,6 +490,7 @@ const TransactionHistory = () => {
                       label={transaction.status.toUpperCase()}
                       color={getStatusColor(transaction.status)}
                       size="small"
+                      sx={{ borderRadius: 0, fontWeight: 600, fontSize: '0.7rem' }}
                     />
                   </TableCell>
                   <TableCell>

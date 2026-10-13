@@ -164,88 +164,111 @@ const Shipping = () => {
   return (
     <Box sx={{ p: 3 }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-        <ShippingIcon sx={{ fontSize: 32, mr: 2, color: 'primary.main' }} />
-        <Typography variant="h4" component="h1">
-          Shipping & Delivery Management
-        </Typography>
-      </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+        <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
+            <ShippingIcon sx={{ fontSize: 28, color: '#6D1734' }} />
+            <Typography 
+              variant="h4" 
+              component="h1"
+              sx={{ 
+                fontFamily: '"Playfair Display", Georgia, serif', 
+                fontWeight: 700, 
+                color: '#6D1734', 
+                letterSpacing: '0.5px' 
+              }}
+            >
+              Shipping & Delivery Tariffs
+            </Typography>
+          </Box>
+          <Typography variant="body2" sx={{ color: '#7D7571' }}>
+            Configure regional state-wise logistics tariffs, insured delivery fees, and combo rates
+          </Typography>
+        </Box>
 
-      {/* Add New Button */}
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
+        {/* Add New Button */}
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => handleOpenDialog()}
-          sx={{ borderRadius: 2 }}
+          sx={{
+            borderRadius: 0,
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            fontSize: '0.78rem',
+            backgroundColor: '#6D1734',
+            '&:hover': { backgroundColor: '#4A1025' }
+          }}
         >
-          Add New State
+          Add New State Tariff
         </Button>
       </Box>
 
       {/* Delivery Data Table */}
-      <Card>
-        <CardContent>
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Delivery Fees by State
-          </Typography>
+      <Card sx={{ borderRadius: 0, border: '1px solid #EDE2D2', boxShadow: 'none' }}>
+        <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
+          <Box sx={{ p: 2.5, backgroundColor: '#FAF7F2', borderBottom: '1px solid #EDE2D2' }}>
+            <Typography variant="h6" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 600, color: '#6D1734' }}>
+              State-Wise Logistics Rates
+            </Typography>
+          </Box>
           
           {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-              <Typography>Loading...</Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+              <Typography>Loading tariffs...</Typography>
             </Box>
           ) : deliveryData.length === 0 ? (
-            <Box sx={{ textAlign: 'center', p: 3 }}>
+            <Box sx={{ textAlign: 'center', p: 4 }}>
               <Typography color="textSecondary">
-                No delivery information found. Add a new state to get started.
+                No delivery information found. Add a new state tariff to begin.
               </Typography>
             </Box>
           ) : (
-            <TableContainer component={Paper} elevation={0}>
+            <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 0 }}>
               <Table>
-                <TableHead>
-                  <TableRow sx={{ backgroundColor: 'grey.50' }}>
-                    <TableCell><strong>State</strong></TableCell>
-                    <TableCell align="right"><strong>Product Delivery Fee</strong></TableCell>
-                    <TableCell align="right"><strong>Combo Delivery Fee</strong></TableCell>
-                    {/* <TableCell align="right"><strong>Above ₹500 Delivery Fee</strong></TableCell> */}
-                    <TableCell align="center"><strong>Actions</strong></TableCell>
+                <TableHead sx={{ backgroundColor: '#FAF7F2' }}>
+                  <TableRow>
+                    <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>State / Region</TableCell>
+                    <TableCell align="right" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Product Delivery Fee</TableCell>
+                    <TableCell align="right" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Combo Delivery Fee</TableCell>
+                    <TableCell align="center" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {deliveryData.map((row) => (
-                    <TableRow key={row.state} hover>
+                    <TableRow key={row.state} hover sx={{ '&:hover': { backgroundColor: '#FAF7F2' } }}>
                       <TableCell>
                         <Chip 
                           label={row.state} 
-                          color="primary" 
                           variant="outlined"
                           size="small"
+                          sx={{ 
+                            borderRadius: 0, 
+                            borderColor: '#C5A15A', 
+                            color: '#6D1734', 
+                            fontWeight: 600, 
+                            fontSize: '0.75rem' 
+                          }}
                         />
                       </TableCell>
                       <TableCell align="right">
-                        <Typography variant="body2" color="textSecondary">
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#282321' }}>
                           {formatCurrency(row.productdeliveryfee)}
                         </Typography>
                       </TableCell>
                       <TableCell align="right">
-                        <Typography variant="body2" color="textSecondary">
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#282321' }}>
                           {formatCurrency(row.combodeliveryfee)}
                         </Typography>
                       </TableCell>
-                      {/* <TableCell align="right">
-                        <Typography variant="body2" color="textSecondary">
-                          {formatCurrency(row.above500_deliveryfee)}
-                        </Typography>
-                      </TableCell> */}
                       <TableCell align="center">
-                        <Tooltip title="Edit">
+                        <Tooltip title="Edit Tariff">
                           <IconButton
                             size="small"
                             onClick={() => handleOpenDialog(row)}
                             color="primary"
                           >
-                            <EditIcon />
+                            <EditIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
                       </TableCell>
@@ -259,9 +282,21 @@ const Shipping = () => {
       </Card>
 
       {/* Add/Edit Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {editingState ? `Edit Delivery Info - ${editingState}` : 'Add New State Delivery Info'}
+      <Dialog 
+        open={openDialog} 
+        onClose={handleCloseDialog} 
+        maxWidth="sm" 
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 0, border: '1px solid #EDE2D2' } }}
+      >
+        <DialogTitle sx={{ 
+          fontFamily: '"Playfair Display", Georgia, serif', 
+          fontWeight: 700, 
+          color: '#6D1734',
+          borderBottom: '1px solid #EDE2D2',
+          pb: 2
+        }}>
+          {editingState ? `Edit Delivery Tariff — ${editingState}` : 'Add State Delivery Tariff'}
         </DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -318,9 +353,18 @@ const Shipping = () => {
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} disabled={loading}>
-            <CancelIcon sx={{ mr: 1 }} />
+        <DialogActions sx={{ p: 2.5, borderTop: '1px solid #EDE2D2', gap: 1 }}>
+          <Button 
+            onClick={handleCloseDialog} 
+            disabled={loading}
+            sx={{
+              borderRadius: 0,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              color: '#7D7571'
+            }}
+          >
+            <CancelIcon sx={{ mr: 1, fontSize: 18 }} />
             Cancel
           </Button>
           <Button
@@ -328,8 +372,15 @@ const Shipping = () => {
             variant="contained"
             disabled={loading}
             startIcon={loading ? null : <SaveIcon />}
+            sx={{
+              borderRadius: 0,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              backgroundColor: '#6D1734',
+              '&:hover': { backgroundColor: '#4A1025' }
+            }}
           >
-            {loading ? 'Saving...' : (editingState ? 'Update' : 'Save')}
+            {loading ? 'Saving...' : (editingState ? 'Update Tariff' : 'Save Tariff')}
           </Button>
         </DialogActions>
       </Dialog>

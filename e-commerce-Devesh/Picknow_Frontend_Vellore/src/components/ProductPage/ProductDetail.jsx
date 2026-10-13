@@ -979,13 +979,13 @@ const ProductDetail = () => {
         }}
         size="medium"
         sx={{
-          color: "#ffd700",
+          color: "#C5A15A",
           "& .MuiRating-iconFilled": {
-            color: "#ffd700",
+            color: "#C5A15A",
           },
           "& .MuiRating-iconHover": {
             marginTop: "4px",
-            color: "#ffd700",
+            color: "#A88338",
           },
         }}
       />
@@ -1471,7 +1471,7 @@ const ProductDetail = () => {
                   </div>
                   <div className="action-buttons-group-surgical">
                     <div className={`wishlist-circle-btn ${isInWishlist ? "active" : ""}`} onClick={handleWishlist}>
-                      <Heart size={20} fill={isInWishlist ? "#ef4444" : "none"} stroke={isInWishlist ? "#ef4444" : "currentColor"} />
+                      <Heart size={20} fill={isInWishlist ? "#6D1734" : "none"} stroke={isInWishlist ? "#6D1734" : "currentColor"} />
                     </div>
                     <div className="share-circle-btn" onClick={() => {
                       if (navigator.share) {
@@ -1666,7 +1666,7 @@ const ProductDetail = () => {
         {isMobile && (
           <div className={`mobile-sticky-actions ${!showSticky ? 'hidden' : ''}`}>
             <div className={`mobile-action-pill-btn ${isInWishlist ? "active" : ""}`} onClick={handleWishlist}>
-              <Heart size={20} fill={isInWishlist ? "#ef4444" : "none"} stroke={isInWishlist ? "#ef4444" : "currentColor"} />
+              <Heart size={20} fill={isInWishlist ? "#6D1734" : "none"} stroke={isInWishlist ? "#6D1734" : "currentColor"} />
             </div>
             <div className="mobile-action-pill-btn" onClick={() => {
               if (navigator.share) {

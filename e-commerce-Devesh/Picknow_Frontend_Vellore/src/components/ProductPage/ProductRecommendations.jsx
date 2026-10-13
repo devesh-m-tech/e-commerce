@@ -35,7 +35,7 @@ const ProductRecommendations = ({
   onAddToCart,
   onWishlist,
   title = "You Might Also Like",
-  subtitle = "Handpicked organic products tailored for you"
+  subtitle = "Handpicked pure silk weaves and heirloom jewellery curated for you"
 }) => {
   const navigate = useNavigate();
   const [addedProducts, setAddedProducts] = useState(new Set());

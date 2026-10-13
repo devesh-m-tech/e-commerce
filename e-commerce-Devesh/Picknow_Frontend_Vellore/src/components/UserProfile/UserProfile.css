@@ -1,140 +1,155 @@
-.user-profile-page {
+/* ============================================================
+   SHRI DEEPAALAYA SILKS — LUXURY USER PROFILE STYLES
+   ============================================================ */
+
+:root {
+  --profile-maroon: #6D1734;
+  --profile-burgundy: #4A1025;
+  --profile-gold: #C5A15A;
+  --profile-dark: #282321;
+  --profile-sand: #FAF7F2;
+  --profile-ivory: #FFF9F0;
+  --profile-border: #EDE2D2;
+}
+
+.user-profile-page,
+.profile-page {
   min-height: 100vh;
-  padding: 130px 20px 20px;
-  background: #f1f3f6;
+  padding: 130px 20px 40px;
+  background: var(--profile-sand);
 }
 
 @media (max-width: 1024px) {
-  .user-profile-page {
-    padding-top: 160px;
-    /* Standardized with Brand pages */
+  .user-profile-page,
+  .profile-page {
+    padding-top: 150px;
   }
 }
 
-.user-profile-container {
-  max-width: 1240px;
+.user-profile-container,
+.profile-container {
+  max-width: 1280px;
   margin: 20px auto;
-  background: white;
-  border-radius: 28px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+  border-radius: 2px !important;
+  box-shadow: 0 4px 20px rgba(40, 35, 33, 0.04);
   display: flex;
   overflow: hidden;
-  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--profile-border) !important;
   position: relative;
-}
-
-.mobile-nav-dropdown-container {
-  display: none;
 }
 
 /* Sidebar Styles */
-.user-sidebar {
-  width: 300px;
-  background: #ff8c42;
-  padding: 40px 0;
-  color: white;
+.user-sidebar,
+.profile-sidebar {
+  width: 280px;
+  background: var(--profile-maroon) !important;
+  padding: 36px 0;
+  color: #ffffff;
   display: flex;
   flex-direction: column;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.3s ease;
   position: relative;
+  border-radius: 0 !important;
 }
 
 .user-sidebar-header {
   padding: 0 20px;
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 }
 
-.user-avatar {
-  width: 100px;
-  height: 100px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  margin: 0 auto 15px;
+.user-avatar,
+.avatar-wrapper {
+  width: 76px !important;
+  height: 76px !important;
+  background: rgba(197, 161, 90, 0.2) !important;
+  border: 2px solid var(--profile-gold) !important;
+  border-radius: 2px !important;
+  margin: 0 auto 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 40px;
-  transition: transform 0.3s ease;
-}
-
-.user-avatar:hover {
-  transform: scale(1.05);
+  font-size: 28px;
+  color: #ffffff !important;
 }
 
 .user-sidebar-nav {
   flex: 1;
 }
 
-.user-nav-item {
+.user-nav-item,
+.sidebar-nav-item {
   display: flex;
   align-items: center;
-  padding: 16px 36px;
-  color: rgba(255, 255, 255, 0.88);
+  padding: 14px 24px;
+  color: rgba(255, 255, 255, 0.85);
   border: none;
   background: none;
   width: 90%;
-  margin: 0 auto 8px;
-  border-radius: 50px;
+  margin: 0 auto 6px;
+  border-radius: 2px !important;
   cursor: pointer;
-  font-size: 15px;
+  font-family: 'Karla', sans-serif;
+  font-size: 14px;
   font-weight: 600;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
 }
 
-.user-nav-item svg {
-  margin-right: 14px;
-  font-size: 18px;
-  transition: transform 0.3s ease;
+.user-nav-item svg,
+.sidebar-nav-item svg {
+  margin-right: 12px;
+  font-size: 16px;
 }
 
-.user-nav-item:hover {
-  background: rgba(255, 255, 255, 0.15);
+.user-nav-item:hover,
+.sidebar-nav-item:hover {
+  background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
-  padding-left: 42px;
+  padding-left: 28px;
 }
 
-.user-nav-item:hover svg {
-  transform: scale(1.2) rotate(5deg);
-}
-
-.user-nav-item.active {
-  background: #ffffff;
-  color: #ff8c42;
-  font-weight: 800;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  transform: scale(1.05);
+.user-nav-item.active,
+.sidebar-nav-item.active {
+  background: #ffffff !important;
+  color: var(--profile-maroon) !important;
+  font-weight: 700;
+  border-left: 3px solid var(--profile-gold) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .user-logout-button {
   margin: 20px;
-  padding: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 10px;
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
   background: none;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.user-logout-button svg {
-  margin-right: 10px;
+  font-family: 'Karla', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
 }
 
 .user-logout-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #ffffff;
 }
 
 /* Content Styles */
-.user-content {
+.user-content,
+.profile-content {
   flex: 1;
-  padding: 40px;
-  background: white;
+  padding: 36px 40px;
+  background: #ffffff;
 }
 
 /* Profile Info Styles */
@@ -148,16 +163,17 @@
 }
 
 .user-profile-avatar {
-  width: 120px;
-  height: 120px;
-  background: #ff8c42;
-  border-radius: 50%;
+  width: 90px;
+  height: 90px;
+  background: #6D1734;
+  border: 2px solid #C5A15A;
+  border-radius: 2px;
   margin: 0 auto 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 50px;
-  color: white;
+  font-size: 40px;
+  color: #FFF9F0;
   transition: transform 0.3s ease;
 }
 
@@ -173,36 +189,42 @@
 .user-detail-item {
   display: flex;
   align-items: center;
-  padding: 24px;
-  background: #fdfdfd;
-  border-radius: 16px;
-  margin-bottom: 20px;
-  border: 1.5px solid #f1f3f6;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 18px 24px;
+  background: #ffffff;
+  border-radius: 2px;
+  margin-bottom: 16px;
+  border: 1px solid #EDE2D2;
+  transition: all 0.2s ease;
 }
 
 .user-detail-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  border-color: #ff8c42;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(109, 23, 52, 0.06);
+  border-color: #6D1734;
 }
 
 .user-detail-icon {
-  font-size: 24px;
-  color: #ff8c42;
+  font-size: 20px;
+  color: #6D1734;
   margin-right: 20px;
 }
 
 .user-detail-content label {
   display: block;
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 5px;
+  font-family: 'Karla', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #8C827A;
+  margin-bottom: 4px;
 }
 
 .user-detail-content p {
-  font-size: 16px;
-  color: #333333;
+  font-family: 'Karla', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #282321;
   margin: 0;
 }
 
@@ -212,21 +234,25 @@
   justify-content: center;
   gap: 10px;
   margin: 30px auto;
-  padding: 14px 44px;
-  background: linear-gradient(135deg, #ff8c42 0%, #ff7f50 100%);
-  color: white;
+  padding: 12px 36px;
+  background: #6D1734;
+  color: #ffffff;
   border: none;
-  border-radius: 50px;
-  font-size: 16px;
-  font-weight: 800;
+  border-radius: 2px;
+  font-family: 'Karla', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 10px 25px rgba(255, 140, 66, 0.25);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(109, 23, 52, 0.2);
 }
 
 .user-edit-profile-btn:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 15px 35px rgba(255, 140, 66, 0.4);
+  background: #4A1025;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(109, 23, 52, 0.3);
 }
 
 /* Empty State Styles */
@@ -10050,9 +10076,100 @@ input:checked+.user-slider:before {
 }
 
 .unavailable-point-fk {
-  color: #ff0000 !important;
+  color: #c62828 !important;
   font-size: 11px;
   font-weight: 600;
   margin-left: 5px;
   font-style: italic;
+}
+
+/* ============================================================
+   SHRI DEEPAALAYA SILKS — PROFILE LUXURY GLOBAL OVERRIDES
+   ============================================================ */
+.user-profile-page h1,
+.user-profile-page h2,
+.user-profile-page h3,
+.user-profile-page .content-title,
+.profile-content h1,
+.profile-content h2,
+.profile-content h3 {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  color: #282321 !important;
+  letter-spacing: 0.2px;
+}
+
+.user-profile-page button,
+.profile-page button,
+.user-edit-profile-btn,
+.btn-explore-now,
+.premium-save-btn-v3,
+.save-btn,
+.quick-amount-chip,
+.modal-close-btn,
+.logout-btn-confirm,
+.logout-btn-cancel,
+.order-card-fk,
+.address-card-v2,
+.wallet-card-v2,
+.user-detail-item {
+  border-radius: 2px !important;
+}
+
+.btn-explore-now {
+  background: #6D1734 !important;
+  color: #ffffff !important;
+}
+
+.btn-explore-now:hover {
+  background: #4A1025 !important;
+  transform: translateY(-2px);
+}
+
+.quick-amount-chip {
+  color: #6D1734 !important;
+  border-color: #EDE2D2 !important;
+}
+
+.quick-amount-chip:hover,
+.quick-amount-chip.active {
+  border-color: #6D1734 !important;
+  background: rgba(109, 23, 52, 0.08) !important;
+  color: #6D1734 !important;
+}
+
+.order-card-fk {
+  border: 1px solid #EDE2D2 !important;
+  box-shadow: 0 2px 8px rgba(40, 35, 33, 0.03) !important;
+  transition: all 0.2s ease !important;
+}
+
+.order-card-fk:hover {
+  border-color: #C5A15A !important;
+  box-shadow: 0 8px 24px rgba(109, 23, 52, 0.06) !important;
+}
+
+.premium-save-btn-v3,
+.address-save-btn,
+.password-submit-btn {
+  background: #6D1734 !important;
+  color: #ffffff !important;
+  font-family: 'Karla', sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+}
+
+.premium-save-btn-v3:hover,
+.address-save-btn:hover {
+  background: #4A1025 !important;
+}
+
+.logout-btn-confirm {
+  background: #6D1734 !important;
+  color: #ffffff !important;
+  border-radius: 2px !important;
+}
+
+.logout-btn-cancel {
+  border-radius: 2px !important;
+  border: 1px solid #EDE2D2 !important;
 }

@@ -1488,7 +1488,13 @@ const Orders = () => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Typography
           variant="h4"
-          sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" } }}
+          sx={{
+            fontSize: { xs: "1.5rem", sm: "2.125rem" },
+            fontFamily: "'Playfair Display', Georgia, serif",
+            color: "primary.main",
+            fontWeight: 600,
+            letterSpacing: "0.5px"
+          }}
         >
           Orders Management
         </Typography>

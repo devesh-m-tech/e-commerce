@@ -85,13 +85,37 @@ const VendorDashboard = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <Typography variant="h4">Vendor Dashboard</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 4 }}>
+        <Box>
+          <Typography 
+            variant="h4"
+            sx={{ 
+              fontFamily: '"Playfair Display", Georgia, serif', 
+              fontWeight: 700, 
+              color: '#6D1734', 
+              letterSpacing: '0.5px',
+              mb: 0.5 
+            }}
+          >
+            Artisan & Weaver Atelier
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#7D7571' }}>
+            Account management, KYC verification credentials, and guild settlement parameters
+          </Typography>
+        </Box>
         <Button
           variant="outlined"
           color="error"
           startIcon={<LogoutIcon />}
           onClick={handleLogout}
+          sx={{
+            borderRadius: 0,
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            fontSize: '0.78rem',
+            borderColor: '#EDE2D2',
+            '&:hover': { borderColor: '#d32f2f' }
+          }}
         >
           Logout
         </Button>
@@ -99,12 +123,19 @@ const VendorDashboard = () => {
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }}>
+          <Paper sx={{ p: 3, borderRadius: 0, border: '1px solid #EDE2D2', boxShadow: 'none' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
-              <Typography variant="h6">Profile Information</Typography>
+              <Typography variant="h6" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 600, color: '#6D1734' }}>Profile & Guild Identity</Typography>
               <Button
                 startIcon={<EditIcon />}
                 onClick={() => setOpenEdit(true)}
+                sx={{
+                  borderRadius: 0,
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  fontSize: '0.75rem',
+                  color: '#6D1734'
+                }}
               >
                 Edit
               </Button>
@@ -114,38 +145,40 @@ const VendorDashboard = () => {
               <Avatar
                 src={vendor.image}
                 alt={vendor.name}
-                sx={{ width: 100, height: 100, mr: 2 }}
+                sx={{ width: 88, height: 88, mr: 2.5, borderRadius: 0, border: '1px solid #EDE2D2' }}
               />
               <Box>
-                <Typography variant="h5">{vendor.name}</Typography>
+                <Typography variant="h5" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 600, color: '#282321' }}>{vendor.name}</Typography>
                 <Chip
-                  label={vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1)}
+                  label={vendor.status.toUpperCase()}
                   color={vendor.status === 'active' ? 'success' : 'error'}
                   size="small"
-                  sx={{ mt: 1 }}
+                  sx={{ mt: 1, borderRadius: 0, fontWeight: 700, fontSize: '0.7rem' }}
                 />
               </Box>
             </Box>
 
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              <strong>Email:</strong> {vendor.email}
+            <Typography variant="body2" sx={{ mb: 1.5, color: '#282321' }}>
+              <strong style={{ color: '#4A1025' }}>Email:</strong> {vendor.email}
             </Typography>
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              <strong>Phone:</strong> {vendor.phone}
+            <Typography variant="body2" sx={{ mb: 1.5, color: '#282321' }}>
+              <strong style={{ color: '#4A1025' }}>Phone:</strong> {vendor.phone}
             </Typography>
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              <strong>Address:</strong> {vendor.address}
+            <Typography variant="body2" sx={{ mb: 1.5, color: '#282321' }}>
+              <strong style={{ color: '#4A1025' }}>Atelier Address:</strong> {vendor.address}
             </Typography>
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              <strong>GST Number:</strong> {vendor.gstNumber}
+            <Typography variant="body2" sx={{ mb: 1.5, color: '#282321' }}>
+              <strong style={{ color: '#4A1025' }}>GST Number:</strong> {vendor.gstNumber}
             </Typography>
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              <strong>PAN Number:</strong> {vendor.panNumber}
+            <Typography variant="body2" sx={{ mb: 1.5, color: '#282321' }}>
+              <strong style={{ color: '#4A1025' }}>PAN Number:</strong> {vendor.panNumber}
             </Typography>
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              <strong>KYC Status:</strong>{' '}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+              <Typography variant="body2" sx={{ color: '#4A1025', fontWeight: 600 }}>
+                KYC Verification:
+              </Typography>
               <Chip
-                label={vendor.kycStatus.charAt(0).toUpperCase() + vendor.kycStatus.slice(1)}
+                label={vendor.kycStatus.toUpperCase()}
                 color={
                   vendor.kycStatus === 'verified'
                     ? 'success'
@@ -154,29 +187,36 @@ const VendorDashboard = () => {
                     : 'warning'
                 }
                 size="small"
+                sx={{ borderRadius: 0, fontWeight: 700, fontSize: '0.7rem' }}
               />
-            </Typography>
+            </Box>
           </Paper>
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ mb: 3 }}>Bank Information</Typography>
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              <strong>Bank Name:</strong> {vendor.bankName}
+          <Paper sx={{ p: 3, borderRadius: 0, border: '1px solid #EDE2D2', boxShadow: 'none' }}>
+            <Typography variant="h6" sx={{ mb: 3, fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 600, color: '#6D1734' }}>Bank & Guild Settlements</Typography>
+            <Typography variant="body2" sx={{ mb: 1.5, color: '#282321' }}>
+              <strong style={{ color: '#4A1025' }}>Bank Name:</strong> {vendor.bankName}
             </Typography>
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              <strong>Account Number:</strong> {vendor.accountNumber}
+            <Typography variant="body2" sx={{ mb: 1.5, color: '#282321' }}>
+              <strong style={{ color: '#4A1025' }}>Account Number:</strong> <span style={{ fontFamily: 'monospace' }}>{vendor.accountNumber}</span>
             </Typography>
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              <strong>IFSC Code:</strong> {vendor.ifscCode}
+            <Typography variant="body2" sx={{ mb: 1.5, color: '#282321' }}>
+              <strong style={{ color: '#4A1025' }}>IFSC Code:</strong> <span style={{ fontFamily: 'monospace' }}>{vendor.ifscCode}</span>
             </Typography>
           </Paper>
         </Grid>
       </Grid>
 
-      <Dialog open={openEdit} onClose={() => setOpenEdit(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Edit Profile</DialogTitle>
+      <Dialog 
+        open={openEdit} 
+        onClose={() => setOpenEdit(false)} 
+        maxWidth="sm" 
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 0, border: '1px solid #EDE2D2' } }}
+      >
+        <DialogTitle sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 700, color: '#6D1734', borderBottom: '1px solid #EDE2D2', pb: 2 }}>Edit Profile Information</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 2 }}>
             <TextField
@@ -186,6 +226,7 @@ const VendorDashboard = () => {
               value={formData.email}
               onChange={handleChange}
               margin="normal"
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
             <TextField
               fullWidth
@@ -194,6 +235,7 @@ const VendorDashboard = () => {
               value={formData.phone}
               onChange={handleChange}
               margin="normal"
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
             <TextField
               fullWidth
@@ -204,12 +246,25 @@ const VendorDashboard = () => {
               margin="normal"
               multiline
               rows={3}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenEdit(false)}>Cancel</Button>
-          <Button onClick={handleSubmit} variant="contained">Save Changes</Button>
+        <DialogActions sx={{ p: 2.5, borderTop: '1px solid #EDE2D2', gap: 1 }}>
+          <Button onClick={() => setOpenEdit(false)} sx={{ borderRadius: 0, textTransform: 'uppercase', letterSpacing: '1px', color: '#7D7571' }}>Cancel</Button>
+          <Button 
+            onClick={handleSubmit} 
+            variant="contained"
+            sx={{
+              borderRadius: 0,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              backgroundColor: '#6D1734',
+              '&:hover': { backgroundColor: '#4A1025' }
+            }}
+          >
+            Save Changes
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

@@ -262,47 +262,43 @@ const Vendors = () => {
   return (
     <Box sx={{ 
       p: { xs: 2, md: 3 },
-      background: theme.palette.mode === 'dark' 
-        ? 'linear-gradient(135deg, #1a1c1e 0%, #2d3436 100%)'
-        : 'linear-gradient(135deg, #f6f9fc 0%, #eef2f7 100%)',
       minHeight: '100vh'
     }}>
       {/* Header Section */}
       <Box sx={{ mb: 3 }}>
-        <Grid container spacing={3} alignItems="center">
-          <Grid item xs={12} md={3}>
+        <Grid container spacing={3} alignItems="flex-start">
+          <Grid item xs={12} md={4}>
             <Typography variant="h4" sx={{ 
+              fontFamily: '"Playfair Display", Georgia, serif',
               fontWeight: 700,
-              color: theme.palette.text.primary,
-              letterSpacing: '0.5px'
+              color: '#6D1734',
+              letterSpacing: '0.5px',
+              mb: 0.5
             }}>
-              Vendors Management
+              Master Weavers & Artisans
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#7D7571' }}>
+              Manage certified handloom weavers, guild partners, and jewellery craftsmen
             </Typography>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={5}>
             <TextField
               fullWidth
-              placeholder="Search vendors by name, business name, email or phone..."
+              placeholder="Search weavers by name, loom guild, email or phone..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon sx={{ color: theme.palette.primary.main }} />
+                    <SearchIcon sx={{ color: '#6D1734' }} />
                   </InputAdornment>
                 ),
               }}
               sx={{ 
                 '& .MuiOutlinedInput-root': { 
-                  borderRadius: 2,
+                  borderRadius: 0,
                   backgroundColor: 'white',
-                  '&:hover': {
-                    backgroundColor: alpha(theme.palette.primary.main, 0.02),
-                  },
-                  '&.Mui-focused': {
-                    backgroundColor: 'white',
-                    boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.2)}`,
-                  }
+                  borderColor: '#EDE2D2',
                 }
               }}
             />
@@ -312,24 +308,23 @@ const Vendors = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: { xs: 'flex-start', md: 'flex-end' },
-              gap: 2
             }}>
               <Box sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 1,
+                gap: 1.5,
                 p: 2,
-                borderRadius: 2,
-                bgcolor: 'white',
-                boxShadow: 1
+                borderRadius: 0,
+                border: '1px solid #EDE2D2',
+                bgcolor: '#FAF7F2',
               }}>
-                <BusinessIcon color="primary" />
+                <BusinessIcon sx={{ color: '#6D1734' }} />
                 <Box>
-                  <Typography variant="h5" color="primary" sx={{ fontWeight: 600, lineHeight: 1 }}>
+                  <Typography variant="h5" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 700, color: '#6D1734', lineHeight: 1 }}>
                     {filteredVendors.length}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Total Vendors
+                  <Typography variant="caption" sx={{ color: '#7D7571', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Active Partners
                   </Typography>
                 </Box>
               </Box>
@@ -340,41 +335,42 @@ const Vendors = () => {
 
       {/* Vendors Table Section */}
       <Paper sx={{ 
-        borderRadius: 3, 
+        borderRadius: 0, 
+        border: '1px solid #EDE2D2',
         overflow: 'hidden',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+        boxShadow: 'none',
         background: 'white',
       }}>
         <TableContainer>
           <Table>
             <TableHead>
               <TableRow sx={{ 
-                background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)'
+                backgroundColor: '#FAF7F2'
               }}>
-                <TableCell sx={{ fontWeight: 600, color: '#4f46e5', py: 2 }}>Vendor Name</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: '#4f46e5', py: 2 }}>Business Name</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: '#4f46e5', py: 2 }}>Contact</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: '#4f46e5', py: 2 }}>Admin Approval</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: '#4f46e5', py: 2 }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: '#4f46e5', py: 2 }}>Joined On</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: '#4f46e5', py: 2 }}>Actions</TableCell>
+                <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', py: 2, borderBottom: '1px solid #EDE2D2' }}>Artisan Name</TableCell>
+                <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', py: 2, borderBottom: '1px solid #EDE2D2' }}>Guild / Workshop</TableCell>
+                <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', py: 2, borderBottom: '1px solid #EDE2D2' }}>Contact</TableCell>
+                <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', py: 2, borderBottom: '1px solid #EDE2D2' }}>Verification</TableCell>
+                <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', py: 2, borderBottom: '1px solid #EDE2D2' }}>Account</TableCell>
+                <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', py: 2, borderBottom: '1px solid #EDE2D2' }}>Enrolled</TableCell>
+                <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', py: 2, borderBottom: '1px solid #EDE2D2' }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
-                    <CircularProgress sx={{ color: '#6366f1' }} size={40} />
+                  <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
+                    <CircularProgress sx={{ color: '#6D1734' }} size={36} />
                   </TableCell>
                 </TableRow>
               ) : filteredVendors.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
+                  <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
                     <Box sx={{ textAlign: 'center' }}>
-                      <BusinessIcon sx={{ fontSize: 48, color: '#94a3b8', mb: 2 }} />
-                      <Typography variant="h6" sx={{ color: '#64748b', mb: 1 }}>No vendors found</Typography>
-                      <Typography variant="body2" sx={{ color: '#94a3b8' }}>
-                        Try adjusting your search to find what you're looking for.
+                      <BusinessIcon sx={{ fontSize: 48, color: '#C5A15A', mb: 2 }} />
+                      <Typography variant="h6" sx={{ fontFamily: '"Playfair Display", Georgia, serif', color: '#282321', mb: 1 }}>No artisans or weavers found</Typography>
+                      <Typography variant="body2" sx={{ color: '#7D7571' }}>
+                        Try adjusting your search criteria to find registered guild members.
                       </Typography>
                     </Box>
                   </TableCell>
@@ -386,9 +382,9 @@ const Vendors = () => {
                     <TableRow 
                       key={vendor._id}
                       sx={{
-                        transition: 'all 0.3s ease',
+                        transition: 'all 0.2s ease',
                         '&:hover': {
-                          backgroundColor: '#f8fafc',
+                          backgroundColor: '#FAF7F2',
                           '& .action-button': {
                             opacity: 1,
                             transform: 'translateX(0)',
@@ -399,67 +395,67 @@ const Vendors = () => {
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                           <Avatar sx={{ 
-                            bgcolor: '#6366f1',
+                            bgcolor: '#6D1734',
+                            color: '#FFF9F0',
                             width: 36,
                             height: 36,
-                            fontSize: '1rem',
-                            fontWeight: 600,
-                            boxShadow: '0 2px 8px rgba(99, 102, 241, 0.2)'
+                            fontSize: '0.9rem',
+                            fontWeight: 700,
+                            borderRadius: 0,
+                            fontFamily: '"Playfair Display", Georgia, serif'
                           }}>
                             {vendor.vendorName?.charAt(0)}
                           </Avatar>
-                          <Typography sx={{ fontWeight: 500, color: '#1e293b' }}>
+                          <Typography sx={{ fontWeight: 600, color: '#282321', fontFamily: '"Karla", sans-serif' }}>
                             {vendor.vendorName}
                           </Typography>
                         </Box>
                       </TableCell>
                       <TableCell>
-                        <Typography sx={{ color: '#475569' }}>
-                          {vendor.businessInfo?.businessName}
+                        <Typography sx={{ color: '#282321', fontWeight: 500 }}>
+                          {vendor.businessInfo?.businessName || '—'}
                         </Typography>
                       </TableCell>
                       <TableCell>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                          <Typography variant="body2" sx={{ color: '#6366f1', fontWeight: 500 }}>
+                          <Typography variant="body2" sx={{ color: '#6D1734', fontWeight: 600 }}>
                             {vendor.email}
                           </Typography>
-                          <Typography variant="body2" sx={{ color: '#64748b' }}>
+                          <Typography variant="body2" sx={{ color: '#7D7571' }}>
                             {vendor.phoneNumber}
                           </Typography>
                         </Box>
                       </TableCell>
                       <TableCell>
                         <Chip
-                          label={vendor.adminApproval?.status === 'approved' ? 'Approved' : 
-                                vendor.adminApproval?.status === 'rejected' ? 'Rejected' : 'Pending'}
+                          label={vendor.adminApproval?.status === 'approved' ? 'VERIFIED' : 
+                                vendor.adminApproval?.status === 'rejected' ? 'REJECTED' : 'PENDING'}
                           color={vendor.adminApproval?.status === 'approved' ? 'success' : 
                                 vendor.adminApproval?.status === 'rejected' ? 'error' : 'warning'}
                           size="small"
                           sx={{ 
-                            borderRadius: '6px',
-                            fontWeight: 600,
-                            px: 1,
-                            '& .MuiChip-label': { px: 2 },
-                            boxShadow: '0 2px 6px rgba(0,0,0,0.05)'
+                            borderRadius: 0,
+                            fontWeight: 700,
+                            fontSize: '0.7rem',
+                            letterSpacing: '0.5px'
                           }}
                         />
                       </TableCell>
                       <TableCell>
                         <Chip
-                          label={vendor.status === 'active' ? 'Active' : 'Inactive'}
+                          label={vendor.status === 'active' ? 'ACTIVE' : 'INACTIVE'}
                           color={vendor.status === 'active' ? 'success' : 'default'}
                           size="small"
                           sx={{ 
-                            borderRadius: '6px',
-                            fontWeight: 600,
-                            px: 1,
-                            '& .MuiChip-label': { px: 2 },
-                            boxShadow: '0 2px 6px rgba(0,0,0,0.05)'
+                            borderRadius: 0,
+                            fontWeight: 700,
+                            fontSize: '0.7rem',
+                            letterSpacing: '0.5px'
                           }}
                         />
                       </TableCell>
                       <TableCell>
-                        <Typography sx={{ color: '#475569' }}>
+                        <Typography sx={{ color: '#7D7571', fontSize: '0.85rem' }}>
                           {vendor.createdAt ? new Date(vendor.createdAt).toLocaleDateString('en-GB') : '-'}
                         </Typography>
                       </TableCell>
@@ -469,19 +465,18 @@ const Vendors = () => {
                           onClick={() => handleViewDetails(vendor)} 
                           size="small"
                           sx={{
-                            bgcolor: '#f1f5f9',
-                            color: '#6366f1',
-                            transition: 'all 0.3s ease',
-                            opacity: 0.9,
-                            transform: 'translateX(-10px)',
+                            bgcolor: '#FAF7F2',
+                            color: '#6D1734',
+                            borderRadius: 0,
+                            border: '1px solid #EDE2D2',
+                            transition: 'all 0.2s ease',
                             '&:hover': {
-                              bgcolor: '#6366f1',
+                              bgcolor: '#6D1734',
                               color: 'white',
-                              transform: 'translateY(-2px)'
                             }
                           }}
                         >
-                          <MoreVertIcon />
+                          <MoreVertIcon fontSize="small" />
                         </IconButton>
                       </TableCell>
                     </TableRow>
@@ -499,17 +494,8 @@ const Vendors = () => {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           sx={{
-            borderTop: '1px solid #e2e8f0',
-            bgcolor: '#f8fafc',
-            '.MuiTablePagination-select': {
-              borderRadius: 1,
-              '&:focus': {
-                bgcolor: 'white'
-              }
-            },
-            '.MuiTablePagination-selectIcon': {
-              color: '#6366f1'
-            }
+            borderTop: '1px solid #EDE2D2',
+            bgcolor: '#FAF7F2',
           }}
         />
       </Paper>
@@ -521,64 +507,66 @@ const Vendors = () => {
         fullWidth
         PaperProps={{
           sx: {
-            borderRadius: 3,
+            borderRadius: 0,
             overflow: 'hidden',
-            boxShadow: '0 12px 48px rgba(0,0,0,0.15)',
+            border: '1px solid #EDE2D2',
+            boxShadow: '0 12px 48px rgba(109,23,52,0.15)',
             '& .MuiDialogTitle-root': {
-              background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+              backgroundColor: '#6D1734',
               color: 'white',
-              py: 3,
+              py: 2.5,
+              fontFamily: '"Playfair Display", Georgia, serif',
             }
           }
         }}
       >
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <PersonIcon />
-          Vendor Details
+          <PersonIcon sx={{ color: '#C5A15A' }} />
+          Artisan & Weaver Profile
         </DialogTitle>
         <DialogContent dividers>
           {selectedVendor && (
             <Grid container spacing={3}>
               {/* Basic Information Section */}
               <Grid item xs={12}>
-                <Paper elevation={0} sx={{ p: 2, backgroundColor: '#f8f9fa', borderRadius: 2 }}>
+                <Paper elevation={0} sx={{ p: 2.5, backgroundColor: '#FAF7F2', borderRadius: 0, border: '1px solid #EDE2D2' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Avatar sx={{ bgcolor: '#1a237e', mr: 2 }}>
+                    <Avatar sx={{ bgcolor: '#6D1734', color: '#FFF9F0', mr: 2, borderRadius: 0 }}>
                       {selectedVendor.vendorName?.charAt(0)}
                     </Avatar>
-                    <Typography variant="h6" color="primary">Basic Information</Typography>
+                    <Typography variant="h6" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 600, color: '#6D1734' }}>Basic Information</Typography>
                   </Box>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                        <PersonIcon color="primary" />
-                        <Typography variant="subtitle2">Vendor Name</Typography>
+                        <PersonIcon sx={{ color: '#6D1734', fontSize: 20 }} />
+                        <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }}>Vendor / Weaver Name</Typography>
                       </Box>
-                      <Typography>{selectedVendor.vendorName}</Typography>
+                      <Typography sx={{ fontWeight: 600, color: '#282321' }}>{selectedVendor.vendorName}</Typography>
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                        <EmailIcon color="primary" />
-                        <Typography variant="subtitle2">Email</Typography>
+                        <EmailIcon sx={{ color: '#6D1734', fontSize: 20 }} />
+                        <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }}>Email Address</Typography>
                       </Box>
-                      <Typography>{selectedVendor.email}</Typography>
+                      <Typography sx={{ color: '#6D1734', fontWeight: 600 }}>{selectedVendor.email}</Typography>
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                        <PhoneIcon color="primary" />
-                        <Typography variant="subtitle2">Phone Number</Typography>
+                        <PhoneIcon sx={{ color: '#6D1734', fontSize: 20 }} />
+                        <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }}>Phone Number</Typography>
                       </Box>
-                      <Typography>{selectedVendor.phoneNumber}</Typography>
+                      <Typography sx={{ color: '#282321' }}>{selectedVendor.phoneNumber}</Typography>
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                        <DescriptionIcon color="primary" />
-                        <Typography variant="subtitle2">Status</Typography>
+                        <DescriptionIcon sx={{ color: '#6D1734', fontSize: 20 }} />
+                        <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }}>Current Status</Typography>
                       </Box>
                       <Chip
                         label={getStatusLabel(selectedVendor.status, selectedVendor.adminApproval)}
                         color={getStatusChipColor(selectedVendor.status, selectedVendor.adminApproval)}
-                        sx={{ borderRadius: 1 }}
+                        sx={{ borderRadius: 0, fontWeight: 700, fontSize: '0.7rem' }}
                       />
                     </Grid>
                   </Grid>
@@ -587,34 +575,34 @@ const Vendors = () => {
 
               {/* Business Information Section */}
               <Grid item xs={12}>
-                <Paper elevation={0} sx={{ p: 2, backgroundColor: '#f8f9fa', borderRadius: 2 }}>
+                <Paper elevation={0} sx={{ p: 2.5, backgroundColor: '#FAF7F2', borderRadius: 0, border: '1px solid #EDE2D2' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <BusinessIcon sx={{ color: '#1a237e', mr: 2 }} />
-                    <Typography variant="h6" color="primary">Business Information</Typography>
+                    <BusinessIcon sx={{ color: '#6D1734', mr: 2 }} />
+                    <Typography variant="h6" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 600, color: '#6D1734' }}>Loom Guild & Business Information</Typography>
                   </Box>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
-                      <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                      <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }} gutterBottom>
                         Business Name
                       </Typography>
-                      <Typography variant="body1">
-                        {selectedVendor.businessInfo?.businessName}
+                      <Typography variant="body1" sx={{ fontWeight: 600, color: '#282321' }}>
+                        {selectedVendor.businessInfo?.businessName || '—'}
                       </Typography>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                      <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                      <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }} gutterBottom>
                         Business Type
                       </Typography>
-                      <Typography variant="body1" sx={{ textTransform: 'capitalize' }}>
-                        {selectedVendor.businessInfo?.businessType}
+                      <Typography variant="body1" sx={{ textTransform: 'capitalize', color: '#282321' }}>
+                        {selectedVendor.businessInfo?.businessType || '—'}
                       </Typography>
                     </Grid>
                     <Grid item xs={12}>
-                      <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                      <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }} gutterBottom>
                         Product Category
                       </Typography>
-                      <Typography variant="body1">
-                        {selectedVendor.businessInfo?.productCategory}
+                      <Typography variant="body1" sx={{ color: '#282321' }}>
+                        {selectedVendor.businessInfo?.productCategory || '—'}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -623,26 +611,27 @@ const Vendors = () => {
 
               {/* Documents Section */}
               <Grid item xs={12}>
-                <Paper elevation={0} sx={{ p: 2, backgroundColor: '#f8f9fa', borderRadius: 2 }}>
+                <Paper elevation={0} sx={{ p: 2.5, backgroundColor: '#FAF7F2', borderRadius: 0, border: '1px solid #EDE2D2' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <DescriptionIcon sx={{ color: '#1a237e', mr: 2 }} />
-                    <Typography variant="h6" color="primary">Documents</Typography>
+                    <DescriptionIcon sx={{ color: '#6D1734', mr: 2 }} />
+                    <Typography variant="h6" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 600, color: '#6D1734' }}>Verification Documents</Typography>
                   </Box>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
-                      <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-                        <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                      <Paper variant="outlined" sx={{ p: 2, borderRadius: 0, border: '1px solid #EDE2D2', backgroundColor: '#FFFFFF' }}>
+                        <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }} gutterBottom>
                           Aadhar Card
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Typography variant="body1">
-                            {selectedVendor.documents?.aadhar?.number}
+                            {selectedVendor.documents?.aadhar?.number || '—'}
                           </Typography>
                           {selectedVendor.documents?.aadhar?.document && (
                             <Button 
                               size="small" 
                               variant="outlined"
                               onClick={() => handleViewDocument(selectedVendor.documents.aadhar.document, 'Aadhar Card')}
+                              sx={{ borderRadius: 0, textTransform: 'uppercase', fontSize: '0.7rem' }}
                             >
                               View
                             </Button>
@@ -651,19 +640,20 @@ const Vendors = () => {
                       </Paper>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                      <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-                        <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                      <Paper variant="outlined" sx={{ p: 2, borderRadius: 0, border: '1px solid #EDE2D2', backgroundColor: '#FFFFFF' }}>
+                        <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }} gutterBottom>
                           PAN Card
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Typography variant="body1">
-                            {selectedVendor.documents?.pan?.number}
+                            {selectedVendor.documents?.pan?.number || '—'}
                           </Typography>
                           {selectedVendor.documents?.pan?.document && (
                             <Button 
                               size="small" 
                               variant="outlined"
                               onClick={() => handleViewDocument(selectedVendor.documents.pan.document, 'PAN Card')}
+                              sx={{ borderRadius: 0, textTransform: 'uppercase', fontSize: '0.7rem' }}
                             >
                               View
                             </Button>
@@ -672,19 +662,20 @@ const Vendors = () => {
                       </Paper>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                      <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-                        <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                      <Paper variant="outlined" sx={{ p: 2, borderRadius: 0, border: '1px solid #EDE2D2', backgroundColor: '#FFFFFF' }}>
+                        <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }} gutterBottom>
                           GST Certificate
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Typography variant="body1">
-                            {selectedVendor.documents?.gst?.number}
+                            {selectedVendor.documents?.gst?.number || '—'}
                           </Typography>
                           {selectedVendor.documents?.gst?.document && (
                             <Button 
                               size="small" 
                               variant="outlined"
                               onClick={() => handleViewDocument(selectedVendor.documents.gst.document, 'GST Certificate')}
+                              sx={{ borderRadius: 0, textTransform: 'uppercase', fontSize: '0.7rem' }}
                             >
                               View
                             </Button>
@@ -694,9 +685,9 @@ const Vendors = () => {
                     </Grid>
                     {selectedVendor.documents?.fssai?.number && (
                       <Grid item xs={12} md={6}>
-                        <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-                          <Typography variant="subtitle2" color="textSecondary" gutterBottom>
-                            FSSAI License
+                        <Paper variant="outlined" sx={{ p: 2, borderRadius: 0, border: '1px solid #EDE2D2', backgroundColor: '#FFFFFF' }}>
+                          <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }} gutterBottom>
+                            FSSAI / Handloom License
                           </Typography>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <Typography variant="body1">
@@ -707,6 +698,7 @@ const Vendors = () => {
                                 size="small" 
                                 variant="outlined"
                                 onClick={() => handleViewDocument(selectedVendor.documents.fssai.document, 'FSSAI License')}
+                                sx={{ borderRadius: 0, textTransform: 'uppercase', fontSize: '0.7rem' }}
                               >
                                 View
                               </Button>
@@ -721,42 +713,42 @@ const Vendors = () => {
 
               {/* Bank Details Section */}
               <Grid item xs={12}>
-                <Paper elevation={0} sx={{ p: 2, backgroundColor: '#f8f9fa', borderRadius: 2 }}>
+                <Paper elevation={0} sx={{ p: 2.5, backgroundColor: '#FAF7F2', borderRadius: 0, border: '1px solid #EDE2D2' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <AccountBalanceIcon sx={{ color: '#1a237e', mr: 2 }} />
-                    <Typography variant="h6" color="primary">Bank Details</Typography>
+                    <AccountBalanceIcon sx={{ color: '#6D1734', mr: 2 }} />
+                    <Typography variant="h6" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 600, color: '#6D1734' }}>Settlement & Bank Details</Typography>
                   </Box>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
-                      <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                      <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }} gutterBottom>
                         Bank Name
                       </Typography>
-                      <Typography variant="body1">
-                        {selectedVendor.bankDetails?.bankName}
+                      <Typography variant="body1" sx={{ color: '#282321' }}>
+                        {selectedVendor.bankDetails?.bankName || '—'}
                       </Typography>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                      <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                      <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }} gutterBottom>
                         Account Number
                       </Typography>
-                      <Typography variant="body1">
-                        {selectedVendor.bankDetails?.accountNumber}
+                      <Typography variant="body1" sx={{ color: '#282321', fontFamily: 'monospace' }}>
+                        {selectedVendor.bankDetails?.accountNumber || '—'}
                       </Typography>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                      <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                      <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }} gutterBottom>
                         IFSC Code
                       </Typography>
-                      <Typography variant="body1">
-                        {selectedVendor.bankDetails?.ifscCode}
+                      <Typography variant="body1" sx={{ color: '#282321', fontFamily: 'monospace' }}>
+                        {selectedVendor.bankDetails?.ifscCode || '—'}
                       </Typography>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                      <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                      <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }} gutterBottom>
                         Account Holder Name
                       </Typography>
-                      <Typography variant="body1">
-                        {selectedVendor.bankDetails?.accountHolderName}
+                      <Typography variant="body1" sx={{ color: '#282321' }}>
+                        {selectedVendor.bankDetails?.accountHolderName || '—'}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -765,26 +757,27 @@ const Vendors = () => {
 
               {/* Status Management Section */}
               <Grid item xs={12}>
-                <Paper elevation={0} sx={{ p: 2, backgroundColor: '#f8f9fa', borderRadius: 2 }}>
+                <Paper elevation={0} sx={{ p: 2.5, backgroundColor: '#FAF7F2', borderRadius: 0, border: '1px solid #EDE2D2' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <BusinessIcon sx={{ color: '#1a237e', mr: 2 }} />
-                    <Typography variant="h6" color="primary">Status Management</Typography>
+                    <BusinessIcon sx={{ color: '#6D1734', mr: 2 }} />
+                    <Typography variant="h6" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 600, color: '#6D1734' }}>Account Control & Approvals</Typography>
                   </Box>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
                       <Box sx={{ 
                         p: 2, 
-                        border: '1px solid #e0e0e0', 
-                        borderRadius: 2,
+                        border: '1px solid #EDE2D2', 
+                        borderRadius: 0,
                         backgroundColor: 'white'
                       }}>
-                        <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                        <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }} gutterBottom>
                           Vendor Status
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                           <Chip
-                            label={selectedVendor?.status === 'active' ? 'Active' : 'Inactive'}
+                            label={selectedVendor?.status === 'active' ? 'ACTIVE' : 'INACTIVE'}
                             color={selectedVendor?.status === 'active' ? 'success' : 'default'}
+                            sx={{ borderRadius: 0, fontWeight: 700, fontSize: '0.7rem' }}
                           />
                         </Box>
                         <Button
@@ -795,29 +788,31 @@ const Vendors = () => {
                           startIcon={selectedVendor?.status === 'active' ? 
                             <BlockIcon /> : 
                             <CheckCircleIcon />}
+                          sx={{ borderRadius: 0, textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.75rem' }}
                         >
                           {selectedVendor?.status === 'active' ? 
-                            'Deactivate Vendor Account' : 
-                            'Activate Vendor Account'}
+                            'Deactivate Artisan Account' : 
+                            'Activate Artisan Account'}
                         </Button>
                       </Box>
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <Box sx={{ 
                         p: 2, 
-                        border: '1px solid #e0e0e0', 
-                        borderRadius: 2,
+                        border: '1px solid #EDE2D2', 
+                        borderRadius: 0,
                         backgroundColor: 'white'
                       }}>
-                        <Typography variant="subtitle2" color="textSecondary" gutterBottom>
-                          Admin Approval
+                        <Typography variant="subtitle2" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }} gutterBottom>
+                          Admin Verification
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                           <Chip
-                            label={selectedVendor?.adminApproval?.status === 'approved' ? 'Approved' : 
-                                  selectedVendor?.adminApproval?.status === 'rejected' ? 'Rejected' : 'Pending'}
+                            label={selectedVendor?.adminApproval?.status === 'approved' ? 'APPROVED' : 
+                                  selectedVendor?.adminApproval?.status === 'rejected' ? 'REJECTED' : 'PENDING'}
                             color={selectedVendor?.adminApproval?.status === 'approved' ? 'success' : 
                                   selectedVendor?.adminApproval?.status === 'rejected' ? 'error' : 'warning'}
+                            sx={{ borderRadius: 0, fontWeight: 700, fontSize: '0.7rem' }}
                           />
                         </Box>
                         <Button
@@ -829,10 +824,11 @@ const Vendors = () => {
                           startIcon={selectedVendor?.adminApproval?.status === 'approved' ? 
                             <BlockIcon /> : 
                             <CheckCircleIcon />}
+                          sx={{ borderRadius: 0, textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.75rem' }}
                         >
                           {selectedVendor?.adminApproval?.status === 'approved' ? 
-                            'Reject Vendor Approval' : 
-                            'Approve Vendor'}
+                            'Revoke Artisan Approval' : 
+                            'Approve Artisan'}
                         </Button>
                       </Box>
                     </Grid>
@@ -842,29 +838,34 @@ const Vendors = () => {
             </Grid>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 2, bgcolor: '#f8f9fa' }}>
+        <DialogActions sx={{ p: 2.5, bgcolor: '#FAF7F2', borderTop: '1px solid #EDE2D2' }}>
           <Button 
             onClick={handleDeleteVendor}
             variant="contained"
             color="error"
             sx={{ 
-              borderRadius: 2,
+              borderRadius: 0,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              fontSize: '0.75rem',
               px: 3,
               mr: 1,
-              '&:hover': { transform: 'translateY(-2px)' },
-              transition: 'transform 0.2s'
             }}
           >
-            Delete Vendor
+            Delete Artisan
           </Button>
           <Button 
             onClick={handleCloseDetails}
             variant="outlined"
             sx={{ 
-              borderRadius: 2,
+              borderRadius: 0,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              fontSize: '0.75rem',
+              borderColor: '#EDE2D2',
+              color: '#6D1734',
               px: 3,
-              '&:hover': { transform: 'translateY(-2px)' },
-              transition: 'transform 0.2s'
+              '&:hover': { borderColor: '#6D1734', backgroundColor: '#FFFFFF' }
             }}
           >
             Close

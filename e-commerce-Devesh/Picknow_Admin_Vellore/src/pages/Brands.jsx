@@ -142,9 +142,19 @@ const Brands = () => {
   };
 
   return (
-    <Box p={3}>
+    <Box p={3} sx={{ bgcolor: '#FAF7F2', minHeight: '100vh' }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h5" component="h1">
+        <Typography
+          variant="h5"
+          component="h1"
+          sx={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            color: "primary.main",
+            fontWeight: 600,
+            fontSize: "1.75rem",
+            letterSpacing: "0.5px"
+          }}
+        >
           Brand Management
         </Typography>
         <Button
@@ -152,18 +162,26 @@ const Brands = () => {
           color="primary"
           startIcon={<AddIcon />}
           onClick={() => handleOpen()}
+          sx={{
+            borderRadius: "2px",
+            textTransform: "uppercase",
+            fontWeight: 600,
+            letterSpacing: "1px",
+            px: 3,
+            py: 1
+          }}
         >
           Add Brand
         </Button>
       </Box>
 
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ borderRadius: "2px", border: "1px solid #EDE2D2", boxShadow: "0 2px 8px rgba(40,35,33,0.03)" }}>
         <Table>
-          <TableHead>
+          <TableHead sx={{ bgcolor: "#FAF7F2" }}>
             <TableRow>
-              <TableCell>Logo</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              <TableCell sx={{ color: "primary.main", fontWeight: 700, textTransform: "uppercase", fontSize: "0.75rem", letterSpacing: "1px" }}>Logo</TableCell>
+              <TableCell sx={{ color: "primary.main", fontWeight: 700, textTransform: "uppercase", fontSize: "0.75rem", letterSpacing: "1px" }}>Name</TableCell>
+              <TableCell align="right" sx={{ color: "primary.main", fontWeight: 700, textTransform: "uppercase", fontSize: "0.75rem", letterSpacing: "1px" }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

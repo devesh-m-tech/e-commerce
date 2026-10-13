@@ -32,7 +32,6 @@ import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { Helmet } from "react-helmet";
 import { ShoppingBag } from "lucide-react";
 import ProductCard from "../ProductPage/ProductCard";
-import PicknowLogo from "../../assets/PicknowLogo.png";
 
 
 const UserProfile = () => {
@@ -3321,7 +3320,19 @@ const UserProfile = () => {
               >
                 <div className="prime-modal-body">
                   <div className="logout-logo-container">
-                    <img src={PicknowLogo} alt="Picknow" className="logout-brand-logo" />
+                    <span style={{
+                      fontFamily: "'Playfair Display', Georgia, serif",
+                      fontWeight: 800,
+                      fontSize: '28px',
+                      color: '#6D1734',
+                      letterSpacing: '1px'
+                    }}>
+                      <span style={{ color: '#6D1734' }}>/</span>
+                      <span style={{ color: '#C5A15A' }}>\</span>
+                      <span style={{ color: '#6D1734' }}>/</span>
+                      <span style={{ color: '#C5A15A' }}>\</span>
+                      <span style={{ color: '#6D1734', fontSize: '32px', lineHeight: 0.5 }}>.</span>
+                    </span>
                   </div>
                   <h3 className="logout-title-v2">See you soon!</h3>
                   <p className="logout-message-v2">

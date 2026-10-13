@@ -189,76 +189,108 @@ const Blog = () => {
 
   return (
     <Box p={3}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h5">Blog Management</Typography>
-        <Button variant="contained" startIcon={<Add />} onClick={() => handleOpen()}>
-          Add Blog
+      <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={3}>
+        <Box>
+          <Typography 
+            variant="h4"
+            sx={{ 
+              fontFamily: '"Playfair Display", Georgia, serif', 
+              fontWeight: 700, 
+              color: '#6D1734', 
+              letterSpacing: '0.5px',
+              mb: 0.5 
+            }}
+          >
+            Editorial & Heritage Journal
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#7D7571' }}>
+            Publish saree weaving chronicles, bridal styling guides, and temple jewellery journals
+          </Typography>
+        </Box>
+        <Button 
+          variant="contained" 
+          startIcon={<Add />} 
+          onClick={() => handleOpen()}
+          sx={{
+            borderRadius: 0,
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            fontSize: '0.78rem',
+            backgroundColor: '#6D1734',
+            '&:hover': { backgroundColor: '#4A1025' }
+          }}
+        >
+          New Article
         </Button>
       </Box>
 
       <TextField
         fullWidth
-        placeholder="Search blogs..."
+        placeholder="Search heritage articles and guides..."
         variant="outlined"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <Search />
+              <Search sx={{ color: '#6D1734' }} />
             </InputAdornment>
           ),
         }}
-        sx={{ mb: 2 }}
+        sx={{ 
+          mb: 3,
+          backgroundColor: '#FFFFFF',
+          '& .MuiOutlinedInput-root': { borderRadius: 0 }
+        }}
       />
 
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ borderRadius: 0, border: '1px solid #EDE2D2', boxShadow: 'none' }}>
         <Table>
-          <TableHead>
+          <TableHead sx={{ backgroundColor: '#FAF7F2' }}>
             <TableRow>
-              <TableCell>Image</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Canonical URL</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Cover</TableCell>
+              <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Article Title</TableCell>
+              <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Excerpt / Summary</TableCell>
+              <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Canonical URL</TableCell>
+              <TableCell align="right" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
                   <CircularProgress />
                 </TableCell>
               </TableRow>
             ) : filteredBlogs.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} align="center">
-                  No blogs found
+                <TableCell colSpan={5} align="center" sx={{ py: 4, color: '#7D7571' }}>
+                  No editorial articles found
                 </TableCell>
               </TableRow>
             ) : (
               filteredBlogs.map((blog) => (
-                <TableRow key={blog._id}>
+                <TableRow key={blog._id} hover sx={{ '&:hover': { backgroundColor: '#FAF7F2' } }}>
                   <TableCell>
                     {blog.image && (
                       <img
                         src={blog.image}
                         alt={blog.title}
-                        style={{ width: 80, height: 80, borderRadius: 4, objectFit: 'cover' }}
+                        style={{ width: 80, height: 80, borderRadius: 0, objectFit: 'cover', border: '1px solid #EDE2D2' }}
                       />
                     )}
                   </TableCell>
-                  <TableCell>{blog.title}</TableCell>
-                  <TableCell sx={{ maxWidth: 250, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <TableCell sx={{ fontWeight: 600, color: '#282321' }}>{blog.title}</TableCell>
+                  <TableCell sx={{ maxWidth: 250, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#7D7571' }}>
                     <div dangerouslySetInnerHTML={{ __html: blog.description }} />
                   </TableCell>
-                  <TableCell>{blog.canonicalUrl}</TableCell>
+                  <TableCell sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: '#6D1734' }}>{blog.canonicalUrl}</TableCell>
                   <TableCell align="right">
-                    <IconButton onClick={() => handleOpen(blog)} color="primary">
-                      <Edit />
+                    <IconButton onClick={() => handleOpen(blog)} color="primary" size="small">
+                      <Edit fontSize="small" />
                     </IconButton>
-                    <IconButton onClick={() => handleDeleteClick(blog)} color="error">
-                      <Delete />
+                    <IconButton onClick={() => handleDeleteClick(blog)} color="error" size="small">
+                      <Delete fontSize="small" />
                     </IconButton>
                   </TableCell>
                 </TableRow>
@@ -276,29 +308,41 @@ const Blog = () => {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: 600,
+            width: 640,
             bgcolor: 'background.paper',
-            boxShadow: 24,
+            boxShadow: '0 8px 32px rgba(109,23,52,0.12)',
             p: 4,
-            borderRadius: 2,
+            borderRadius: 0,
+            border: '1px solid #EDE2D2',
             maxHeight: '90vh',
             overflow: 'auto',
           }}
         >
-          <Typography variant="h6" mb={2}>
-            {selectedBlog ? 'Edit Blog' : 'Create Blog'}
+          <Typography 
+            variant="h5" 
+            mb={2}
+            sx={{ 
+              fontFamily: '"Playfair Display", Georgia, serif', 
+              fontWeight: 700, 
+              color: '#6D1734',
+              borderBottom: '1px solid #EDE2D2',
+              pb: 1.5
+            }}
+          >
+            {selectedBlog ? 'Edit Journal Article' : 'Compose Journal Article'}
           </Typography>
           <form onSubmit={handleSubmit}>
-            <TextField fullWidth label="Title" name="title" value={formData.title} onChange={handleInputChange} margin="normal" required />
+            <TextField fullWidth label="Title" name="title" value={formData.title} onChange={handleInputChange} margin="normal" required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }} />
 
-            <Typography variant="subtitle2" color="textSecondary" sx={{ mt: 2, mb: 1 }}>
-              Description
+            <Typography variant="subtitle2" sx={{ mt: 2, mb: 1, fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025' }}>
+              Article Body
             </Typography>
             <ReactQuill
               theme="snow"
               value={formData.description}
               onChange={(value) => setFormData({ ...formData, description: value })}
-              placeholder="Write your blog content here..."
+              placeholder="Write your heritage chronicle or styling guide here..."
+              style={{ height: 200, marginBottom: 50 }}
             />
 
             <TextField
@@ -310,16 +354,28 @@ const Blog = () => {
               margin="normal"
               required
               placeholder="https://example.com/blog/title"
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }}
             />
-            <TextField fullWidth label="Meta Keywords" name="metaKeywords" value={formData.metaKeywords} onChange={handleInputChange} margin="normal" />
-            <TextField fullWidth label="Meta Title" name="metaTitle" value={formData.metaTitle} onChange={handleInputChange} margin="normal" />
-            <TextField fullWidth label="Meta Description" name="metaDescription" value={formData.metaDescription} onChange={handleInputChange} margin="normal" />
+            <TextField fullWidth label="Meta Keywords" name="metaKeywords" value={formData.metaKeywords} onChange={handleInputChange} margin="normal" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }} />
+            <TextField fullWidth label="Meta Title" name="metaTitle" value={formData.metaTitle} onChange={handleInputChange} margin="normal" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }} />
+            <TextField fullWidth label="Meta Description" name="metaDescription" value={formData.metaDescription} onChange={handleInputChange} margin="normal" multiline rows={2} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 0 } }} />
 
             <Box mt={2}>
               <Input type="file" name="image" onChange={handleInputChange} style={{ display: 'none' }} id="image-upload" accept="image/*" />
               <label htmlFor="image-upload">
-                <Button variant="outlined" fullWidth component="span">
-                  {formData.image || previewUrl ? 'Change Image' : 'Upload Image'}
+                <Button 
+                  variant="outlined" 
+                  fullWidth 
+                  component="span"
+                  sx={{
+                    borderRadius: 0,
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    borderColor: '#EDE2D2',
+                    color: '#6D1734'
+                  }}
+                >
+                  {formData.image || previewUrl ? 'Change Cover Image' : 'Upload Cover Image'}
                 </Button>
               </label>
               {(previewUrl || formData.image) && (
@@ -327,28 +383,53 @@ const Blog = () => {
                   <img
                     src={previewUrl || (formData.image ? URL.createObjectURL(formData.image) : '')}
                     alt="Preview"
-                    style={{ maxWidth: '100%', maxHeight: 250, objectFit: 'contain' }}
+                    style={{ maxWidth: '100%', maxHeight: 220, objectFit: 'contain', border: '1px solid #EDE2D2' }}
                   />
                 </Box>
               )}
             </Box>
 
-            <Box mt={3} display="flex" justifyContent="flex-end" gap={1}>
-              <Button onClick={handleClose}>Cancel</Button>
-              <Button type="submit" variant="contained" disabled={isUploading}>
-                {isUploading ? 'Uploading...' : selectedBlog ? 'Update' : 'Create'}
+            <Box mt={3} display="flex" justifyContent="flex-end" gap={1.5} pt={2} borderTop="1px solid #EDE2D2">
+              <Button 
+                onClick={handleClose}
+                sx={{
+                  borderRadius: 0,
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  color: '#7D7571'
+                }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                variant="contained" 
+                disabled={isUploading}
+                sx={{
+                  borderRadius: 0,
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  backgroundColor: '#6D1734',
+                  '&:hover': { backgroundColor: '#4A1025' }
+                }}
+              >
+                {isUploading ? 'Publishing...' : selectedBlog ? 'Update Article' : 'Publish Article'}
               </Button>
             </Box>
           </form>
         </Box>
       </Modal>
 
-      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>Are you sure you want to delete "{selectedBlog?.title}"?</DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleDelete} color="error">
+      <Dialog 
+        open={deleteDialogOpen} 
+        onClose={() => setDeleteDialogOpen(false)}
+        PaperProps={{ sx: { borderRadius: 0, border: '1px solid #EDE2D2' } }}
+      >
+        <DialogTitle sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 700, color: '#6D1734' }}>Confirm Deletion</DialogTitle>
+        <DialogContent sx={{ color: '#282321' }}>Are you sure you want to permanently delete "{selectedBlog?.title}"?</DialogContent>
+        <DialogActions sx={{ p: 2, borderTop: '1px solid #EDE2D2' }}>
+          <Button onClick={() => setDeleteDialogOpen(false)} sx={{ borderRadius: 0, color: '#7D7571' }}>Cancel</Button>
+          <Button onClick={handleDelete} variant="contained" color="error" sx={{ borderRadius: 0 }}>
             Delete
           </Button>
         </DialogActions>

@@ -737,14 +737,26 @@ const ComboOffers = () => {
   };
 
   return (
-    <Box className="combo-offers-container">
-      <Box className="combo-offers-header">
-        <Typography variant="h4">Combo Offers</Typography>
+    <Box className="combo-offers-container" sx={{ p: 3, bgcolor: '#FAF7F2', minHeight: '100vh' }}>
+      <Box className="combo-offers-header" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            color: 'primary.main',
+            fontWeight: 600,
+            fontSize: '1.75rem',
+            letterSpacing: '0.5px'
+          }}
+        >
+          Combo Offers & Hampers
+        </Typography>
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Button
             variant="outlined"
             onClick={handleExportToExcel}
             startIcon={<FileDownloadIcon />}
+            sx={{ borderRadius: '2px', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.5px' }}
           >
             Export to Excel
           </Button>
@@ -752,18 +764,25 @@ const ComboOffers = () => {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => handleOpen()}
+            sx={{ borderRadius: '2px', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '1px', px: 3 }}
           >
             Create Combo Offer
           </Button>
         </Box>
       </Box>
 
-      <Box className="search-container">
+      <Box className="search-container" sx={{ mb: 3 }}>
         <TextField
           fullWidth
-          placeholder="Search combo offers..."
+          placeholder="Search combo offers and bridal sets..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          sx={{
+            bgcolor: '#ffffff',
+            borderRadius: '2px',
+            border: '1px solid #EDE2D2',
+            '& fieldset': { border: 'none' }
+          }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -774,10 +793,12 @@ const ComboOffers = () => {
         />
       </Box>
 
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ borderRadius: '2px', border: '1px solid #EDE2D2', boxShadow: '0 2px 8px rgba(40,35,33,0.03)' }}>
         <Table size="small">
-          <TableHead>
+          <TableHead sx={{ bgcolor: '#FAF7F2' }}>
             <TableRow>
+              <TableCell sx={{ color: 'primary.main', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '1px' }}>Image</TableCell>
+              <TableCell sx={{ color: 'primary.main', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '1px' }}>Combo Name</TableCell>
               <TableCell width="80px">Image</TableCell>
               <TableCell>Combo Name</TableCell>
               <TableCell>Products</TableCell>
