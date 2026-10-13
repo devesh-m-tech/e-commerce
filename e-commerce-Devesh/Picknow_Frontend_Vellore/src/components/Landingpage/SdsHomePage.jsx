@@ -285,10 +285,28 @@ const SdsHomePage = () => {
             <div className="sds-hero-ornament-line" />
           </motion.div>
         </div>
+
+        {/* Floating Luxury Scroll Cue Anchored at Bottom of Full Viewport Fold */}
+        <motion.button
+          className="sds-hero-scroll-cue"
+          onClick={() => {
+            const nextEl = document.getElementById('shop-by-category');
+            if (nextEl) {
+              nextEl.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+          aria-label="Scroll down to browse categories"
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.35, ease: "easeOut" }}
+        >
+          <span className="sds-hero-scroll-label">EXPLORE</span>
+          <div className="sds-hero-scroll-line" aria-hidden="true" />
+        </motion.button>
       </section>
 
       {/* ── 2. SHOP BY CATEGORY ─────────────────────────────── */}
-      <section className="sds-section" aria-label="Shop by category">
+      <section className="sds-section" id="shop-by-category" aria-label="Shop by category">
         <div className="sds-container">
           <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
             <span className="sds-section-label">Browse Collections</span>

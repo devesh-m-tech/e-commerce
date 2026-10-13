@@ -6,17 +6,22 @@
 /* ── Hero (Matching Reference Image Editorial Minimalist Standard) ── */
 
 .sds-hero {
-  min-height: clamp(420px, 56vh, 520px);
+  min-height: calc(100vh - var(--header-total-height, 108px));
+  min-height: calc(100dvh - var(--header-total-height, 108px));
+  height: calc(100vh - var(--header-total-height, 108px));
+  height: calc(100dvh - var(--header-total-height, 108px));
   background-color: #FFFFFF;
-  background-image: radial-gradient(circle at 50% 25%, #FFFFFF 0%, #FAFAF8 70%, #F5F3ED 100%);
+  background-image: radial-gradient(circle at 50% 34%, #FFFFFF 0%, #FAFAF8 65%, #F4F1EA 100%);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: clamp(2.5rem, 5vw, 4rem) var(--container-px) clamp(2rem, 4vw, 3rem);
+  padding: clamp(2rem, 4vw, 3.5rem) var(--container-px);
   text-align: center;
   position: relative;
   overflow: hidden;
   border-bottom: 1px solid #ECE7DE;
+  box-sizing: border-box;
 }
 
 /* Floating Ambient Light */
@@ -31,41 +36,46 @@
 .sds-hero-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: blur(90px);
   will-change: transform, opacity;
 }
 
 .sds-hero-orb-1 {
-  width: 440px;
-  height: 440px;
-  top: -12%;
-  left: 20%;
-  background: radial-gradient(circle, rgba(197, 161, 90, 0.15) 0%, rgba(237, 226, 210, 0.05) 60%, transparent 80%);
+  width: 520px;
+  height: 520px;
+  top: -10%;
+  left: 18%;
+  background: radial-gradient(circle, rgba(197, 161, 90, 0.16) 0%, rgba(237, 226, 210, 0.05) 60%, transparent 80%);
 }
 
 .sds-hero-orb-2 {
-  width: 480px;
-  height: 480px;
-  bottom: -15%;
-  right: 18%;
-  background: radial-gradient(circle, rgba(109, 23, 52, 0.08) 0%, rgba(197, 161, 90, 0.06) 50%, transparent 80%);
+  width: 560px;
+  height: 560px;
+  bottom: -12%;
+  right: 16%;
+  background: radial-gradient(circle, rgba(109, 23, 52, 0.09) 0%, rgba(197, 161, 90, 0.06) 50%, transparent 80%);
 }
 
 .sds-hero-content {
   position: relative;
   z-index: 1;
-  max-width: 980px;
+  max-width: 1040px;
+  width: 100%;
   margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ── Kinetic Letter Animation Styles ── */
 .sds-hero-heading {
   font-family: var(--font-serif);
-  font-size: clamp(2.8rem, 6.4vw, 5rem);
+  font-size: clamp(3.2rem, 6.6vw, 5.5rem);
   color: #1A1615;
-  line-height: 1.1;
-  margin-bottom: 1.15rem;
-  letter-spacing: -0.015em;
+  line-height: 1.12;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.018em;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -138,13 +148,13 @@
 /* ── Subheading matching reference image ── */
 .sds-hero-subheading {
   font-family: var(--font-serif);
-  font-size: clamp(1.05rem, 1.85vw, 1.35rem);
+  font-size: clamp(1.1rem, 2vw, 1.45rem);
   font-weight: 400;
   font-style: italic;
   color: #554D48;
-  margin-bottom: 2.25rem;
-  line-height: 1.5;
-  max-width: 680px;
+  margin-bottom: 2.75rem;
+  line-height: 1.55;
+  max-width: 720px;
   margin-inline: auto;
   letter-spacing: 0.015em;
 }
@@ -154,7 +164,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 2rem;
+  margin-bottom: 2.25rem;
 }
 
 .sds-hero-btn-editorial {
@@ -164,24 +174,24 @@
   justify-content: center;
   background-color: #211E1D;
   color: #FFFFFF !important;
-  padding: 15px 42px;
+  padding: 16px 48px;
   border-radius: 0px !important;
   font-family: var(--font-sans);
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   text-decoration: none;
   border: 1px solid #211E1D;
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(33, 30, 29, 0.18);
+  box-shadow: 0 4px 18px rgba(33, 30, 29, 0.16);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sds-hero-btn-editorial:hover {
   background-color: #6D1734;
   border-color: #C5A15A;
-  box-shadow: 0 8px 24px rgba(109, 23, 52, 0.28);
+  box-shadow: 0 8px 26px rgba(109, 23, 52, 0.28);
 }
 
 /* Light sweep reflection across the button */
@@ -211,12 +221,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 16px;
   margin-top: 0.25rem;
 }
 
 .sds-hero-ornament-line {
-  width: 68px;
+  width: 72px;
   height: 1px;
   background: #C5A15A;
   opacity: 0.55;
@@ -228,6 +238,95 @@
   background: #C5A15A;
   transform: rotate(45deg);
   opacity: 0.75;
+}
+
+/* ── Floating Luxury Scroll Cue (Anchored to bottom center of full fold) ── */
+.sds-hero-scroll-cue {
+  position: absolute;
+  bottom: clamp(16px, 2.8vh, 32px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #8C827A;
+  padding: 6px 16px;
+  transition: color 0.25s ease, opacity 0.25s ease;
+  user-select: none;
+  text-decoration: none;
+}
+
+.sds-hero-scroll-cue:hover {
+  color: #6D1734;
+}
+
+.sds-hero-scroll-label {
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: inherit;
+}
+
+.sds-hero-scroll-line {
+  width: 1px;
+  height: 24px;
+  background: linear-gradient(180deg, #C5A15A 0%, rgba(197, 161, 90, 0.1) 100%);
+  animation: sdsScrollLinePulse 2.2s infinite ease-in-out;
+}
+
+@keyframes sdsScrollLinePulse {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(7px);
+    opacity: 1;
+  }
+}
+
+/* ── Responsive adjustments for Hero ── */
+@media (max-height: 720px) and (min-width: 901px) {
+  .sds-hero {
+    height: auto;
+    min-height: calc(100vh - var(--header-total-height, 108px));
+    padding: 2.5rem var(--container-px) 2rem;
+  }
+  .sds-hero-heading {
+    font-size: clamp(2.6rem, 5.2vw, 4rem);
+    margin-bottom: 0.85rem;
+  }
+  .sds-hero-subheading {
+    margin-bottom: 1.85rem;
+    font-size: 1.1rem;
+  }
+  .sds-hero-cta-wrap {
+    margin-bottom: 1.5rem;
+  }
+  .sds-hero-scroll-cue {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .sds-hero {
+    height: auto;
+    min-height: calc(100svh - 100px);
+    padding: clamp(3.5rem, 8vw, 5rem) var(--container-px) 3rem;
+  }
+  .sds-hero-heading {
+    font-size: clamp(2.4rem, 8.5vw, 3.6rem);
+  }
+  .sds-hero-scroll-cue {
+    display: none;
+  }
 }
 
 /* ── Shop by Category ────────────────────────────────────── */

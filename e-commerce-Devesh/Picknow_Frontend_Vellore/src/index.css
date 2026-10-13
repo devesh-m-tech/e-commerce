@@ -43,10 +43,12 @@
   --nav-label-weight:  500;
 
   /* ── Layout ── */
-  --container-max:   1440px;
-  --container-px:    clamp(1rem, 5vw, 5rem);
-  --nav-height:      72px;
-  --nav-height-sm:   64px;
+  --container-max:        1440px;
+  --container-px:         clamp(1rem, 5vw, 5rem);
+  --announcement-height:  36px;
+  --nav-height:           72px;
+  --nav-height-sm:        64px;
+  --header-total-height:  108px;
 
   /* ── Corners — square with max 2px ── */
   --radius-sm: 2px;
@@ -385,12 +387,17 @@ textarea:focus {
   background-color: var(--color-maroon);
   color: var(--color-white);
   text-align: center;
-  padding: 8px 16px;
+  padding: 0 16px;
+  height: var(--announcement-height, 36px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-family: var(--font-sans);
+  box-sizing: border-box;
 }
 
 /* ============================================================
