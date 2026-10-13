@@ -131,7 +131,7 @@ const App = () => {
   };
 
   return (
-    <SnackbarProvider maxSnack={3} autoHideDuration={2000} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+    <SnackbarProvider maxSnack={3} autoHideDuration={3000} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
       <div className="app">
         {!shouldHideNavbar() && <AnnouncementBar />}
         {!shouldHideNavbar() && (
@@ -204,7 +204,7 @@ const App = () => {
         {!shouldHideFooter() && <SdsFooter />}
         <ToastContainer
           position="top-right"
-          autoClose={800}
+          autoClose={3000}
           hideProgressBar={false}
           newestOnTop
           closeOnClick

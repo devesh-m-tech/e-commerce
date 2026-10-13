@@ -20,6 +20,39 @@ const discountPct = (original, sale) => {
   return Math.round(((original - sale) / original) * 100);
 };
 
+// ── Kinetic Letter-by-Letter Animation Component ─────────────
+const AnimatedWord = ({ word, isBold = false, baseDelay = 0 }) => {
+  return (
+    <span className={`sds-animated-word ${isBold ? 'sds-word-bold' : 'sds-word-regular'}`}>
+      {word.split('').map((char, index) => {
+        const charDelay = baseDelay + index * 0.038;
+        return (
+          <span key={index} className="sds-char-envelope">
+            <motion.span
+              className="sds-char"
+              initial={{ y: '135%', opacity: 0, rotateZ: 4, filter: 'blur(3px)' }}
+              animate={{ y: '0%', opacity: 1, rotateZ: 0, filter: 'blur(0px)' }}
+              transition={{
+                duration: 0.85,
+                delay: charDelay,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              whileHover={{
+                y: -10,
+                color: '#C5A15A',
+                scale: 1.15,
+                transition: { type: 'spring', stiffness: 500, damping: 10 },
+              }}
+            >
+              {char}
+            </motion.span>
+          </span>
+        );
+      })}
+    </span>
+  );
+};
+
 // ── Product Card ─────────────────────────────────────────────
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
@@ -177,111 +210,80 @@ const SdsHomePage = () => {
 
       {/* ── 1. HERO ─────────────────────────────────────────── */}
       <section className="sds-hero" aria-label="Hero banner">
-        {/* Floating Ambient Zari Shimmer Orbs */}
+        {/* Subtle Ambient Light Shimmer */}
         <div className="sds-hero-ambient" aria-hidden="true">
           <motion.div
             className="sds-hero-orb sds-hero-orb-1"
             animate={{
-              x: [0, 25, -20, 0],
-              y: [0, -20, 15, 0],
-              scale: [1, 1.12, 0.96, 1],
-              opacity: [0.35, 0.55, 0.4, 0.35]
+              x: [0, 20, -15, 0],
+              y: [0, -15, 10, 0],
+              scale: [1, 1.08, 0.98, 1],
+              opacity: [0.22, 0.42, 0.28, 0.22]
             }}
-            transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+            transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
           />
           <motion.div
             className="sds-hero-orb sds-hero-orb-2"
             animate={{
-              x: [0, -30, 20, 0],
-              y: [0, 18, -25, 0],
-              scale: [1, 0.92, 1.08, 1],
-              opacity: [0.3, 0.48, 0.35, 0.3]
+              x: [0, -20, 15, 0],
+              y: [0, 15, -20, 0],
+              scale: [1, 0.95, 1.06, 1],
+              opacity: [0.18, 0.38, 0.25, 0.18]
             }}
-            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 1 }}
           />
-          <div className="sds-hero-mesh-overlay" />
         </div>
 
         <div className="sds-hero-content">
-          <motion.div
-            className="sds-hero-badge-wrap"
-            initial={{ opacity: 0, y: -14, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <span className="sds-hero-badge">
-              <Sparkles size={13} className="sds-hero-sparkle" />
-              <span>HANDPICKED · HANDWOVEN · SILK MARK CERTIFIED</span>
-              <Sparkles size={13} className="sds-hero-sparkle" />
-            </span>
-          </motion.div>
+          {/* Headline matching reference image with kinetic letter animation */}
+          <h1 className="sds-hero-heading" aria-label="Nice Summer Collection">
+            <AnimatedWord word="Nice" isBold={false} baseDelay={0.06} />
+            <span className="sds-word-space">&nbsp;</span>
+            <AnimatedWord word="Summer" isBold={true} baseDelay={0.22} />
+            <span className="sds-word-space">&nbsp;</span>
+            <AnimatedWord word="Collection" isBold={false} baseDelay={0.46} />
+          </h1>
 
-          <motion.h1
-            className="sds-hero-heading"
-            initial={{ opacity: 0, y: 26 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
-          >
-            Timeless <strong className="sds-hero-emphasis">Elegance</strong>,<br />
-            Woven in Tradition.
-          </motion.h1>
-
+          {/* Subheading matching reference image */}
           <motion.p
             className="sds-hero-subheading"
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.24, ease: [0.16, 1, 0.3, 1] }}
-          >
-            Pure mulberry silk sarees handwoven by master artisans, temple jewellery, and festive heirlooms crafted for life's most cherished occasions.
-          </motion.p>
-
-          <motion.div
-            className="sds-hero-cta-row"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.36, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, delay: 0.82, ease: [0.16, 1, 0.3, 1] }}
           >
-            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
-              <Link to="/products" className="sds-btn sds-btn-primary sds-hero-cta-main">
-                <span>Shop The Collection</span>
-                <ArrowRight size={16} className="sds-cta-arrow" />
-              </Link>
-            </motion.div>
-            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
-              <Link to="/category/cat_silk_sarees" className="sds-btn sds-btn-secondary sds-hero-cta-sub">
-                Explore Pure Silks
-              </Link>
-            </motion.div>
-          </motion.div>
+            A Good Looking, Comfortable Traditional Collection
+          </motion.p>
 
-          {/* Quick Luxury Highlights */}
+          {/* Single solid dark rectangular CTA button matching reference image */}
           <motion.div
-            className="sds-hero-highlights"
-            initial={{ opacity: 0, y: 12 }}
+            className="sds-hero-cta-wrap"
+            initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.48 }}
+            transition={{ duration: 0.75, delay: 0.98, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="sds-hero-highlight-item">
-              <span className="sds-highlight-bullet">✦</span>
-              <span>100% Pure Kanchipuram Silk</span>
-            </div>
-            <div className="sds-hero-highlight-divider" />
-            <div className="sds-hero-highlight-item">
-              <span className="sds-highlight-bullet">✦</span>
-              <span>Zari Weaves by Master Artisans</span>
-            </div>
-            <div className="sds-hero-highlight-divider" />
-            <div className="sds-hero-highlight-item">
-              <span className="sds-highlight-bullet">✦</span>
-              <span>Complimentary Insured Shipping</span>
-            </div>
+            <motion.div
+              whileHover={{ y: -2, scale: 1.015 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Link to="/products" className="sds-hero-btn-editorial">
+                <span>SHOP THE COLLECTION</span>
+                <span className="sds-btn-reflection" />
+              </Link>
+            </motion.div>
           </motion.div>
 
-          <div className="sds-hero-ornament" aria-hidden="true">
+          {/* Minimalist ornament below button */}
+          <motion.div
+            className="sds-hero-ornament"
+            aria-hidden="true"
+            initial={{ opacity: 0, scaleX: 0.6 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ duration: 0.8, delay: 1.15, ease: "easeOut" }}
+          >
             <div className="sds-hero-ornament-line" />
             <div className="sds-hero-ornament-diamond" />
             <div className="sds-hero-ornament-line" />
-          </div>
+          </motion.div>
         </div>
       </section>
 
