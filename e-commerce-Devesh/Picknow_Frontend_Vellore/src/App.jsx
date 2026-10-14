@@ -161,6 +161,7 @@ const App = () => {
             <Route path="/combo/:id" element={<ComboDetail />} />
             <Route path="/search" element={<SearchResults />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/profile/*" element={<UserProfile />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/categories" element={<CategoryPage />} />
             <Route path="/category/:id" element={<CategoryProducts />} />

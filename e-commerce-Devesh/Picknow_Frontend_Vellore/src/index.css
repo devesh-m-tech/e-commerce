@@ -49,6 +49,7 @@
   --nav-height:           72px;
   --nav-height-sm:        64px;
   --header-total-height:  108px;
+  --sds-navbar-height:    72px;
 
   /* ── Corners — square with max 2px ── */
   --radius-sm: 2px;

@@ -1,0 +1,178 @@
+/* ============================================================
+   CheckoutProgressBar.css — Luxury Top Quick Bar / Steps Bar
+   Shri Deepaalaya Silks (Cart & Checkout Flow)
+   ============================================================ */
+
+.checkout-header-wrapper {
+  position: sticky;
+  top: var(--sds-navbar-height, 72px);
+  z-index: 99;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border, #EDE2D2);
+  box-shadow: 0 2px 10px rgba(40, 35, 33, 0.04);
+  padding: 12px 0 10px;
+  transition: top 0.15s ease;
+}
+
+@media (max-width: 768px) {
+  .checkout-header-wrapper {
+    padding: 9px 0 7px;
+  }
+}
+
+.checkout-progress-bar {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: flex-start;
+}
+
+@media (max-width: 480px) {
+  .checkout-progress-bar {
+    padding: 0 16px;
+  }
+}
+
+/* ── Mobile Step Info ── */
+.mobile-step-info {
+  display: none;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-mid, #524744);
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+
+.mobile-step-info strong {
+  color: var(--color-maroon, #6D1734);
+  font-weight: 600;
+}
+
+@media (max-width: 520px) {
+  .mobile-step-info {
+    display: block;
+  }
+}
+
+/* ── Step Column ── */
+.progress-step-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  user-select: none;
+  background: none;
+  border: none;
+  padding: 0;
+  outline: none;
+}
+
+.progress-step-column.clickable {
+  cursor: pointer;
+}
+
+.progress-step-column.clickable:hover .step-circle {
+  transform: scale(1.08);
+  box-shadow: 0 2px 8px rgba(22, 101, 52, 0.25);
+}
+
+.progress-step-column.clickable:hover .step-label {
+  color: var(--color-maroon, #6D1734);
+  text-decoration: underline;
+}
+
+/* ── Step Circle ── */
+.step-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border, #EDE2D2);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+}
+
+.circle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8C827A;
+  transition: all 0.25s ease;
+}
+
+.circle-icon.active {
+  color: #ffffff;
+}
+
+/* Pulse animation for active step */
+@keyframes stepCirclePulse {
+  0% { box-shadow: 0 0 0 0 rgba(109, 23, 52, 0.35); }
+  70% { box-shadow: 0 0 0 8px rgba(109, 23, 52, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(109, 23, 52, 0); }
+}
+
+.step-circle.active {
+  border-color: var(--color-maroon, #6D1734);
+  background: var(--color-maroon, #6D1734);
+  animation: stepCirclePulse 2.4s infinite;
+}
+
+.step-circle.completed {
+  border-color: #166534;
+  background: #166534;
+}
+
+/* ── Line Track ── */
+.progress-line-track {
+  flex: 1 1 0;
+  height: 2px;
+  background: var(--border, #EDE2D2);
+  margin-top: 13px; /* centers with 28px circle */
+  margin-left: 0;
+  margin-right: 0;
+  overflow: hidden;
+  min-width: 14px;
+}
+
+.progress-line-fill {
+  height: 100%;
+  background: #166534;
+  transition: width 0.35s ease;
+}
+
+/* ── Step Label ── */
+.step-label {
+  font-family: var(--font, 'Karla', sans-serif);
+  font-size: 11px;
+  font-weight: 500;
+  color: #8C827A;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.step-label.active {
+  color: var(--color-maroon, #6D1734);
+  font-weight: 700;
+}
+
+.step-label.completed {
+  color: #166534;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .step-label {
+    font-size: 9.5px;
+    letter-spacing: 0.02em;
+  }
+}

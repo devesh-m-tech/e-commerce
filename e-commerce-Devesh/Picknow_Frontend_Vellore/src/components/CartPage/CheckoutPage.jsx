@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
-  MapPin, Plus, Edit2, Trash2, Check, ChevronRight,
+  MapPin, Plus, Edit2, Trash2, ChevronRight,
   CreditCard, Wallet, Smartphone, Building2, Package,
   ShieldCheck, Tag, Star, Bookmark, Zap, Receipt, Info, Truck, Calendar
 } from "lucide-react";
@@ -12,64 +12,12 @@ import Confetti from "react-confetti";
 import ConfettiExplosion from "react-confetti-explosion";
 import "./CheckoutPage.css";
 import { cartApi } from "../../APi/cartApi";
-import { userApi } from "../../APi/userApi";
+import { userApi, addToWishlist } from "../../APi/userApi";
 import { transformImageUrl } from "../../APi/utils";
 import ModernLoader from "../Loading/ModernLoader";
+import CheckoutProgressBar from "./CheckoutProgressBar";
 
 // --- SUB-COMPONENTS (Defined outside to prevent remount issues) ---
-const CheckoutProgressBar = ({ currentStep, Check }) => {
-  const steps = [
-    { id: 1, label: "Address", icon: <MapPin size={14} /> },
-    { id: 2, label: "Order Summary", icon: <Package size={14} /> },
-    { id: 3, label: "Payment", icon: <CreditCard size={14} /> },
-  ];
-
-  return (
-    <div className="checkout-header-wrapper">
-      {/* Mobile Step Text */}
-      <div className="mobile-step-info">
-        Step {currentStep} of 3: <strong>{steps[currentStep - 1].label}</strong>
-      </div>
-
-      <div className="checkout-progress-bar">
-        {steps.map((step, index) => {
-          const isCompleted = currentStep > step.id;
-          const isActive = currentStep === step.id;
-          const isLast = index === steps.length - 1;
-
-          return (
-            <React.Fragment key={step.id}>
-              <div className={`progress-step-column ${isActive ? "active" : ""}`}>
-                <div className={`step-circle ${isActive ? "active" : ""} ${isCompleted ? "completed" : ""}`}>
-                  {isCompleted ? (
-                    <Check size={14} strokeWidth={3} color="#fff" />
-                  ) : (
-                    <span className={`circle-icon ${isActive ? "active" : ""}`}>
-                      {step.icon}
-                    </span>
-                  )}
-                </div>
-                <span className={`step-label ${isActive ? "active" : ""} ${isCompleted ? "completed" : ""}`}>
-                  {step.label}
-                </span>
-              </div>
-
-              {!isLast && (
-                <div className="progress-line-track">
-                  <div
-                    className="progress-line-fill"
-                    style={{ width: isCompleted ? "100%" : "0%" }}
-                  />
-                </div>
-              )}
-            </React.Fragment>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
 const AddressStep = ({ addresses, selectedAddress, setSelectedAddress, navigate, Plus, handleContinueToSummary }) => (
   <div className="checkout-card">
     <div className="checkout-card-header">
@@ -1399,7 +1347,10 @@ const CheckoutPage = () => {
         </div>
       )}
 
-      <CheckoutProgressBar currentStep={currentStep} Check={Check} />
+      <CheckoutProgressBar
+        currentStep={currentStep + 1}
+        onStepClick={(targetStep) => setCurrentStep(targetStep)}
+      />
 
       <div className="checkout-wrapper">
         <div className="checkout-left">

@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft, ShoppingBag, LogIn, ShieldCheck,
-  Star, Bookmark, Trash2, Zap, MapPin, AlertTriangle
+  Bookmark, Trash2, Zap, MapPin
 } from "lucide-react";
 import { useSnackbar } from "notistack";
 import "./CartPage.css";
 import { cartApi } from "../../APi/cartApi";
-import { userApi, addToWishlist, removeFromWishlist, getWishlist, addToSaveForLater, removeFromSaveForLater, getSaveForLater } from "../../APi/userApi";
+import { userApi, addToSaveForLater, removeFromSaveForLater, getSaveForLater } from "../../APi/userApi";
 import { transformImageUrl } from "../../APi/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import ModernLoader from "../Loading/ModernLoader";
 import { Tag } from "lucide-react";
+import CheckoutProgressBar from "./CheckoutProgressBar";
 
 /* ── Helpers ── */
 const getDeliveryDate = () => {
@@ -457,6 +458,7 @@ const CartPage = () => {
   if (!isAuthenticated) {
     return (
       <div className="cart-page">
+        <CheckoutProgressBar currentStep={1} />
         <div className="state-container">
           <div className="state-icon"><LogIn size={36} /></div>
           <p className="state-title">Please Login</p>
@@ -479,6 +481,7 @@ const CartPage = () => {
   if (isLoading) {
     return (
       <div className="cart-page">
+        <CheckoutProgressBar currentStep={1} />
         <div className="loader-wrap">
           <ModernLoader showTiming={false} animationType="morph" size={0.7} customMessage="Loading your cart..." showProgress />
         </div>
@@ -489,6 +492,7 @@ const CartPage = () => {
   if (cart.length === 0) {
     return (
       <div className="cart-page">
+        <CheckoutProgressBar currentStep={1} />
         <div className="state-container">
           <div className="state-icon"><ShoppingBag size={36} /></div>
           <p className="state-title">Your cart is empty!</p>
@@ -517,6 +521,14 @@ const CartPage = () => {
   /* ── Main layout ── */
   return (
     <div className="cart-page">
+      <CheckoutProgressBar
+        currentStep={1}
+        onStepClick={(step) => {
+          if (step > 1 && cart.length > 0) {
+            handleCheckout();
+          }
+        }}
+      />
       <div className="cart-wrapper">
 
 
@@ -573,8 +585,6 @@ const CartPage = () => {
                 const totalPrice = itemPrice * item.quantity;
                 const discPct = item.product?.pOffer || getDiscountPercent(item);
                 const mrp = getMrp(item);
-                const rating = item.product?.pRating || 0;
-                const ratingCount = item.product?.pRatingCount || item.product?.ratingCount || 0;
                 const pName = item.variantType === "combo" ? item.comboName : (item.product?.pName || "Product");
                 const rawImg = item.variantType === "combo"
                   ? item.comboImage
@@ -867,7 +877,7 @@ const CartPage = () => {
                 Delivery Address Missing
               </h3>
               <p style={{ fontSize: '14px', color: '#878787', margin: '0 0 24px', lineHeight: '1.6' }}>
-                You haven't selected a delivery address yet. Please add an address to proceed with your order.
+                You haven&apos;t selected a delivery address yet. Please add an address to proceed with your order.
               </p>
             </div>
             <div className="prime-modal-footer" style={{ background: '#f9f9f9' }}>

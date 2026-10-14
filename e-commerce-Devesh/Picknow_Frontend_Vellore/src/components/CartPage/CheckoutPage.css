@@ -29,20 +29,20 @@
 .checkout-page {
   min-height: 100vh;
   background: var(--grey-bg);
-  padding: 40px 0 40px;
-  margin-top: 170px; /* announcement-bar(~36px) + navbar(72px) + progress-bar(~62px) */
+  padding: 0 0 48px;
+  margin-top: 0;
 }
 
 @media (max-width: 768px) {
   .checkout-page {
-    margin-top: 230px; /* Accounts for tall mobile navbar + progress bar */
-    padding-top: 20px;
+    margin-top: 0;
+    padding: 0 0 100px; /* Space for sticky footer */
   }
 }
 
 @media (max-width: 480px) {
   .checkout-page {
-    margin-top: 240px;
+    margin-top: 0;
   }
 }
 
@@ -52,7 +52,13 @@
   display: grid;
   grid-template-columns: 1fr 380px;
   gap: 16px;
-  padding: 0 16px;
+  padding: 20px 16px 0;
+}
+
+@media (max-width: 768px) {
+  .checkout-wrapper {
+    padding: 14px 12px 0;
+  }
 }
 
 /* ═══════════════════════════════════════════════
@@ -68,201 +74,6 @@
 .checkout-container {
   display: flex;
   gap: 24px;
-}
-
-.checkout-header-wrapper {
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
-  padding: 16px 0;
-  position: fixed;
-  top: 108px; /* announcement-bar(~36px) + navbar(72px) = 108px */
-  left: 0;
-  width: 100%;
-  z-index: 100;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-@media (max-width: 1024px) {
-  .checkout-header-wrapper {
-    top: 144px; /* Taller on mobile: announcement + double-row navbar */
-    padding: 10px 0;
-  }
-}
-
-.checkout-progress-bar {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 0 32px;
-  display: flex;
-  align-items: flex-start;
-}
-
-@media (max-width: 480px) {
-  .checkout-progress-bar {
-    padding: 0 16px;
-  }
-}
-
-/* ── Each step: only as wide as its content ── */
-.progress-step-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-  /* never compress */
-  flex: 0 0 auto;
-  /* width = content only */
-}
-
-/* ── Line: takes ALL remaining space between steps ── */
-.progress-line-track {
-  flex: 1 1 0;
-  /* grows equally between every pair of steps */
-  height: 1.5px;
-  background: #e0e0e0;
-  margin-top: 13px;
-  /* (28px circle / 2) - 1px border = 13px → perfect vertical center */
-  margin-left: 0;
-  /* touches the circle */
-  margin-right: 0;
-  /* touches the circle */
-  border-radius: 0;
-  overflow: hidden;
-  min-width: 0;
-}
-
-.progress-line-fill {
-  height: 100%;
-  background: #2e7d32;
-  transition: width 0.4s ease;
-}
-
-/* ── Circle ── */
-.step-circle {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid #ddd;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  box-sizing: border-box;
-}
-
-.step-circle.active {
-  border-color: #2874f0;
-  background: #2874f0;
-}
-
-.step-circle.completed {
-  border-color: #2e7d32;
-  background: #2e7d32;
-}
-/* Pulsing animation for active step milestones */
-@keyframes circlePulse {
-  0% { box-shadow: 0 0 0 0 rgba(40, 116, 240, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(40, 116, 240, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(40, 116, 240, 0); }
-}
-
-.step-circle.active {
-  border-color: var(--blue);
-  background: var(--blue);
-  animation: circlePulse 2s infinite; /* Premium pulse effect */
-}
-
-.circle-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #aaa;
-  transition: all 0.3s ease;
-}
-
-.circle-icon.active {
-  color: #fff; /* White icon for the active blue background */
-}
-
-.circle-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #aaa;
-  transition: all 0.3s ease;
-}
-
-.circle-icon.active {
-  color: #fff;
-}
-
-/* Pulsing animation for active step */
-@keyframes circlePulse {
-  0% { box-shadow: 0 0 0 0 rgba(40, 116, 240, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(40, 116, 240, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(40, 116, 240, 0); }
-}
-
-.step-circle.active {
-  border-color: var(--blue);
-  background: var(--blue);
-  animation: circlePulse 2s infinite;
-}
-
-/* ── Label ── */
-.step-label {
-  font-size: 11px;
-  font-weight: 500;
-  color: #aaa;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-
-.step-label.active {
-  color: #2874f0;
-  font-weight: 700;
-}
-
-.step-label.completed {
-  color: #2e7d32;
-}
-
-.mobile-step-info {
-  display: none;
-  text-align: center;
-  font-size: 13px;
-  color: var(--text-mid);
-  margin-bottom: 12px;
-}
-
-@media (max-width: 480px) {
-  .mobile-step-info {
-    display: block;
-  }
-
-  .step-label {
-    display: none;
-    /* Hide labels on tiny screens to save space, use indicator above */
-  }
-
-  .progress-step-column {
-    gap: 0;
-  }
-
-  .step-circle {
-    width: 32px;
-    /* Make circles a bit larger if labels are hidden */
-    height: 32px;
-  }
-
-  .progress-line-track {
-    margin-top: 15px;
-    /* Re-center track */
-  }
 }
 
 /* ═══════════════════════════════════════════════
@@ -659,8 +470,7 @@
   gap: 16px;
   align-self: flex-start;
   position: sticky;
-  top: 80px;
-
+  top: calc(var(--sds-navbar-height, 72px) + 72px);
 }
 
 .checkout-primary-btn {

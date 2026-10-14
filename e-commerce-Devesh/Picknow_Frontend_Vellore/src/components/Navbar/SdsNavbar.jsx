@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { createPortal } from 'react-dom';
-import { Search, ShoppingCart, Heart, User, LogOut, Menu, X, ChevronDown } from 'lucide-react';
+import { Search, ShoppingCart, Heart, User, LogOut, Menu, X } from 'lucide-react';
 import { useSnackbar } from 'notistack';
 import { cartApi } from '../../APi/cartApi';
 import { getWishlist } from '../../APi/userApi';
@@ -167,6 +167,7 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
   const [isSearching, setIsSearching] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const searchRef = useRef(null);
+  const navRef = useRef(null);
 
   // Scroll handler
   useEffect(() => {
@@ -174,6 +175,21 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Keep --sds-navbar-height dynamically synced for sticky elements underneath
+  useEffect(() => {
+    const updateNavHeight = () => {
+      if (navRef.current) {
+        const h = navRef.current.getBoundingClientRect().height;
+        if (h > 0) {
+          document.documentElement.style.setProperty('--sds-navbar-height', `${Math.round(h)}px`);
+        }
+      }
+    };
+    updateNavHeight();
+    window.addEventListener('resize', updateNavHeight);
+    return () => window.removeEventListener('resize', updateNavHeight);
+  }, [isScrolled]);
 
   // Fetch cart + wishlist counts
   const fetchCounts = useCallback(async () => {
@@ -290,6 +306,7 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
     <>
       <header>
         <nav
+          ref={navRef}
           className={`sds-navbar${isScrolled ? ' scrolled' : ''}`}
           role="navigation"
           aria-label="Main navigation"
