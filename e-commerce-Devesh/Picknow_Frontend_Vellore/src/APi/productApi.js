@@ -56,8 +56,8 @@ export const productApi = {
     }
   },
 
-  searchProducts: (query) => axiosInstance.get('/products/search', { params: { q: query } }),
-  getSearchSuggestions: (query) => axiosInstance.get('/search/suggestions', { params: { query } }),
+  searchProducts: (query) => axiosInstance.get('/products/search', { params: { q: query, query } }).then(res => res.data),
+  getSearchSuggestions: (query) => axiosInstance.get('/search/suggestions', { params: { query, q: query } }),
   getProductsByCategory: (categoryId) => axiosInstance.get(`/product/category/${categoryId}`).then(res => res.data),
 
   // Add review methods

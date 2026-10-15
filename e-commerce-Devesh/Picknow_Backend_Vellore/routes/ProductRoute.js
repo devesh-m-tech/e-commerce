@@ -21,7 +21,9 @@ import {
   getLatestProduct,
   getbrandProduct,
   getProductByType,
-  getProductsGroupedByName
+  getProductsGroupedByName,
+  getLowStockProducts,
+  quickUpdateStock
 } from "../controllers/Products.js";
 import { getProductsByCategory } from "../controllers/categoryControll.js";
 import { isAuth } from "../middelware/isAuth.js";
@@ -29,10 +31,14 @@ import { addRatingAndReview, getProductReviews, deleteReview, getAuthReviews } f
 import { isVendorAuth, isVerifiedVendor } from "../middelware/isVendorAuth.js";
 import Product from "../models/Product.js";
 import { categoryModel as Category } from "../models/Category.js";
+import { search } from "../controllers/searchController.js";
 
 const router = express.Router();
 
 // Admin routes (protected)
+router.get("/admin/product/low-stock", isAdminAuth, isAdmin, getLowStockProducts);
+router.put("/admin/product/:id/stock", isAdminAuth, isAdmin, quickUpdateStock);
+router.patch("/admin/product/:id/stock", isAdminAuth, isAdmin, quickUpdateStock);
 router.post("/admin/product/new", isAdminAuth, isAdmin, uploadFiles, createProduct);
 router.get("/admin/product/all", isAdminAuth, isAdmin, getAllProducts);
 router.get("/admin/product/", isAdminAuth, isAdmin, getProductById);
@@ -48,6 +54,7 @@ router.get("/vendor/product/all", isVendorAuth, isVerifiedVendor, getAllProducts
 router.get("/vendor/product/vendorId", isVendorAuth, isVerifiedVendor, getProductsByVendorId);
 
 // Public routes (no authentication required)
+router.get("/products/search", search);     // Enhanced Search by Name, Color, and Category
 router.get("/", getAllProducts);           // Get all products
 router.get("/products", getAllProducts);   // Alias: also serve products at /products
 router.post("/filterproducts", fiterProducts);           // Get all products

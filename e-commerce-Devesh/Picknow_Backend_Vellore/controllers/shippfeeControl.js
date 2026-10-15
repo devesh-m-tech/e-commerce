@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { shippingFee } from "../models/shipfee";
+import { shippingFee } from "../models/shipfee.js";
 
 // const addshipfee = async (req, res) => {
 //   try {

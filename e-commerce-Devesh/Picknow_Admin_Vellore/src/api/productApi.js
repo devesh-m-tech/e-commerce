@@ -264,6 +264,17 @@ export const productApi = {
     }
   },
 
+  getLowStockProducts: async () => {
+    try {
+      checkAdminAccess();
+      const response = await axiosInstance.get('/admin/product/low-stock');
+      return response.data;
+    } catch (error) {
+      console.warn('Error fetching low stock products:', error);
+      return { success: false, products: [] };
+    }
+  },
+
   // Delete a product image
   deleteProductImage: async (productId, imageUrl) => {
     try {

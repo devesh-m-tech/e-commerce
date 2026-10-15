@@ -129,16 +129,35 @@ export const getAllCategory = async (req, res) => {
 };
 
 
-// Get a single category by ID
+// Helper to escape regex
+const escapeRegex = (string) => {
+  return string ? string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : '';
+};
+
+// Get a single category by ID or slug
 export const getCategoryById = async (req, res) => {
   try {
     const idParam = req.params.id || req.query.id;
     if (!idParam) {
       return res.status(400).json({ success: false, message: "ID is required" });
     }
-    const id = new mongoose.Types.ObjectId(idParam);
 
-    const category = await categoryModel.findById(id);
+    let category = null;
+    if (mongoose.Types.ObjectId.isValid(idParam)) {
+      category = await categoryModel.findById(idParam);
+    }
+
+    if (!category) {
+      const slugClean = idParam.replace(/^cat_/, '').replace(/_/g, ' ');
+      const esc = escapeRegex(slugClean);
+      category = await categoryModel.findOne({
+        $or: [
+          { cName: { $regex: new RegExp(`^${esc}`, 'i') } },
+          { cName: { $regex: new RegExp(esc, 'i') } }
+        ]
+      });
+    }
+
     if (!category) {
       return res.status(404).json({
         success: false,
@@ -173,10 +192,19 @@ export const getProductsByCategory = async (req, res) => {
         { pType: "combo" }
       ];
     } else {
-      const firstWord = categoryName.split(' ')[0];
+      let cleanName = categoryName;
+      if (categoryName.startsWith('cat_')) {
+        cleanName = categoryName.replace(/^cat_/, '').replace(/_/g, ' ');
+      }
+      const firstWord = cleanName.split(' ')[0];
+      const escName = escapeRegex(cleanName);
       query.$or = [
         { pCategory: categoryName },
         { pSubCategory: categoryName },
+        { pCategory: { $regex: new RegExp(`^${escName}`, 'i') } },
+        { pSubCategory: { $regex: new RegExp(`^${escName}`, 'i') } },
+        { pCategory: { $regex: new RegExp(escName, 'i') } },
+        { pSubCategory: { $regex: new RegExp(escName, 'i') } },
         { 
           $and: [
             { pType: "combo" },
@@ -337,7 +365,20 @@ export const deleteCategory = async (req, res) => {
 export const getSubCategories = async (req, res) => {
   try {
     const categoryId = req.params.categoryId;
-    const category = await categoryModel.findById(categoryId);
+    let category = null;
+    if (mongoose.Types.ObjectId.isValid(categoryId)) {
+      category = await categoryModel.findById(categoryId);
+    }
+    if (!category) {
+      const slugClean = categoryId.replace(/^cat_/, '').replace(/_/g, ' ');
+      const esc = escapeRegex(slugClean);
+      category = await categoryModel.findOne({
+        $or: [
+          { cName: { $regex: new RegExp(`^${esc}`, 'i') } },
+          { cName: { $regex: new RegExp(esc, 'i') } }
+        ]
+      });
+    }
 
     if (!category) {
       return res.status(404).json({

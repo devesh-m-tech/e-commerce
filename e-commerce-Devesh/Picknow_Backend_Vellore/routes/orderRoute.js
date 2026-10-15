@@ -55,12 +55,17 @@ import {
     returnOrderItem,
     getReturnProductsByid,
     getAllReturnProducts,
-    updateReturnStatus
+    updateReturnStatus,
+    logInvoicePrint,
+    trackPublicOrder
 } from "../controllers/orderController.js";
 import { isAdminAuth, isAdmin } from "../middelware/isAdminAuth.js";
 
 
 const router = express.Router();
+
+// Public Order Tracking (Requirement 1.D)
+router.get("/track/public", trackPublicOrder);
 
 // Order creation routes
 router.post("/direct", isAuth, createDirectOrder);
@@ -70,6 +75,8 @@ router.post("/cart", isAuth, createCartOrder);
 router.get("/admin/orders", isAdminAuth, isAdmin, getAllOrders);
 router.get("/admin/order/:id", isAdminAuth, isAdmin, getOrderById);
 router.post("/admin/order/:id/cancel", isAdminAuth, isAdmin, cancelOrder);
+router.post("/admin/order/:id/print", isAdminAuth, isAdmin, logInvoicePrint);
+router.post("/admin/:id/print", isAdminAuth, isAdmin, logInvoicePrint);
 router.put("/status/:id", isAdminAuth, isAdmin, updateOrderStatus);
 // router.get("/admin/totAmountSpendByorder", isAdminAuth, isAdmin, getTotAmountSpendByorder);
 

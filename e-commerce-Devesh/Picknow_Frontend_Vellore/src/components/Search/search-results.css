@@ -9,7 +9,7 @@
   --soft-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
 }
 
-.product-layout {
+.sds-search-results-page.product-layout {
   max-width: 1440px;
   margin: 0 auto;
   padding: 10px 40px 80px; 
@@ -21,7 +21,7 @@
 }
 
 /* SIDEBAR REFINEMENT */
-.filter-sidebar {
+.sds-search-results-page .filter-sidebar {
   width: 280px;
   position: sticky;
   top: 100px;
@@ -32,7 +32,7 @@
   box-shadow: var(--soft-shadow);
 }
 
-.filter-sidebar h4 {
+.sds-search-results-page .filter-sidebar h4 {
   font-size: 1.1rem;
   font-weight: 800;
   color: var(--surgical-dark);
@@ -43,11 +43,11 @@
   letter-spacing: -0.02em;
 }
 
-.sidebar-section {
+.sds-search-results-page .sidebar-section {
   margin-bottom: 32px;
 }
 
-.filter-title {
+.sds-search-results-page .filter-title {
   font-size: 0.75rem;
   font-weight: 800;
   color: var(--surgical-grey);
@@ -58,8 +58,8 @@
 }
 
 /* CUSTOM DROPDOWNS */
-.category-dropdown,
-.sort-select {
+.sds-search-results-page .category-dropdown,
+.sds-search-results-page .sort-select {
   width: 100%;
   height: 44px;
   padding: 0 12px;
@@ -74,20 +74,20 @@
   outline: none;
 }
 
-.category-dropdown:hover,
-.sort-select:hover {
+.sds-search-results-page .category-dropdown:hover,
+.sds-search-results-page .sort-select:hover {
   border-color: #cbd5e1;
 }
 
-.category-dropdown:focus,
-.sort-select:focus {
+.sds-search-results-page .category-dropdown:focus,
+.sds-search-results-page .sort-select:focus {
   border-color: var(--surgical-blue);
   background: white;
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08);
 }
 
 /* BRAND CHECKBOXES */
-.brand-checkbox {
+.sds-search-results-page .brand-checkbox {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -99,11 +99,11 @@
   transition: all 0.2s ease;
 }
 
-.brand-checkbox:hover {
+.sds-search-results-page .brand-checkbox:hover {
   color: var(--surgical-blue);
 }
 
-.brand-checkbox input {
+.sds-search-results-page .brand-checkbox input {
   width: 18px;
   height: 18px;
   border-radius: 6px;
@@ -112,25 +112,25 @@
 }
 
 /* RESULTS CONTAINER */
-.products-container {
+.sds-search-results-page .products-container {
   flex: 1;
 }
 
-.products-header {
+.sds-search-results-page .products-header {
   margin-bottom: 32px;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
 }
 
-.products-count {
+.sds-search-results-page .products-count {
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--surgical-grey);
 }
 
 /* PREMIUM PRODUCT GRID */
-.products-grid {
+.sds-search-results-page .products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 32px;

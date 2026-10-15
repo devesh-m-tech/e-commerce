@@ -53,6 +53,9 @@ export const createProduct = async (req, res) => {
       pReturn,
       pReturnDays,
       variants,
+      pSku,
+      pVideo,
+      lowStockThreshold,
       pMetaTitle,
       pMetaKeywords,
       pMetaDescription,
@@ -140,6 +143,9 @@ export const createProduct = async (req, res) => {
       pPreviousPrice: pPreviousPrice === "undefined" ? 0 : Number(pPreviousPrice || 0),
       pOffer: pOffer === "undefined" ? 0 : Number(pOffer || 0),
       pStock: pStock === "undefined" ? 0 : Number(pStock || 0),
+      lowStockThreshold: typeof lowStockThreshold !== "undefined" ? Number(lowStockThreshold) : 10,
+      pSku: pSku || "",
+      pVideo: pVideo || "",
       pQuantity: pQuantity === "undefined" ? 0 : Number(pQuantity || 0),
       pReturn,
       pReturnDays,
@@ -659,6 +665,14 @@ export const updateProduct = async (req, res) => {
       pTax,
       pStatus,
       pBrand,
+      pPrice,
+      pPreviousPrice,
+      pOffer,
+      pStock,
+      pQuantity,
+      lowStockThreshold,
+      pSku,
+      pVideo,
       pReturn,
       pReturnDays,
       imagesToDelete,
@@ -674,6 +688,16 @@ export const updateProduct = async (req, res) => {
       schemaMarkup,
     } = req.body;
 
+    // RBAC: Restrict price changes to admin/owner/super_admin
+    if (typeof pPrice !== "undefined" && Number(pPrice) !== existingProduct.pPrice) {
+      if (req.user && req.user.role === "inventory_staff") {
+        return res.status(403).json({
+          success: false,
+          message: "Permission Denied: Inventory staff are not authorized to modify product prices. Please contact an Admin."
+        });
+      }
+    }
+
     // Build update object
     const updateData = {
       ...(pName && { pName }),
@@ -685,6 +709,14 @@ export const updateProduct = async (req, res) => {
       ...(typeof pTax !== "undefined" && { pTax: Number(pTax) }),
       ...(pStatus && { pStatus }),
       ...(pBrand && { pBrand }),
+      ...(typeof pPrice !== "undefined" && { pPrice: Number(pPrice) }),
+      ...(typeof pPreviousPrice !== "undefined" && { pPreviousPrice: Number(pPreviousPrice) }),
+      ...(typeof pOffer !== "undefined" && { pOffer: Number(pOffer) }),
+      ...(typeof pStock !== "undefined" && { pStock: Number(pStock) }),
+      ...(typeof pQuantity !== "undefined" && { pQuantity: Number(pQuantity) }),
+      ...(typeof lowStockThreshold !== "undefined" && { lowStockThreshold: Number(lowStockThreshold) }),
+      ...(typeof pSku !== "undefined" && { pSku }),
+      ...(typeof pVideo !== "undefined" && { pVideo }),
       ...(pReturn && { pReturn }),
       ...(pReturnDays && { pReturnDays: Number(pReturnDays) }),
       vendorId: req.user.role === "vendor" ? req.user._id : req.user._id,
@@ -1899,3 +1931,68 @@ export const getProductsGroupedByName = async (req, res) => {
     });
   }
 };
+
+// Get Low Stock Products (Requirement 2.B)
+export const getLowStockProducts = async (req, res) => {
+  try {
+    const products = await productModel.find({
+      $expr: {
+        $lte: ["$pStock", { $ifNull: ["$lowStockThreshold", 10] }]
+      }
+    })
+    .select("pName pSku pPrice pStock lowStockThreshold pImage pCategory pStatus")
+    .sort({ pStock: 1 });
+
+    const alerts = products.map(p => ({
+      _id: p._id,
+      pName: p.pName,
+      pSku: p.pSku || "N/A",
+      pPrice: p.pPrice,
+      pStock: p.pStock,
+      lowStockThreshold: p.lowStockThreshold || 10,
+      pCategory: p.pCategory,
+      pImage: p.pImage?.[0] || "",
+      isOutOfStock: p.pStock <= 0,
+      message: p.pStock <= 0
+        ? `Out of Stock Alert: ${p.pName} has 0 pieces remaining!`
+        : `Low Stock Alert: ${p.pName} — only ${p.pStock} pieces left. Consider restocking.`
+    }));
+
+    return res.status(200).json({
+      success: true,
+      count: alerts.length,
+      alerts
+    });
+  } catch (error) {
+    console.error("Error fetching low stock products:", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch low stock products" });
+  }
+};
+
+// Quick Update Product Stock or Threshold
+export const quickUpdateStock = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { pStock, lowStockThreshold, pSku } = req.body;
+
+    const updateFields = {};
+    if (typeof pStock !== "undefined") updateFields.pStock = Number(pStock);
+    if (typeof lowStockThreshold !== "undefined") updateFields.lowStockThreshold = Number(lowStockThreshold);
+    if (typeof pSku !== "undefined") updateFields.pSku = pSku;
+
+    const product = await productModel.findByIdAndUpdate(id, updateFields, { new: true });
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Product stock updated successfully",
+      product
+    });
+  } catch (error) {
+    console.error("Error updating stock:", error);
+    return res.status(500).json({ success: false, message: "Failed to update product stock" });
+  }
+};
+

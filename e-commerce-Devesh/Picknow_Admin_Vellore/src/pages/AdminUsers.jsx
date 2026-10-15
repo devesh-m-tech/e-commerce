@@ -285,6 +285,12 @@ const AdminUsers = () => {
         return 'error';
       case 'admin':
         return 'primary';
+      case 'sales_staff':
+        return 'info';
+      case 'inventory_staff':
+        return 'warning';
+      case 'exchange_staff':
+        return 'secondary';
       default:
         return 'default';
     }
@@ -700,8 +706,11 @@ const AdminUsers = () => {
                 onChange={handleChange}
                 label="Role"
               >
-                <MenuItem value="super_admin">Super Admin</MenuItem>
-                <MenuItem value="admin">Admin</MenuItem>
+                <MenuItem value="super_admin">Super Admin (Owner)</MenuItem>
+                <MenuItem value="admin">Store Admin</MenuItem>
+                <MenuItem value="sales_staff">Sales Staff</MenuItem>
+                <MenuItem value="inventory_staff">Inventory Staff</MenuItem>
+                <MenuItem value="exchange_staff">Exchange Staff</MenuItem>
               </Select>
             </FormControl>
 

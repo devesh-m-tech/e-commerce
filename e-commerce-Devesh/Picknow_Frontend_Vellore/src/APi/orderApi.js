@@ -113,5 +113,16 @@ export const orderApi = {
       }
       throw error.response?.data || { message: 'Failed to fetch return products' };
     }
+  },
+
+  trackPublicOrder: async (orderIdentifier, phone) => {
+    try {
+      const params = { orderIdentifier };
+      if (phone) params.phone = phone;
+      const response = await axiosInstance.get('order/track/public', { params });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to track order' };
+    }
   }
 };

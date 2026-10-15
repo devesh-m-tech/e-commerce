@@ -40,7 +40,7 @@ const SearchResults = () => {
   const [availableBrands, setAvailableBrands] = useState([]);
   const [wishlistLoading, setWishlistLoading] = useState({}); // productId -> boolean
 
-  const query = queryParams.get("query") || "";
+  const query = queryParams.get("query") || queryParams.get("q") || "";
   const type = (queryParams.get("type") || "all").toLowerCase();
   const pType = queryParams.get("pType") || "";
   const category = queryParams.get("category") || "";
@@ -465,7 +465,7 @@ const SearchResults = () => {
   };
 
   return (
-    <div className="product-layout">
+    <div className="product-layout sds-search-results-page">
       {/* Filter Overlay */}
       <div
         className={`overlay ${isFilterOpen ? "open" : ""}`}

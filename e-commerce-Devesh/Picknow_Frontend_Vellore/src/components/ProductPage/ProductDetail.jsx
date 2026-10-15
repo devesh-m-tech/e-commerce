@@ -145,6 +145,7 @@ const ProductDetail = () => {
   const [showCelebration, setShowCelebration] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [isVideoSelected, setIsVideoSelected] = useState(false);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [addingToCart, setAddingToCart] = useState(false);
@@ -1274,24 +1275,63 @@ const ProductDetail = () => {
           {/* Left Column: Gallery */}
           <div className="gallery-column-surgical">
             <div className="gallery-main-row-surgical">
-              {productImages && productImages.length > 1 && (
+              {((productImages && productImages.length > 1) || product?.pVideo) && (
                 <div className="thumbs-vertical-pillar">
                   {productImages.map((image, index) => (
                     <div
                       key={index}
-                      className={`thumb-cell ${selectedImage === index ? "active" : ""}`}
-                      onMouseEnter={() => setSelectedImage(index)}
-                      onClick={() => handleImagepopup(selectedImage)}
+                      className={`thumb-cell ${(!isVideoSelected && selectedImage === index) ? "active" : ""}`}
+                      onMouseEnter={() => {
+                        setIsVideoSelected(false);
+                        setSelectedImage(index);
+                      }}
+                      onClick={() => {
+                        setIsVideoSelected(false);
+                        handleImagepopup(index);
+                      }}
                     >
                       <img src={transformImageUrl(image.url)} alt={image.alt} />
                     </div>
                   ))}
+                  {product?.pVideo && (
+                    <div
+                      className={`thumb-cell ${isVideoSelected ? "active" : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsVideoSelected(true);
+                      }}
+                      title="Watch Product Video"
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "#fff1f2",
+                        border: isVideoSelected ? "2px solid #e11d48" : "1px solid #fecdd3",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <Youtube size={20} color="#e11d48" />
+                      <span style={{ fontSize: "9px", fontWeight: 700, color: "#e11d48", marginTop: 2 }}>VIDEO</span>
+                    </div>
+                  )}
                 </div>
               )}
 
-              <div className={`main-stage-surgical ${(!productImages || productImages.length <= 1) ? 'single-image' : ''}`} onClick={() => handleImagepopup(selectedImage)}>
-                <span className="aesthetic-zoom-label">Premium Focus</span>
-                <img src={transformImageUrl(productImages[selectedImage]?.url)} alt={product?.pName} />
+              <div className={`main-stage-surgical ${(!productImages || productImages.length <= 1) ? 'single-image' : ''}`}>
+                {isVideoSelected && product?.pVideo ? (
+                  <video
+                    controls
+                    autoPlay
+                    src={product.pVideo}
+                    style={{ width: "100%", height: "100%", maxHeight: "500px", objectFit: "contain", borderRadius: 8 }}
+                  />
+                ) : (
+                  <div style={{ width: "100%", height: "100%" }} onClick={() => handleImagepopup(selectedImage)}>
+                    <span className="aesthetic-zoom-label">Premium Focus</span>
+                    <img src={transformImageUrl(productImages[selectedImage]?.url)} alt={product?.pName} />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1352,13 +1392,13 @@ const ProductDetail = () => {
             </div>
 
             <div className="stock-status-surgical">
-              {Number(selectedVariant ? selectedVariant.stock : product.pStock) > 0 ? (
-                <div className={`stock-badge in-stock ${Number(selectedVariant ? selectedVariant.stock : product.pStock) <= 5 ? "low-stock" : ""}`}>
+              {Number(selectedVariant ? selectedVariant.stock : (product.pStock ?? product.pQuantity ?? 0)) > 0 ? (
+                <div className={`stock-badge in-stock ${Number(selectedVariant ? selectedVariant.stock : (product.pStock ?? product.pQuantity ?? 0)) < 10 ? "low-stock" : ""}`}>
                   <Check size={14} />
                   <span>
-                    {Number(selectedVariant ? selectedVariant.stock : product.pStock) <= 5
-                      ? `Only ${selectedVariant ? selectedVariant.stock : product.pStock} units left!`
-                      : "In Stock - Ready to Ship"}
+                    {Number(selectedVariant ? selectedVariant.stock : (product.pStock ?? product.pQuantity ?? 0)) < 10
+                      ? `Only ${selectedVariant ? selectedVariant.stock : (product.pStock ?? product.pQuantity ?? 0)} left in stock — order soon!`
+                      : "In Stock — Ready to Ship"}
                   </span>
                 </div>
               ) : (

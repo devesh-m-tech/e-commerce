@@ -21,14 +21,12 @@ export const isAdminAuth = async (req, res, next) => {
   }
 };
 
-// Admin Role Check Middleware
+// Admin & Staff Role Check Middleware
 export const isAdmin = (req, res, next) => {
-
-
-  if (req.user && (req.user.role === "admin" || req.user.role === "super_admin")) {
+  const allowedRoles = ["admin", "super_admin", "sales_staff", "inventory_staff", "exchange_staff"];
+  if (req.user && allowedRoles.includes(req.user.role) && req.user.status !== "inactive") {
     return next();
-  }
-  else {
-    return res.status(403).json({ message: "Access denied. Admins only." });
+  } else {
+    return res.status(403).json({ message: "Access denied. Insufficient permissions." });
   }
 };

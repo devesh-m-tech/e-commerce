@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { createPortal } from 'react-dom';
-import { Search, ShoppingCart, Heart, User, LogOut, Menu, X } from 'lucide-react';
+import { Search, ShoppingCart, Heart, User, LogOut, Menu, X, ArrowRight, ChevronRight, Sparkles, Tag, Palette, Folder } from 'lucide-react';
 import { useSnackbar } from 'notistack';
 import { cartApi } from '../../APi/cartApi';
 import { getWishlist } from '../../APi/userApi';
@@ -18,6 +18,26 @@ const formatINR = (amount) => {
   if (!amount && amount !== 0) return '';
   const num = Number(amount);
   return '₹' + num.toLocaleString('en-IN');
+};
+
+/** Map color names to representative luxury HEX swatches */
+const getColorHex = (name = '') => {
+  const n = String(name).toLowerCase();
+  if (n.includes('red') || n.includes('crimson') || n.includes('ruby')) return '#8B1834';
+  if (n.includes('maroon') || n.includes('burgundy')) return '#6D1734';
+  if (n.includes('blue') || n.includes('peacock') || n.includes('sapphire')) return '#0B4F6C';
+  if (n.includes('navy')) return '#1B263B';
+  if (n.includes('green') || n.includes('mint') || n.includes('emerald')) return '#1E5E3A';
+  if (n.includes('olive')) return '#556B2F';
+  if (n.includes('gold') || n.includes('yellow') || n.includes('mustard') || n.includes('zari')) return '#C5A15A';
+  if (n.includes('pink') || n.includes('rose') || n.includes('magenta') || n.includes('rani')) return '#C25975';
+  if (n.includes('orange') || n.includes('rust') || n.includes('copper')) return '#C3522C';
+  if (n.includes('peach') || n.includes('coral')) return '#E07A5F';
+  if (n.includes('purple') || n.includes('violet') || n.includes('lavender')) return '#6A3D73';
+  if (n.includes('white') || n.includes('ivory') || n.includes('cream')) return '#EFE7DA';
+  if (n.includes('black') || n.includes('charcoal')) return '#282321';
+  if (n.includes('silver') || n.includes('grey') || n.includes('gray')) return '#A8A29E';
+  return '#C5A15A';
 };
 
 // ── Nav link configuration ───────────────────────────────────
@@ -55,8 +75,14 @@ const NAV_LINKS = [
     ],
   },
   { label: 'Bridal Collection', path: '/category/cat_bridal_wear' },
-  { label: 'All Products', path: '/products' },
+  { label: 'About Us', path: '/about-us' },
   { label: 'Offers', path: '/deals' },
+];
+
+const DRAWER_HELP_LINKS = [
+  { label: 'Track Order', path: '/order-tracking' },
+  { label: 'Exchange Request', path: '/exchange-request' },
+  { label: 'Contact Us', path: '/contact-us' },
 ];
 
 // ── Mobile Drawer ────────────────────────────────────────────
@@ -89,8 +115,20 @@ const MobileDrawer = ({ isOpen, onClose, isLoggedIn, onOpenLogout }) => {
 
           {/* Nav links */}
           <nav className="sds-drawer-nav-list" aria-label="Mobile navigation">
-            <div className="sds-drawer-section-title">Navigation</div>
+            <div className="sds-drawer-section-title">Collections</div>
             {NAV_LINKS.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className="sds-drawer-nav-link"
+                onClick={onClose}
+              >
+                {link.label}
+              </Link>
+            ))}
+
+            <div className="sds-drawer-section-title" style={{ marginTop: '12px' }}>Customer Care</div>
+            {DRAWER_HELP_LINKS.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
@@ -164,6 +202,8 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [categorySuggestions, setCategorySuggestions] = useState([]);
+  const [colorSuggestions, setColorSuggestions] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const searchRef = useRef(null);
@@ -255,26 +295,80 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
 
   // Search debounce
   useEffect(() => {
-    if (searchText.length < 2) { setSearchResults([]); return; }
+    if (searchText.length < 2) {
+      setSearchResults([]);
+      setCategorySuggestions([]);
+      setColorSuggestions([]);
+      return;
+    }
     const timer = setTimeout(async () => {
       setIsSearching(true);
       try {
         const res = await productApi.getSearchSuggestions(searchText);
-        if (res?.data?.success) {
-          const s = res.data.suggestions || {};
-          setSearchResults([...(s.products || []), ...(s.combo || [])].slice(0, 10));
+        const data = res?.data || res;
+        if (data?.success) {
+          const s = data.suggestions || {};
+          setSearchResults([...(s.products || []), ...(s.combo || [])].slice(0, 8));
+          setCategorySuggestions(s.categories || []);
+          setColorSuggestions(s.colors || []);
         } else {
           setSearchResults([]);
+          setCategorySuggestions([]);
+          setColorSuggestions([]);
         }
-      } catch { setSearchResults([]); }
-      finally { setIsSearching(false); }
-    }, 320);
+      } catch {
+        setSearchResults([]);
+        setCategorySuggestions([]);
+        setColorSuggestions([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 280);
     return () => clearTimeout(timer);
   }, [searchText]);
 
-  const handleSearch = () => {
-    if (!searchText.trim()) return;
-    navigate(`/search?query=${encodeURIComponent(searchText)}&type=all`);
+  // Close search overlay on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && searchOpen) {
+        setSearchOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [searchOpen]);
+
+  // Close search overlay on route change
+  useEffect(() => {
+    setSearchOpen(false);
+  }, [location.pathname]);
+
+  // Auto-focus input when search panel opens
+  useEffect(() => {
+    if (searchOpen) {
+      const t = setTimeout(() => searchRef.current?.focus(), 80);
+      return () => clearTimeout(t);
+    }
+  }, [searchOpen]);
+
+  const handleSearch = (term = searchText) => {
+    if (!term || !term.trim()) return;
+    const clean = term.trim();
+    navigate(`/products?q=${encodeURIComponent(clean)}`);
+    setSearchText('');
+    setSearchOpen(false);
+  };
+
+  const handleCategorySuggestionClick = (cat) => {
+    const catName = typeof cat === 'string' ? cat : cat.name || cat.categoryName;
+    navigate(`/products?category=${encodeURIComponent(catName)}`);
+    setSearchText('');
+    setSearchOpen(false);
+  };
+
+  const handleColorSuggestionClick = (color) => {
+    const colorName = typeof color === 'string' ? color : color.name;
+    navigate(`/products?q=${encodeURIComponent(colorName)}`);
     setSearchText('');
     setSearchOpen(false);
   };
@@ -367,19 +461,14 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
 
             {/* Right utilities */}
             <div className="sds-nav-utils">
-              {/* Static INR label */}
-              <span className="sds-currency-label" aria-label="Currency: Indian Rupee">INR</span>
-
-              {/* Search icon (desktop opens inline; mobile uses search row) */}
+              {/* Search toggle */}
               <button
-                className="sds-nav-icon-btn"
-                aria-label="Search"
-                onClick={() => {
-                  setSearchOpen((v) => !v);
-                  setTimeout(() => searchRef.current?.focus(), 50);
-                }}
+                className={`sds-nav-icon-btn${searchOpen ? ' active' : ''}`}
+                aria-label={searchOpen ? "Close search" : "Search"}
+                aria-expanded={searchOpen}
+                onClick={() => setSearchOpen((v) => !v)}
               >
-                <Search size={20} />
+                {searchOpen ? <X size={20} /> : <Search size={20} />}
               </button>
 
               {/* Wishlist */}
@@ -430,97 +519,276 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
             </div>
           </div>
 
-          {/* Search bar row (toggle on desktop icon click, always visible on mobile) */}
-          {(searchOpen) && (
-            <div className="sds-mobile-search-row" style={{ display: 'block' }}>
-              <div className="sds-search-bar" style={{ position: 'relative' }}>
-                <Search size={16} style={{ color: 'var(--color-gold)', flexShrink: 0 }} />
-                <input
-                  ref={searchRef}
-                  type="search"
-                  placeholder="Search silk sarees, jewellery, kurtis…"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  onFocus={() => setSearchOpen(true)}
-                  aria-label="Search products"
-                />
-                {searchText && (
-                  <button
-                    onClick={() => setSearchText('')}
-                    style={{ background: 'none', color: 'var(--color-text-muted)', padding: '0 4px', flexShrink: 0 }}
-                    aria-label="Clear search"
-                  >
-                    <X size={14} />
-                  </button>
-                )}
+          {/* ── Luxury Animated Search Panel ── */}
+          <AnimatePresence>
+            {searchOpen && (
+              <motion.div
+                className="sds-search-panel-wrapper"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <div className="sds-search-panel-inner">
+                  {/* Search Input Box */}
+                  <div className="sds-search-input-box">
+                    <Search size={20} className="sds-search-box-icon" />
+                    <input
+                      ref={searchRef}
+                      type="search"
+                      placeholder="Search by product name, color, or collection (e.g. Kanchipuram, Red, Jewellery)…"
+                      value={searchText}
+                      onChange={(e) => setSearchText(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                      aria-label="Search products"
+                      className="sds-search-box-input"
+                    />
+                    {searchText && (
+                      <button
+                        type="button"
+                        onClick={() => setSearchText("")}
+                        className="sds-search-box-clear"
+                        aria-label="Clear search text"
+                      >
+                        <X size={16} />
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setSearchOpen(false)}
+                      className="sds-search-box-close"
+                      aria-label="Close search"
+                    >
+                      <span className="sds-search-esc-tag">ESC</span>
+                      <X size={18} />
+                    </button>
+                  </div>
 
-                {/* Dropdown suggestions */}
-                {searchText.length >= 2 && (
-                  <div className="sds-search-dropdown">
-                    {searchResults.length > 0 ? (
-                      searchResults.map((p) => {
-                        const name  = p.name || p.pName || 'Product';
-                        const image = p.image || (Array.isArray(p.pImage) ? p.pImage[0] : p.pImage);
-                        const price = p.price || p.pPrice;
-                        const cat   = p.category?.cName || p.category || p.pCategory?.cName || '';
-                        return (
+                  {/* Trending suggestions when search is empty */}
+                  {!searchText && (
+                    <motion.div
+                      className="sds-search-trending-row"
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.05, duration: 0.2 }}
+                    >
+                      <span className="sds-trending-label">Trending Searches:</span>
+                      <div className="sds-trending-tags">
+                        {[
+                          "Kanchipuram Silk",
+                          "Bridal Sarees",
+                          "Temple Jewellery",
+                          "Banarasi Silk",
+                          "Soft Silk Sarees",
+                          "Pure Zari Weaves",
+                        ].map((term) => (
+                          <button
+                            key={term}
+                            type="button"
+                            className="sds-trending-tag"
+                            onClick={() => handleSearch(term)}
+                          >
+                            {term}
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Search Results Dropdown List ("Dropdown Wise") */}
+                  {searchText.length >= 2 && (
+                    <motion.div
+                      className="sds-search-dropdown-menu"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.18 }}
+                    >
+                      {isSearching ? (
+                        <div className="sds-dropdown-status-row">
+                          <span className="sds-search-spinner" /> Searching royal collections for "{searchText}"…
+                        </div>
+                      ) : (searchResults.length > 0 || categorySuggestions.length > 0 || colorSuggestions.length > 0) ? (
+                        <div className="sds-dropdown-scroll-body">
+                          {/* 1. Collections & Categories Dropdown List */}
+                          {categorySuggestions.length > 0 && (
+                            <div className="sds-dropdown-section">
+                              <div className="sds-dropdown-section-header">
+                                <Folder size={13} className="sds-dropdown-section-icon" />
+                                <span>Collections & Categories</span>
+                              </div>
+                              <div className="sds-dropdown-list">
+                                {categorySuggestions.map((cat, idx) => {
+                                  const catName = cat.name || cat.categoryName || cat;
+                                  return (
+                                    <div
+                                      key={`cat-${idx}`}
+                                      className="sds-dropdown-item sds-dropdown-cat-item"
+                                      onClick={() => handleCategorySuggestionClick(cat)}
+                                      role="button"
+                                      tabIndex={0}
+                                      onKeyDown={(e) => e.key === "Enter" && handleCategorySuggestionClick(cat)}
+                                    >
+                                      <div className="sds-dropdown-item-main">
+                                        <Tag size={13} className="sds-dropdown-subicon" />
+                                        <span className="sds-dropdown-item-title">{catName}</span>
+                                      </div>
+                                      <span className="sds-dropdown-item-badge">
+                                        in Collections <ChevronRight size={13} />
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 2. Color Shades Dropdown List */}
+                          {colorSuggestions.length > 0 && (
+                            <div className="sds-dropdown-section">
+                              <div className="sds-dropdown-section-header">
+                                <Palette size={13} className="sds-dropdown-section-icon" />
+                                <span>Colors & Shades</span>
+                              </div>
+                              <div className="sds-dropdown-list">
+                                {colorSuggestions.map((col, idx) => {
+                                  const colName = col.name || col;
+                                  return (
+                                    <div
+                                      key={`col-${idx}`}
+                                      className="sds-dropdown-item sds-dropdown-color-item"
+                                      onClick={() => handleColorSuggestionClick(col)}
+                                      role="button"
+                                      tabIndex={0}
+                                      onKeyDown={(e) => e.key === "Enter" && handleColorSuggestionClick(col)}
+                                    >
+                                      <div className="sds-dropdown-item-main">
+                                        <span
+                                          className="sds-dropdown-color-swatch"
+                                          style={{ backgroundColor: getColorHex(colName) }}
+                                        />
+                                        <span className="sds-dropdown-item-title">{colName}</span>
+                                      </div>
+                                      <span className="sds-dropdown-item-badge">
+                                        Filter by Shade <ChevronRight size={13} />
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 3. Products Dropdown List */}
+                          {searchResults.length > 0 && (
+                            <div className="sds-dropdown-section">
+                              <div className="sds-dropdown-section-header">
+                                <Sparkles size={13} className="sds-dropdown-section-icon" />
+                                <span>Handcrafted Sarees & Jewellery ({searchResults.length})</span>
+                              </div>
+                              <div className="sds-dropdown-product-list">
+                                {searchResults.map((p) => {
+                                  const name = p.name || p.pName || "Silk Saree";
+                                  const image = p.image || (Array.isArray(p.pImage) ? p.pImage[0] : p.pImage);
+                                  const price = p.price || p.pPrice;
+                                  const cat = p.category?.cName || p.category || p.pCategory?.cName || p.pCategory || "";
+                                  const color = p.color || "";
+                                  return (
+                                    <div
+                                      key={p._id || p.id}
+                                      className="sds-dropdown-product-row"
+                                      onClick={() => handleProductClick(p)}
+                                      role="button"
+                                      tabIndex={0}
+                                      onKeyDown={(e) => e.key === "Enter" && handleProductClick(p)}
+                                    >
+                                      <img
+                                        src={transformImageUrl(image)}
+                                        alt={name}
+                                        className="sds-dropdown-product-thumb"
+                                        loading="lazy"
+                                      />
+                                      <div className="sds-dropdown-product-info">
+                                        <h5 className="sds-dropdown-product-title">{name}</h5>
+                                        <div className="sds-dropdown-product-tags">
+                                          {cat && <span className="sds-dropdown-tag-cat">{cat}</span>}
+                                          {color && (
+                                            <span className="sds-dropdown-tag-color">
+                                              <span
+                                                className="sds-dropdown-tag-color-dot"
+                                                style={{ backgroundColor: getColorHex(color) }}
+                                              />
+                                              {color}
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <div className="sds-dropdown-product-price-col">
+                                        <span className="sds-dropdown-product-price">{formatINR(price)}</span>
+                                        <ChevronRight size={15} className="sds-dropdown-arrow-icon" />
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Dropdown Footer: See all results */}
                           <div
-                            key={p._id || p.id}
-                            className="sds-search-result-item"
-                            onClick={() => handleProductClick(p)}
+                            className="sds-dropdown-footer-row"
+                            onClick={() => handleSearch(searchText)}
                             role="button"
                             tabIndex={0}
-                            onKeyDown={(e) => e.key === 'Enter' && handleProductClick(p)}
+                            onKeyDown={(e) => e.key === "Enter" && handleSearch(searchText)}
                           >
-                            <img
-                              src={transformImageUrl(image)}
-                              alt={name}
-                              className="sds-search-result-img"
-                              loading="lazy"
-                            />
-                            <div>
-                              <span className="sds-search-result-name">{name}</span>
-                              <span className="sds-search-result-cat">{cat}</span>
+                            <div className="sds-dropdown-footer-left">
+                              <Search size={14} className="sds-dropdown-footer-icon" />
+                              <span>
+                                View all matching results for <strong>"{searchText}"</strong>
+                              </span>
                             </div>
-                            <span className="sds-search-result-price">{formatINR(price)}</span>
+                            <div className="sds-dropdown-footer-right">
+                              <span>Search Catalog</span>
+                              <ArrowRight size={14} />
+                            </div>
                           </div>
-                        );
-                      })
-                    ) : (
-                      <div className="sds-search-result-item" style={{ justifyContent: 'center', color: 'var(--color-text-muted)' }}>
-                        {isSearching ? 'Searching…' : 'No results found'}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Mobile search row (always shown on mobile regardless of searchOpen) */}
-          <div className="sds-mobile-search-row">
-            <div className="sds-search-bar">
-              <Search size={16} style={{ color: 'var(--color-gold)', flexShrink: 0 }} />
-              <input
-                type="search"
-                placeholder="Search sarees, jewellery…"
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                onFocus={() => setSearchOpen(true)}
-                onBlur={() => setTimeout(() => setSearchOpen(false), 200)}
-                aria-label="Search products"
-              />
-              {searchText && (
-                <button onClick={() => setSearchText('')} aria-label="Clear" style={{ background: 'none', color: 'var(--color-text-muted)' }}>
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-          </div>
+                        </div>
+                      ) : (
+                        <div className="sds-dropdown-empty-state">
+                          <div className="sds-dropdown-empty-icon-wrap">
+                            <Search size={22} />
+                          </div>
+                          <div className="sds-dropdown-empty-text">
+                            <h4>No royal pieces found matching "{searchText}"</h4>
+                            <p>
+                              Try searching by <strong>Product Name</strong> (e.g. Kanchipuram, Banarasi), <strong>Color</strong> (e.g. Red, Blue, Gold, Green), or <strong>Collection</strong> (e.g. Silk Sarees, Temple Jewellery).
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </nav>
       </header>
+
+      {/* Backdrop overlay when search is open */}
+      <AnimatePresence>
+        {searchOpen && (
+          <motion.div
+            className="sds-search-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            onClick={() => setSearchOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+      </AnimatePresence>
 
       {/* Mobile drawer */}
       <MobileDrawer

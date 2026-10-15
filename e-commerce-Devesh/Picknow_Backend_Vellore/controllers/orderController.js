@@ -13,6 +13,7 @@ import { generateEmailTemplate } from "../utils/emailTemplates.js";
 import { User } from "../models/User.js";
 import { WalletTransaction } from "../models/wallet.js";
 import { shipfeeModelSchema } from "../models/shipfee.js";
+import { sendOrderAlert } from "../utils/smsNotification.js";
 import crypto from "crypto";
 
 const instance = new Razorpay({
@@ -646,12 +647,31 @@ export const updateOrderStatus = async (req, res) => {
       order.orderStatus = "CANCELLED";
     } else if (orderStatus === "DISPATCHED") {
       order.orderStatus = "DISPATCHED";
-      order.trackingInfo = { trackingNumber: trackingNumber || order.trackingInfo.trackingNumber };
+      order.trackingInfo = { trackingNumber: trackingNumber || order.trackingInfo?.trackingNumber };
     } else {
       order.orderStatus = orderStatus;
     }
 
+    // Auto-generate invoice when reaching CONFIRMED stage (Requirement 2.D)
+    if ((orderStatus === "CONFIRMED" || orderStatus === "DISPATCHED" || orderStatus === "DELIVERED") && !order.invoiceNumber) {
+      order.invoiceNumber = `SDS-INV-${new Date().getFullYear()}-${order._id.toString().slice(-6).toUpperCase()}`;
+      order.invoiceGeneratedAt = new Date();
+    }
+
     await order.save();
+
+    // Send WhatsApp / SMS order delivery updates (Requirement 1.C & 4)
+    const customerPhone = order.shippingAddress?.contact || order.shippingAddress?.mobile;
+    if (customerPhone) {
+      const msg = orderStatus === "CONFIRMED"
+        ? `Your order #${order._id} has been CONFIRMED. Invoice #${order.invoiceNumber || order._id} is ready.`
+        : orderStatus === "DISPATCHED"
+        ? `Your order #${order._id} has been DISPATCHED! Tracking: ${trackingNumber || order.trackingInfo?.trackingNumber || "Available in portal"}.`
+        : orderStatus === "DELIVERED"
+        ? `Your order #${order._id} has been DELIVERED! Thank you for shopping with Shri Deepaalaya Silks.`
+        : `Your order #${order._id} status is now ${orderStatus}.`;
+      sendOrderAlert(customerPhone, msg);
+    }
 
     // Notification
     let orderImage = null;
@@ -675,6 +695,37 @@ export const updateOrderStatus = async (req, res) => {
   } catch (error) {
     console.error("System: Error in updateOrderStatus:", error);
     res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+// Admin: Record invoice print to track duplicates and shop thermal printer receipts (Requirement 2.D)
+export const logInvoicePrint = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const order = await Order.findById(id);
+    if (!order) return res.status(404).json({ success: false, message: "Order not found" });
+
+    if (!order.invoiceNumber) {
+      order.invoiceNumber = `SDS-INV-${new Date().getFullYear()}-${order._id.toString().slice(-6).toUpperCase()}`;
+      order.invoiceGeneratedAt = new Date();
+    }
+
+    order.invoicePrinted = true;
+    order.invoicePrintCount = (order.invoicePrintCount || 0) + 1;
+    order.lastPrintedAt = new Date();
+
+    await order.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Invoice print logged",
+      invoiceNumber: order.invoiceNumber,
+      invoicePrintCount: order.invoicePrintCount,
+      isDuplicate: order.invoicePrintCount > 1,
+      lastPrintedAt: order.lastPrintedAt
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -775,6 +826,78 @@ export const updateReturnStatus = async (req, res) => {
     res.status(200).json({ success: true, message: `Return ${status}` });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+// Public order tracking (Requirement 1.D: Dedicated Tracking Page - Track by Order ID / Mobile number)
+export const trackPublicOrder = async (req, res) => {
+  try {
+    const { orderIdentifier, phone } = req.query;
+    if (!orderIdentifier) {
+      return res.status(400).json({ success: false, message: "Order ID or Order Number is required" });
+    }
+
+    const trimmed = String(orderIdentifier).trim();
+    let queryConditions = [
+      { orderNumber: trimmed },
+      { invoiceNumber: trimmed }
+    ];
+
+    if (mongoose.Types.ObjectId.isValid(trimmed)) {
+      queryConditions.push({ _id: trimmed });
+    }
+
+    let order = await Order.findOne({ $or: queryConditions })
+      .populate("items.product", "pName pImage pPrice pSku")
+      .populate("user", "name mobile email")
+      .lean();
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "No order found matching the provided identifier." });
+    }
+
+    // If phone is provided, verify match
+    if (phone) {
+      const cleanPhone = phone.replace(/\D/g, "");
+      const orderPhone = (order.shippingAddress?.contact || order.user?.mobile || "").replace(/\D/g, "");
+      if (cleanPhone && orderPhone && !orderPhone.includes(cleanPhone) && !cleanPhone.includes(orderPhone)) {
+        return res.status(403).json({ success: false, message: "Phone number does not match this order." });
+      }
+    }
+
+    const publicOrder = {
+      _id: order._id,
+      orderNumber: order.orderNumber || order._id,
+      invoiceNumber: order.invoiceNumber,
+      orderStatus: order.orderStatus,
+      paymentStatus: order.paymentStatus,
+      paymentMethod: order.paymentMethod,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+      deliveryDate: order.deliveryDate,
+      estimatedDeliveryDate: order.estimatedDeliveryDate || new Date(new Date(order.createdAt).getTime() + 5 * 24 * 60 * 60 * 1000),
+      trackingNumber: order.trackingNumber || order.trackingInfo?.trackingNumber,
+      shippingCarrier: order.trackingInfo?.courierName || "Professional Express Courier",
+      shippingAddress: {
+        city: order.shippingAddress?.city,
+        state: order.shippingAddress?.state,
+        pincode: order.shippingAddress?.pincode,
+        name: order.shippingAddress?.name ? order.shippingAddress.name.split(" ")[0] + " ***" : "Customer",
+      },
+      items: (order.items || []).map(item => ({
+        name: item.product?.pName || item.name || "Silk Saree",
+        quantity: item.quantity,
+        price: item.price,
+        image: Array.isArray(item.product?.pImage) ? item.product.pImage[0] : item.product?.pImage
+      })),
+      finalAmount: order.finalAmount,
+      totalAmount: order.totalAmount,
+    };
+
+    return res.status(200).json({ success: true, order: publicOrder });
+  } catch (error) {
+    console.error("Error tracking public order:", error);
+    return res.status(500).json({ success: false, message: "Failed to track order" });
   }
 };
 

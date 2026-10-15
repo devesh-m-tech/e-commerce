@@ -48,7 +48,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PrintIcon from "@mui/icons-material/Print";
-import { fetchOrders, updateOrderStatus } from "../api/dashboardApi";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import { fetchOrders, updateOrderStatus, logInvoicePrintApi } from "../api/dashboardApi";
 import { productApi } from "../api/productApi";
 import { variantApi } from "../api/variantApi";
 import { comboApi } from "../api/comboApi";
@@ -1066,8 +1067,17 @@ const Orders = () => {
     }, 250);
   };
 
-  // Modify handlePrint to include responsive styles
+  // Modify handlePrint to include responsive styles and duplicate prevention
   const handlePrint = () => {
+    if (!selectedOrder) return;
+    const isReprint = Boolean(selectedOrder.invoicePrinted || (selectedOrder.invoicePrintCount && selectedOrder.invoicePrintCount > 0));
+    const reprintNum = (selectedOrder.invoicePrintCount || 0) + 1;
+
+    // Log print to backend
+    logInvoicePrintApi(selectedOrder._id);
+    setSelectedOrder(prev => prev ? { ...prev, invoicePrinted: true, invoicePrintCount: reprintNum } : prev);
+    setOrders(prev => prev.map(o => o._id === selectedOrder._id ? { ...o, invoicePrinted: true, invoicePrintCount: reprintNum } : o));
+
     const printWindow = window.open("", "_blank");
     const orderDate = new Date(selectedOrder.createdAt).toLocaleDateString(
       "en-GB"
@@ -1077,7 +1087,7 @@ const Orders = () => {
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Invoice - ${selectedOrder._id}</title>
+          <title>Invoice - ${selectedOrder.invoiceNumber || selectedOrder._id}</title>
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
             * { box-sizing: border-box; }
@@ -1280,10 +1290,17 @@ const Orders = () => {
               <div class="logo">
                 <h2 style="font-family: 'Playfair Display', serif; color: #6D1734; margin: 0; font-size: 24px; letter-spacing: 1px;">Shri Deepaalaya Silks</h2>
               </div>
-              <h1 style="font-size: 20px; margin-top: 8px;">Invoice</h1>
+              <h1 style="font-size: 20px; margin-top: 8px;">Tax Invoice</h1>
+              <p>Invoice No: <strong>${selectedOrder.invoiceNumber || ('SDS-INV-' + selectedOrder._id.slice(-6).toUpperCase())}</strong></p>
               <p>Order ID: ${selectedOrder._id}</p>
               <p>Date: ${orderDate}</p>
             </div>
+
+            ${isReprint ? `
+              <div style="background: #fee2e2; border: 2px dashed #dc2626; color: #991b1b; padding: 10px; margin: 15px auto; text-align: center; border-radius: 6px; font-weight: bold; font-size: 15px; letter-spacing: 2px;">
+                *** DUPLICATE INVOICE / REPRINT (Copy #${reprintNum}) ***
+              </div>
+            ` : ''}
 
             <div class="content">
               <div class="from-section">
@@ -1459,6 +1476,160 @@ const Orders = () => {
     printWindow.document.close();
     printWindow.focus();
 
+    setTimeout(() => {
+      printWindow.print();
+    }, 250);
+  };
+
+  // Thermal Printer Support (ESC/POS 80mm format)
+  const handleThermalPrint = () => {
+    if (!selectedOrder) return;
+    const isReprint = Boolean(selectedOrder.invoicePrinted || (selectedOrder.invoicePrintCount && selectedOrder.invoicePrintCount > 0));
+    const reprintNum = (selectedOrder.invoicePrintCount || 0) + 1;
+
+    // Log print to backend for duplicate invoice prevention
+    logInvoicePrintApi(selectedOrder._id);
+    setSelectedOrder(prev => prev ? { ...prev, invoicePrinted: true, invoicePrintCount: reprintNum } : prev);
+    setOrders(prev => prev.map(o => o._id === selectedOrder._id ? { ...o, invoicePrinted: true, invoicePrintCount: reprintNum } : o));
+
+    const printWindow = window.open("", "_blank");
+    const orderDate = new Date(selectedOrder.createdAt).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+    const thermalContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Receipt - ${selectedOrder.invoiceNumber || selectedOrder._id}</title>
+          <meta charset="utf-8">
+          <style>
+            @page {
+              size: 80mm auto;
+              margin: 0;
+            }
+            * {
+              box-sizing: border-box;
+              font-family: 'Courier New', Courier, monospace;
+            }
+            body {
+              width: 78mm;
+              margin: 0 auto;
+              padding: 8px 4px;
+              color: #000;
+              background: #fff;
+              font-size: 12px;
+              line-height: 1.3;
+            }
+            .center { text-align: center; }
+            .bold { font-weight: bold; }
+            .header-title { font-size: 15px; font-weight: 900; letter-spacing: 1px; margin-bottom: 2px; }
+            .subtitle { font-size: 10px; margin-bottom: 3px; }
+            .divider { border-top: 1px dashed #000; margin: 6px 0; }
+            .double-divider { border-top: 2px solid #000; margin: 6px 0; }
+            .reprint-banner {
+              border: 2px solid #000;
+              padding: 4px;
+              font-size: 12px;
+              font-weight: 900;
+              text-align: center;
+              margin: 6px 0;
+            }
+            .items-table {
+              width: 100%;
+              border-collapse: collapse;
+            }
+            .items-table th {
+              text-align: left;
+              border-bottom: 1px solid #000;
+              padding: 3px 0;
+              font-size: 11px;
+            }
+            .items-table td {
+              padding: 3px 0;
+              vertical-align: top;
+              font-size: 11px;
+            }
+            .right { text-align: right; }
+            .totals-row { display: flex; justify-content: space-between; margin: 2px 0; font-size: 11px; }
+            .grand-total { font-size: 13px; font-weight: 900; }
+            .footer { font-size: 9px; text-align: center; margin-top: 10px; }
+            @media print {
+              body { width: 100%; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="center">
+            <div class="header-title">SHRI DEEPAALAYA SILKS</div>
+            <div class="subtitle">Handcrafted Kanchipuram Silks & Sarees</div>
+            <div class="subtitle">Vellore, Tamil Nadu | Ph: +91 94432 12345</div>
+            <div class="subtitle">care@shrideepaalayasilks.com</div>
+          </div>
+
+          ${isReprint ? `
+            <div class="reprint-banner">
+              *** DUPLICATE / REPRINT #${reprintNum} ***
+            </div>
+          ` : ''}
+
+          <div class="divider"></div>
+          <div><strong>Inv No:</strong> ${selectedOrder.invoiceNumber || ('SDS-INV-' + selectedOrder._id.slice(-6).toUpperCase())}</div>
+          <div><strong>Order ID:</strong> ${selectedOrder._id}</div>
+          <div><strong>Date:</strong> ${orderDate}</div>
+          <div><strong>Customer:</strong> ${selectedOrder.shippingAddress?.name || selectedOrder.user?.name || "Customer"}</div>
+          <div><strong>Phone:</strong> ${selectedOrder.shippingAddress?.contact || selectedOrder.user?.mobile || "N/A"}</div>
+          <div><strong>Payment:</strong> ${(selectedOrder.paymentMethod || 'ONLINE').toUpperCase()} (${selectedOrder.paymentStatus || 'PAID'})</div>
+
+          <div class="divider"></div>
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th style="width: 50%;">Item</th>
+                <th style="width: 15%; text-align: center;">Qty</th>
+                <th style="width: 35%; text-align: right;">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${(selectedOrder.items || []).map(item => {
+                const prod = productDetails[item.product];
+                const name = prod?.pName || item.product?.pName || 'Silk Saree';
+                return `
+                  <tr>
+                    <td>${name.slice(0, 22)}</td>
+                    <td style="text-align: center;">${item.quantity}</td>
+                    <td class="right">₹${((item.price || 0) * (item.quantity || 1)).toFixed(2)}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+
+          <div class="divider"></div>
+          <div class="totals-row"><span>Subtotal:</span><span>₹${(selectedOrder.totalAmount || 0).toFixed(2)}</span></div>
+          <div class="totals-row"><span>Shipping:</span><span>₹${(selectedOrder.shippingCharges || 0).toFixed(2)}</span></div>
+          ${selectedOrder.discount > 0 ? `<div class="totals-row"><span>Discount:</span><span>-₹${selectedOrder.discount.toFixed(2)}</span></div>` : ''}
+          <div class="double-divider"></div>
+          <div class="totals-row grand-total"><span>TOTAL:</span><span>₹${getNetPayableAmount(selectedOrder).toFixed(2)}</span></div>
+          <div class="double-divider"></div>
+
+          <div class="footer">
+            <div class="bold">All prices inclusive of taxes.</div>
+            <div>* STRICT NO-RETURN POLICY *</div>
+            <div>Exchange within 7 days with unbox video proof.</div>
+            <div style="margin-top: 5px;">*** Thank you for shopping with us! ***</div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(thermalContent);
+    printWindow.document.close();
+    printWindow.focus();
     setTimeout(() => {
       printWindow.print();
     }, 250);
@@ -2450,18 +2621,36 @@ const Orders = () => {
             </Button>
           )}
           */}
+          {selectedOrder?.invoicePrintCount > 0 && (
+            <Chip
+              label={`Printed ${selectedOrder.invoicePrintCount}x (Reprint)`}
+              color="warning"
+              variant="outlined"
+              size="small"
+              sx={{ mr: "auto", fontWeight: 600 }}
+            />
+          )}
+          <Button
+            onClick={handleThermalPrint}
+            variant="contained"
+            color="primary"
+            startIcon={<ReceiptLongIcon />}
+            sx={{ mr: 1, borderRadius: 2, textTransform: "none" }}
+          >
+            Thermal Receipt (80mm)
+          </Button>
           <Button
             onClick={handlePrint}
             variant="outlined"
             startIcon={<PrintIcon />}
-            sx={{ mr: 1, borderRadius: 2 }}
+            sx={{ mr: 1, borderRadius: 2, textTransform: "none" }}
           >
-            Print
+            Invoice (A4)
           </Button>
           <Button
             onClick={handleCloseDialog}
             variant="outlined"
-            sx={{ borderRadius: 2 }}
+            sx={{ borderRadius: 2, textTransform: "none" }}
           >
             Close
           </Button>

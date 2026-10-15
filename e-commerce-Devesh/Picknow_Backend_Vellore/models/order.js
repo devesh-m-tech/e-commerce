@@ -124,6 +124,24 @@ const orderSchema = new mongoose.Schema(
     cashPayment: {
       type: Number,
       default: 0,
+    },
+    invoiceNumber: {
+      type: String,
+      default: "",
+    },
+    invoiceGeneratedAt: {
+      type: Date,
+    },
+    invoicePrinted: {
+      type: Boolean,
+      default: false,
+    },
+    invoicePrintCount: {
+      type: Number,
+      default: 0,
+    },
+    lastPrintedAt: {
+      type: Date,
     }
   },
   { timestamps: true }

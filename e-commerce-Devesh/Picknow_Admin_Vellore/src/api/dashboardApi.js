@@ -235,3 +235,36 @@ export const updateOrderStatus = async (orderId, status, trackingNumber = null) 
     throw error;
   }
 };
+
+// Fetch Dashboard Summary (Requirement 2.A)
+export const fetchDashboardSummary = async () => {
+  try {
+    const res = await axiosInstance.get('/dashboard/summary');
+    return res.data;
+  } catch (error) {
+    console.error('Error fetching dashboard summary:', error);
+    return { success: false, summary: null };
+  }
+};
+
+// Fetch Comprehensive Reports (Requirement 2.G)
+export const fetchReports = async (params = {}) => {
+  try {
+    const res = await axiosInstance.get('/dashboard/reports', { params });
+    return res.data;
+  } catch (error) {
+    console.error('Error fetching reports:', error);
+    throw error;
+  }
+};
+
+// Log Invoice Print & prevent duplicates (Requirement 2.D)
+export const logInvoicePrintApi = async (orderId) => {
+  try {
+    const res = await axiosInstance.post(`/order/admin/${orderId}/print`);
+    return res.data;
+  } catch (error) {
+    console.warn('Error logging invoice print:', error);
+    return { success: false };
+  }
+};
