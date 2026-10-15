@@ -7,6 +7,7 @@ import { categoryApi } from '../../APi/categoryApi';
 import axiosInstance from '../../APi/axiosInstance';
 import { transformImageUrl } from '../../APi/utils';
 import SdsLogo from '../common/SdsLogo';
+import { DUMMY_CATEGORIES, DUMMY_PRODUCTS } from '../../mockData/dummyData';
 import './SdsHomePage.css';
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -174,10 +175,17 @@ const SdsHomePage = () => {
           axiosInstance.get('/search', { params: { type: 'deals', limit: 8, includeVariants: true } }),
         ]);
 
-        const catList  = Array.isArray(catRes) ? catRes : (catRes.categories || []);
-        const prodList = featRes?.products || (Array.isArray(featRes) ? featRes : []);
-        const latList  = Array.isArray(latestRes) ? latestRes.slice(0, 8) : [];
-        const dealList = dealsRes?.data?.results?.products || dealsRes?.data?.products || [];
+        const rawCatList = Array.isArray(catRes) ? catRes : (catRes?.categories || []);
+        const catList = rawCatList.length > 0 ? rawCatList : DUMMY_CATEGORIES;
+
+        const rawProdList = featRes?.products || (Array.isArray(featRes) ? featRes : []);
+        const prodList = rawProdList.length > 0 ? rawProdList : DUMMY_PRODUCTS;
+
+        const rawLatList = Array.isArray(latestRes) && latestRes.length > 0 ? latestRes : prodList;
+        const latList = rawLatList.slice(0, 8);
+
+        const rawDealList = dealsRes?.data?.results?.products || dealsRes?.data?.products || [];
+        const dealList = rawDealList.length > 0 ? rawDealList : prodList.slice(0, 4);
 
         setCategories(catList.slice(0, 10));
         setFeatured(prodList.slice(0, 8));

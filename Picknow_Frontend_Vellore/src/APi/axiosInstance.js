@@ -28,6 +28,44 @@ axiosInstance.defaults.adapter = async (config) => {
 
   try {
     const response = await defaultAdapter(config);
+
+    // If backend returns 200 OK but database has 0 products or 0 categories (unseeded DB),
+    // gracefully provide mock data so the store UI never appears completely empty.
+    if (response?.data) {
+      const urlStr = config.url || '';
+      const isProductReq = urlStr.includes('/product') || urlStr.includes('/search');
+      const isCategoryReq = urlStr.includes('/category');
+
+      const isEmptyProducts = isProductReq && (
+        (Array.isArray(response.data.products) && response.data.products.length === 0) ||
+        (Array.isArray(response.data.results?.products) && response.data.results.products.length === 0) ||
+        (Array.isArray(response.data.data) && response.data.data.length === 0)
+      );
+
+      const isEmptyCategories = isCategoryReq && (
+        (Array.isArray(response.data.categories) && response.data.categories.length === 0) ||
+        (Array.isArray(response.data) && response.data.length === 0)
+      );
+
+      if (isEmptyProducts || isEmptyCategories) {
+        try {
+          const mockData = handleMockRequest(config);
+          if (mockData !== undefined) {
+            return {
+              data: mockData,
+              status: 200,
+              statusText: 'OK',
+              headers: { 'content-type': 'application/json' },
+              config,
+              request: {}
+            };
+          }
+        } catch (e) {
+          // ignore mock errors and return real response
+        }
+      }
+    }
+
     return response;
   } catch (error) {
     // If backend is not running or network request failed, gracefully fall back to local dataset

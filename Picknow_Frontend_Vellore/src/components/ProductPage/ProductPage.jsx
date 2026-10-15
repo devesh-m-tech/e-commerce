@@ -188,14 +188,16 @@ const ProductPage = () => {
         });
 
         const productsData = response.products || [];
-        // Filter out products without variants or without active variants
+        // Include products with active variants or standalone products without variants
         const filteredProducts = productsData.filter((product) => {
-          if (!product.variants || product.variants.length === 0) return false;
+          if (!product.variants || product.variants.length === 0) return true;
           const activeVariants = product.variants.filter(
             (v) => v.status === "active" || v.status === "Active"
           );
           return activeVariants.length > 0;
         });
+
+        const displayList = filteredProducts.length > 0 ? filteredProducts : productsData;
 
         if (filteredProducts.length === 0) {
           console.log("No active products found after filtering");
@@ -207,19 +209,19 @@ const ProductPage = () => {
           }
         }
 
-        setProducts(filteredProducts);
-        setAllProducts(filteredProducts);
-        setFilteredProducts(filteredProducts);
+        setProducts(displayList);
+        setAllProducts(displayList);
+        setFilteredProducts(displayList);
 
         // Update pagination state with API response data
         setTotalPages(response.totalPages || 1);
         setHasNextPage(page < (response.totalPages || 1));
         setHasPrevPage(page > 1);
-        setTotalProducts(response.total || 0);
+        setTotalProducts(response.total || displayList.length);
 
         // Extract unique categories
         const uniqueCategories = [
-          ...new Set(filteredProducts.map((p) => p.pCategory)),
+          ...new Set(displayList.map((p) => p.pCategory)),
         ];
         setCategories(["all", ...uniqueCategories]);
       }
