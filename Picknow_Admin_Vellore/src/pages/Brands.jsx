@@ -44,8 +44,14 @@ const Brands = () => {
   const fetchBrands = async () => {
     try {
       const data = await getAllBrands();
-      setBrands(data);
+      const brandList = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.brands)
+        ? data.brands
+        : [];
+      setBrands(brandList);
     } catch (error) {
+      setBrands([]);
       toast.error(error.message || 'Error fetching brands');
     }
   };
@@ -185,7 +191,7 @@ const Brands = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {brands.map((brand) => (
+            {Array.isArray(brands) && brands.map((brand) => (
               <TableRow key={brand._id}>
                 <TableCell>
                   <img

@@ -314,11 +314,15 @@ const Products = () => {
   const fetchCategories = async () => {
     try {
       const response = await categoryApi.getAllCategories();
-      if (response) {
-        setCategories(response);
-      }
+      const catList = Array.isArray(response)
+        ? response
+        : Array.isArray(response?.categories)
+        ? response.categories
+        : [];
+      setCategories(catList);
     } catch (error) {
       console.error("Error fetching categories:", error);
+      setCategories([]);
       enqueueSnackbar(error.message || "Failed to fetch categories", {
         variant: "error",
       });
@@ -328,9 +332,15 @@ const Products = () => {
   const fetchBrands = async () => {
     try {
       const data = await getAllBrands();
-      setBrands(data);
+      const brandList = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.brands)
+        ? data.brands
+        : [];
+      setBrands(brandList);
     } catch (error) {
       console.error("Error fetching brands:", error);
+      setBrands([]);
       enqueueSnackbar("Error fetching brands", { variant: "error" });
     }
   };
@@ -2487,7 +2497,7 @@ const Products = () => {
                   onChange={handleChange}
                   label="Brand"
                 >
-                  {brands.length === 0 ? (
+                  {!Array.isArray(brands) || brands.length === 0 ? (
                     <MenuItem value="" disabled>
                       No brands available
                     </MenuItem>
@@ -2557,13 +2567,13 @@ const Products = () => {
                   onChange={handleChange}
                   label="Category"
                 >
-                  {categories.length === 0 ? (
+                  {!Array.isArray(categories) || categories.length === 0 ? (
                     <MenuItem value="" disabled>
                       No categories available
                     </MenuItem>
                   ) : (
                     categories
-                      .filter((category) => category.cStatus === "active")
+                      .filter((category) => category && (category.cStatus === "active" || category.cStatus === 1))
                       .map((category) => (
                         <MenuItem key={category._id} value={category.cName}>
                           <Box
@@ -2619,7 +2629,7 @@ const Products = () => {
                     }));
 
                     // Fetch nested subcategories when a subcategory is selected
-                    if (value) {
+                    if (value && Array.isArray(categories)) {
                       const category = categories.find(
                         (cat) => cat.cName === formData.category
                       );
@@ -2640,7 +2650,7 @@ const Products = () => {
                   }}
                 >
                   <MenuItem value="">None</MenuItem>
-                  {subcategories.map((subcat) => (
+                  {Array.isArray(subcategories) && subcategories.map((subcat) => (
                     <MenuItem key={subcat._id} value={subcat.name}>
                       {subcat.name}
                     </MenuItem>
@@ -2658,7 +2668,7 @@ const Products = () => {
                   disabled={!formData.pSubCategory}
                 >
                   <MenuItem value="">None</MenuItem>
-                  {nestedSubCategories.map((nestedSubcat) => (
+                  {Array.isArray(nestedSubCategories) && nestedSubCategories.map((nestedSubcat) => (
                     <MenuItem key={nestedSubcat._id} value={nestedSubcat.name}>
                       {nestedSubcat.name}
                     </MenuItem>
