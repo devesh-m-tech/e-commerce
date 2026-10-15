@@ -847,7 +847,7 @@ const CartPage = () => {
 
           <div className="summary-secure">
             <ShieldCheck size={18} color="#878787" style={{ flexShrink: 0, marginTop: 1 }} />
-            <span>Safe and Secure Payments. Easy returns. 100% Authentic products.</span>
+            <span>Safe and Secure Payments. 100% Authentic Handloom Silk.</span>
           </div>
 
         </div>

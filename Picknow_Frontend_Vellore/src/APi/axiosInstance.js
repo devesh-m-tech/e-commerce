@@ -5,7 +5,7 @@ const defaultAdapter = axios.getAdapter(axios.defaults.adapter);
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env?.VITE_API_BASE_URL || 'http://localhost:5000/api',
-  timeout: 5000,
+  timeout: 1500,
   headers: {
     'Content-Type': 'application/json'
   }

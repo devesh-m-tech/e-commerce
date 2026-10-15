@@ -36,6 +36,7 @@ import {
   LocalShipping,
   Security,
   Loop,
+  Check,
   FavoriteBorder,
 } from "@mui/icons-material";
 // import Footer from "../Footer/Footer"; // Removed to prevent duplication
@@ -235,9 +236,9 @@ const ComboDetail = () => {
       color: "#27ae60",
     },
     {
-      icon: <Loop sx={{ fontSize: 32, color: "#f39c12" }} />,
-      title: "Easy Returns",
-      description: "7 day return policy",
+      icon: <Check sx={{ fontSize: 32, color: "#f39c12" }} />,
+      title: "100% Authentic",
+      description: "Silk Mark Certified",
       color: "#f39c12",
     },
   ];

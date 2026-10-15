@@ -275,17 +275,26 @@ export const handleMockRequest = (config) => {
 
   // ── SEARCH & SEARCH SUGGESTIONS ──────────────────────────────
   if (cleanPath === "/search" || cleanPath === "/products/search") {
-    const q = (getParam("q") || getParam("query") || "").toLowerCase().trim();
-    const type = getParam("type");
+    const rawQ = (getParam("q") || getParam("query") || "").toLowerCase().trim();
 
     let results = DUMMY_PRODUCTS;
-    if (q) {
-      results = DUMMY_PRODUCTS.filter(p =>
-        p.pName.toLowerCase().includes(q) ||
-        p.pCategory.toLowerCase().includes(q) ||
-        p.pSubCategory.toLowerCase().includes(q) ||
-        p.pDescription.toLowerCase().includes(q)
-      );
+    if (rawQ) {
+      const words = rawQ.split(/\s+/).filter(w => w.length > 1);
+      const matched = DUMMY_PRODUCTS.filter(p => {
+        const pName = (p.pName || "").toLowerCase();
+        const pCat = (p.pCategory || "").toLowerCase();
+        const pSub = (p.pSubCategory || "").toLowerCase();
+        const pDesc = (p.pDescription || "").toLowerCase();
+        const pColor = (p.variants?.[0]?.attributes?.color || p.variants?.[0]?.color || "").toLowerCase();
+        const pBrand = (p.pBrand || "").toLowerCase();
+        const fullText = `${pName} ${pCat} ${pSub} ${pDesc} ${pColor} ${pBrand}`;
+
+        if (fullText.includes(rawQ)) return true;
+        if (words.length > 0 && words.some(w => fullText.includes(w))) return true;
+        return false;
+      });
+
+      results = matched.length > 0 ? matched : DUMMY_PRODUCTS;
     }
     return {
       success: true,
@@ -491,7 +500,7 @@ export const handleMockRequest = (config) => {
     return {
       success: true,
       products: wishProducts,
-      wishlist: { products: wishProducts }
+      wishlist: wishProducts
     };
   }
 

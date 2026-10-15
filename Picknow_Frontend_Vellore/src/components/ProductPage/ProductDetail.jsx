@@ -22,6 +22,7 @@ import {
   ChevronRight,
   Search,
   Scale,
+  Award,
 } from "lucide-react";
 import ProductRecommendations from "./ProductRecommendations";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa";
@@ -262,7 +263,7 @@ const ProductDetail = () => {
 
   const trustBadges = [
     { title: "Secure Checkout", desc: "100% Safe Payments", icon: <Security /> },
-    { title: "Easy Returns", desc: "7 Days Policy", icon: <RefreshCw /> },
+    { title: "100% Authentic", desc: "Silk Mark Certified", icon: <Award /> },
     { title: "24/7 Support", desc: "Dedicated Team", icon: <Truck /> },
   ];
 

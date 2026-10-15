@@ -392,6 +392,143 @@ export const DUMMY_PRODUCTS = [
     ]
   },
 
+  // ── Dress 2 (Anarkali) ───────────────────────────────────────
+  {
+    _id: "prod_anarkali_2",
+    pName: "Royal Emerald Green Georgette Flared Anarkali Suit",
+    pShortDescription: "Grand flared royal emerald green Anarkali suit with Lucknowi chikankari and mirror borders.",
+    pDescription: "Channel royal poise in this opulent emerald green Anarkali suit. Tailored from premium flowy georgette with tone-on-tone embroidery and intricate mirror work along the yoke and 48-kali flare. Paired with coordinating churidar and a sheer embroidered dupatta.",
+    pPrice: 7200,
+    pMrp: 10999,
+    pPreviousPrice: 10999,
+    price: 7200,
+    mrp: 10999,
+    pOffer: 34,
+    pStock: 14,
+    stock: 14,
+    pSold: 53,
+    pRating: 4.9,
+    pCategory: "Women's Ethnic Wear",
+    pSubCategory: "Anarkali Suits",
+    pBrand: "Shri Deepaalaya Silks",
+    pType: "normal",
+    pStatus: "Active",
+    fabric: "Flowy Georgette with Shantoon Lining",
+    dupatta: "Embroidered Georgette with Gold Zari Border",
+    careInstructions: "Dry Clean Only",
+    pImage: [
+      "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80"
+    ],
+    variants: [
+      {
+        _id: "var_an2_s",
+        productId: "prod_anarkali_2",
+        status: "active",
+        price: 7200,
+        previousPrice: 10999,
+        offer: 34,
+        stock: 4,
+        min: 1,
+        isDefault: true,
+        attributes: { size: "S", color: "Emerald Green" },
+        size: "S",
+        color: "Emerald Green"
+      },
+      {
+        _id: "var_an2_m",
+        productId: "prod_anarkali_2",
+        status: "active",
+        price: 7200,
+        previousPrice: 10999,
+        offer: 34,
+        stock: 6,
+        min: 1,
+        attributes: { size: "M", color: "Emerald Green" },
+        size: "M",
+        color: "Emerald Green"
+      },
+      {
+        _id: "var_an2_l",
+        productId: "prod_anarkali_2",
+        status: "active",
+        price: 7200,
+        previousPrice: 10999,
+        offer: 34,
+        stock: 4,
+        min: 1,
+        attributes: { size: "L", color: "Emerald Green" },
+        size: "L",
+        color: "Emerald Green"
+      }
+    ],
+    pRatingsReviews: [
+      { _id: "rev_an2_1", rating: 5, review: "The emerald color is so royal and rich. Flare is super wide!", user: "Sangeetha N.", createdAt: "2026-07-02" }
+    ]
+  },
+
+  // ── Dress 3 (Anarkali) ───────────────────────────────────────
+  {
+    _id: "prod_anarkali_3",
+    pName: "Blush Pink Mirror Work Silk Anarkali Suit Set",
+    pShortDescription: "Pastel blush pink pure chanderi silk Anarkali suit with artisanal mirror work.",
+    pDescription: "Effortlessly festive, this blush pink Anarkali suit combines traditional hand-done mirror work with modern pastel sensibility. Includes scalloped net dupatta with zari buttis and matching trousers.",
+    pPrice: 5899,
+    pMrp: 8999,
+    pPreviousPrice: 8999,
+    price: 5899,
+    mrp: 8999,
+    pOffer: 34,
+    pStock: 16,
+    stock: 16,
+    pSold: 61,
+    pRating: 4.8,
+    pCategory: "Women's Ethnic Wear",
+    pSubCategory: "Anarkali Suits",
+    pBrand: "Shri Deepaalaya Silks",
+    pType: "normal",
+    pStatus: "Active",
+    fabric: "Chanderi Silk with Soft Crepe Lining",
+    dupatta: "Fine Net with Scalloped Zari",
+    careInstructions: "Dry Clean Only",
+    pImage: [
+      "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=800&q=80"
+    ],
+    variants: [
+      {
+        _id: "var_an3_s",
+        productId: "prod_anarkali_3",
+        status: "active",
+        price: 5899,
+        previousPrice: 8999,
+        offer: 34,
+        stock: 5,
+        min: 1,
+        isDefault: true,
+        attributes: { size: "S", color: "Blush Pink" },
+        size: "S",
+        color: "Blush Pink"
+      },
+      {
+        _id: "var_an3_m",
+        productId: "prod_anarkali_3",
+        status: "active",
+        price: 5899,
+        previousPrice: 8999,
+        offer: 34,
+        stock: 7,
+        min: 1,
+        attributes: { size: "M", color: "Blush Pink" },
+        size: "M",
+        color: "Blush Pink"
+      }
+    ],
+    pRatingsReviews: [
+      { _id: "rev_an3_1", rating: 5, review: "Very pretty blush pink color, perfect for reception guest wear.", user: "Divya M.", createdAt: "2026-07-10" }
+    ]
+  },
+
   // ── Bridal Lehenga ───────────────────────────────────────────
   {
     _id: "prod_lehenga_1",

@@ -386,60 +386,71 @@ const ProductPage = () => {
           if (query) {
             // Search for products by query term
             const response = await productApi.searchProducts(query);
-            const rawProducts = response.products || response.results?.products || [];
-            if (response.success && Array.isArray(rawProducts)) {
+            const rawProducts = Array.isArray(response?.products)
+              ? response.products
+              : Array.isArray(response?.results?.products)
+              ? response.results.products
+              : Array.isArray(response?.data?.products)
+              ? response.data.products
+              : Array.isArray(response?.data)
+              ? response.data
+              : Array.isArray(response)
+              ? response
+              : [];
+
+            if (rawProducts.length > 0) {
               const activeProducts = rawProducts.filter(
                 (product) => !product.pStatus || product.pStatus.toLowerCase() === "active"
               );
 
-              if (activeProducts.length > 0) {
-                // Use already populated variants or fetch if empty
-                const productsWithVariants = await Promise.all(
-                  activeProducts.map(async (product) => {
-                    if (Array.isArray(product.variants) && product.variants.length > 0 && typeof product.variants[0] === 'object') {
-                      const activeVars = product.variants.filter(
-                        (v) => !v.status || v.status.toLowerCase() === "active"
+              const targetProducts = activeProducts.length > 0 ? activeProducts : rawProducts;
+
+              // Use already populated variants or fetch if empty
+              const productsWithVariants = await Promise.all(
+                targetProducts.map(async (product) => {
+                  if (Array.isArray(product.variants) && product.variants.length > 0 && typeof product.variants[0] === 'object') {
+                    const activeVars = product.variants.filter(
+                      (v) => !v.status || v.status.toLowerCase() === "active"
+                    );
+                    return { ...product, variants: activeVars.length > 0 ? activeVars : product.variants };
+                  }
+                  try {
+                    const variantResponse = await productApi.getProductVariants(product._id);
+                    if (variantResponse.success && variantResponse.variants) {
+                      const activeVariants = variantResponse.variants.filter(
+                        (variant) => !variant.status || variant.status.toLowerCase() === "active"
                       );
-                      return { ...product, variants: activeVars };
+                      return { ...product, variants: activeVariants.length > 0 ? activeVariants : variantResponse.variants };
                     }
-                    try {
-                      const variantResponse = await productApi.getProductVariants(product._id);
-                      if (variantResponse.success && variantResponse.variants) {
-                        const activeVariants = variantResponse.variants.filter(
-                          (variant) => !variant.status || variant.status.toLowerCase() === "active"
-                        );
-                        return { ...product, variants: activeVariants };
-                      }
-                      return product;
-                    } catch (error) {
-                      return product;
-                    }
-                  })
-                );
+                    return product;
+                  } catch (error) {
+                    return product;
+                  }
+                })
+              );
 
-                setProducts(productsWithVariants);
-                setAllProducts(productsWithVariants);
-                setFilteredProducts(productsWithVariants);
+              setProducts(productsWithVariants);
+              setAllProducts(productsWithVariants);
+              setFilteredProducts(productsWithVariants);
 
-                // Update pagination
-                const totalFiltered = productsWithVariants.length;
-                const totalPages = Math.ceil(totalFiltered / productsPerPage);
-                setTotalPages(totalPages);
-                setHasNextPage(1 < totalPages);
-                setHasPrevPage(false);
-                setTotalProducts(totalFiltered);
-                setPage(1);
-              } else {
-                // No products found
-                setProducts([]);
-                setAllProducts([]);
-                setFilteredProducts([]);
-                setTotalProducts(0);
-                setTotalPages(1);
-                setHasNextPage(false);
-                setHasPrevPage(false);
-                setPage(1);
-              }
+              // Update pagination
+              const totalFiltered = productsWithVariants.length;
+              const totalPages = Math.ceil(totalFiltered / productsPerPage) || 1;
+              setTotalPages(totalPages);
+              setHasNextPage(1 < totalPages);
+              setHasPrevPage(false);
+              setTotalProducts(totalFiltered);
+              setPage(1);
+            } else {
+              // No products found
+              setProducts([]);
+              setAllProducts([]);
+              setFilteredProducts([]);
+              setTotalProducts(0);
+              setTotalPages(1);
+              setHasNextPage(false);
+              setHasPrevPage(false);
+              setPage(1);
             }
           } else if (subcategoryId || categoryId || category) {
             // Fetch products by subcategory or category ID / name
@@ -640,9 +651,14 @@ const ProductPage = () => {
   const fetchWishlist = async () => {
     try {
       const response = await getWishlist();
-      setWishlistItems(response.wishlist || []);
+      const rawList = response?.products ||
+                      response?.wishlist?.products ||
+                      (Array.isArray(response?.wishlist) ? response.wishlist : []) ||
+                      (Array.isArray(response) ? response : []);
+      setWishlistItems(Array.isArray(rawList) ? rawList : []);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
+      setWishlistItems([]);
     }
   };
 
@@ -946,17 +962,19 @@ const ProductPage = () => {
       if (isAdding) {
         const response = await addToWishlist(productId, variantId);
         if (response.success) {
-          setWishlistItems((prev) => [...prev, { productId, variantId }]);
+          setWishlistItems((prev) => Array.isArray(prev) ? [...prev, { productId, variantId }] : [{ productId, variantId }]);
           enqueueSnackbar("Product added to wishlist", { variant: "success" });
         }
       } else {
         const response = await removeFromWishlist(productId, variantId);
         if (response.success) {
           setWishlistItems((prev) =>
-            prev.filter(
-              (item) =>
-                !(item.productId === productId && item.variantId === variantId)
-            )
+            Array.isArray(prev)
+              ? prev.filter(
+                  (item) =>
+                    !(item?.productId === productId && item?.variantId === variantId)
+                )
+              : []
           );
           enqueueSnackbar("Product removed from wishlist", {
             variant: "success",
@@ -1340,11 +1358,45 @@ const ProductPage = () => {
               <span>/</span>
               <span className="current">All Products</span>
             </nav>
-            <span className="sds-catalog-label">The Royal Saree & Ethnic Collection</span>
-            <h1 className="sds-catalog-title">Handcrafted Silks & Fine Attire</h1>
+            <span className="sds-catalog-label">
+              {new URLSearchParams(location.search).get('q') 
+                ? 'Search Results'
+                : 'The Royal Saree & Ethnic Collection'}
+            </span>
+            <h1 className="sds-catalog-title">
+              {new URLSearchParams(location.search).get('q') 
+                ? `Results for "${new URLSearchParams(location.search).get('q')}"`
+                : "Handcrafted Silks & Fine Attire"}
+            </h1>
             <p className="sds-catalog-subtitle">
-              Discover pure Kanchipuram silk sarees, Banarasi weaves, bridal couture, and heirloom jewellery handpicked with timeless artistry.
+              {new URLSearchParams(location.search).get('q')
+                ? `Showing pieces matching your search query. Tap clear to return to the full boutique.`
+                : 'Discover pure Kanchipuram silk sarees, Banarasi weaves, bridal couture, and heirloom jewellery handpicked with timeless artistry.'}
             </p>
+            {new URLSearchParams(location.search).get('q') && (
+              <div style={{ marginTop: '12px' }}>
+                <button
+                  type="button"
+                  onClick={() => navigate('/products')}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.18)',
+                    border: '1px solid rgba(255, 255, 255, 0.45)',
+                    color: '#ffffff',
+                    padding: '6px 16px',
+                    borderRadius: '20px',
+                    fontSize: '13px',
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    backdropFilter: 'blur(6px)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  Clear search ✕
+                </button>
+              </div>
+            )}
           </div>
         </section>
 
@@ -1431,25 +1483,36 @@ const ProductPage = () => {
                     showProgress={false}
                   />
                 </div>
-              ) : products.length > 0 ? (
+              ) : Array.isArray(products) && products.length > 0 ? (
                 products.map((product) => {
-                  const isWishlisted = wishlistItems.some(
+                  const isWishlisted = Array.isArray(wishlistItems) && wishlistItems.some(
                     (item) => (item?._id || item?.productId || item?.product?._id) === product?._id
                   );
                   return (
                     <ProductCard 
                       key={product._id} 
                       product={product} 
-                      isInitialWishlisted={isWishlisted} 
+                      isInitialWishlisted={Boolean(isWishlisted)} 
                     />
                   );
                 })
               ) : (
                 <div className="empty-state">
-                  <h3>No Handcrafted Pieces Found</h3>
-                  <p>Try clearing active filters or adjusting your price/category search.</p>
-                  <button type="button" className="empty-state-reset-btn" onClick={resetFilters}>
-                    Reset All Filters
+                  <h3>No Pieces Found</h3>
+                  <p>
+                    {new URLSearchParams(location.search).get('q') 
+                      ? `We couldn't find any piece matching "${new URLSearchParams(location.search).get('q')}". Try searching for sarees, anarkali, jewellery, or browse all collections.`
+                      : "Try clearing active filters or adjusting your price/category search."}
+                  </p>
+                  <button 
+                    type="button" 
+                    className="empty-state-reset-btn" 
+                    onClick={() => {
+                      resetFilters();
+                      if (location.search) navigate('/products');
+                    }}
+                  >
+                    {new URLSearchParams(location.search).get('q') ? "Browse All Products" : "Reset All Filters"}
                   </button>
                 </div>
               )}
