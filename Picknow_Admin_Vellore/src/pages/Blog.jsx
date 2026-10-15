@@ -54,7 +54,14 @@ const Blog = () => {
     try {
       setLoading(true);
       const data = await getAllBlogs();
-      setBlogs(data.blogs || data || []);
+      const rawBlogs = Array.isArray(data?.blogs)
+        ? data.blogs
+        : Array.isArray(data?.data)
+        ? data.data
+        : Array.isArray(data)
+        ? data
+        : [];
+      setBlogs(rawBlogs);
     } catch (error) {
       toast.error(error.message || 'Error fetching blogs');
     } finally {
@@ -181,10 +188,11 @@ const Blog = () => {
     }
   };
 
-  const filteredBlogs = blogs.filter(
+  const safeBlogs = Array.isArray(blogs) ? blogs : [];
+  const filteredBlogs = safeBlogs.filter(
     (blog) =>
-      blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      blog.description.toLowerCase().includes(searchQuery.toLowerCase())
+      (blog?.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (blog?.description || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (

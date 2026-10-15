@@ -346,7 +346,14 @@ const Orders = () => {
       setLoading(true);
       setError(null);
       const response = await fetchOrders();
-      setOrders(response.orders || []);
+      const rawOrders = Array.isArray(response?.orders)
+        ? response.orders
+        : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response)
+        ? response
+        : [];
+      setOrders(rawOrders);
     } catch (err) {
       setError("Failed to load orders. Please try again later.");
       console.error("Error loading orders:", err);
@@ -625,7 +632,7 @@ const Orders = () => {
     setStatusFilter(event.target.value);
   };
 
-  const filteredOrders = orders.filter((order) => {
+  const filteredOrders = (Array.isArray(orders) ? orders : []).filter((order) => {
     // Apply status filter
     if (statusFilter !== "all") {
       const orderStatus = order.orderStatus?.toUpperCase();

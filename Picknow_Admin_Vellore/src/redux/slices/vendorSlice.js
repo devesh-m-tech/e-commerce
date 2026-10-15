@@ -7,7 +7,7 @@ export const fetchVendors = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await vendorApi.getAllVendors();
-      return response.vendors;
+      return response.vendors || response.data || (Array.isArray(response) ? response : []);
     } catch (error) {
       return rejectWithValue(error);
     }
@@ -107,7 +107,7 @@ const vendorSlice = createSlice({
       })
       .addCase(fetchVendors.fulfilled, (state, action) => {
         state.loading = false;
-        state.vendors = action.payload;
+        state.vendors = Array.isArray(action.payload) ? action.payload : (action.payload?.vendors || []);
       })
       .addCase(fetchVendors.rejected, (state, action) => {
         state.loading = false;

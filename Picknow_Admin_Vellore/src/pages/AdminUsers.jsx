@@ -85,9 +85,14 @@ const AdminUsers = () => {
     try {
       setLoading(true);
       const response = await adminApi.getAllAdmins();
-      if (response.success) {
-        setAdminUsers(response.admins);
-      }
+      const rawAdmins = Array.isArray(response?.admins)
+        ? response.admins
+        : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response)
+        ? response
+        : [];
+      setAdminUsers(rawAdmins);
     } catch (error) {
       enqueueSnackbar(error.message || 'Failed to fetch admin users', { variant: 'error' });
     } finally {
@@ -106,10 +111,12 @@ const AdminUsers = () => {
 
   // Memoize filtered users to prevent unnecessary recalculations
   const filteredUsers = useMemo(() => {
-    return adminUsers.filter(user => 
-      user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.role?.toLowerCase().includes(searchQuery.toLowerCase())
+    const list = Array.isArray(adminUsers) ? adminUsers : [];
+    const query = (searchQuery || '').toLowerCase();
+    return list.filter(user => 
+      (user?.name || '').toLowerCase().includes(query) ||
+      (user?.email || '').toLowerCase().includes(query) ||
+      (user?.role || '').toLowerCase().includes(query)
     );
   }, [adminUsers, searchQuery]);
 
@@ -346,15 +353,15 @@ const AdminUsers = () => {
     }
 
     // Prepare the data for export
-    const exportData = adminUsers.map(user => ({
-      'ID': user._id,
-      'Name': user.name,
-      'Email': user.email,
-      'Role': user.role.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
-      'Status': user.status,
-      'Created At': new Date(user.createdAt).toLocaleDateString(),
-      'Permissions': Object.entries(user.permissions || {})
-        .map(([module, actions]) => `${module}: ${actions.join(', ')}`)
+    const exportData = (Array.isArray(adminUsers) ? adminUsers : []).map(user => ({
+      'ID': user?._id || '',
+      'Name': user?.name || '',
+      'Email': user?.email || '',
+      'Role': (user?.role || 'admin').split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+      'Status': user?.status || 'active',
+      'Created At': user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : '',
+      'Permissions': Object.entries(user?.permissions || {})
+        .map(([module, actions]) => `${module}: ${(Array.isArray(actions) ? actions : []).join(', ')}`)
         .join(' | ')
     }));
 
@@ -562,10 +569,10 @@ const AdminUsers = () => {
                       </TableCell>
                       <TableCell>
                         <Chip
-                          label={user.role.split('_').map(word => 
+                          label={(user?.role || 'admin').split('_').map(word => 
                             word.charAt(0).toUpperCase() + word.slice(1)
                           ).join(' ')}
-                          color={getRoleColor(user.role)}
+                          color={getRoleColor(user?.role || 'admin')}
                           size="small"
                         />
                       </TableCell>

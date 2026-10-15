@@ -60,9 +60,12 @@ const Shipping = () => {
     try {
       setLoading(true);
       const response = await shippingApi.getAllDeliveryInfo();
-      if (response.success) {
-        setDeliveryData(response.data);
-      }
+      const rawData = Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response)
+        ? response
+        : [];
+      setDeliveryData(rawData);
     } catch (error) {
       showSnackbar(error.message || 'Failed to fetch delivery data', 'error');
     } finally {
@@ -217,7 +220,7 @@ const Shipping = () => {
             <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
               <Typography>Loading tariffs...</Typography>
             </Box>
-          ) : deliveryData.length === 0 ? (
+          ) : (!Array.isArray(deliveryData) || deliveryData.length === 0) ? (
             <Box sx={{ textAlign: 'center', p: 4 }}>
               <Typography color="textSecondary">
                 No delivery information found. Add a new state tariff to begin.
@@ -235,7 +238,7 @@ const Shipping = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {deliveryData.map((row) => (
+                  {(Array.isArray(deliveryData) ? deliveryData : []).map((row) => (
                     <TableRow key={row.state} hover sx={{ '&:hover': { backgroundColor: '#FAF7F2' } }}>
                       <TableCell>
                         <Chip 

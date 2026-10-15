@@ -292,15 +292,18 @@ const Products = () => {
     try {
       setLoading(true);
       const response = await productApi.getAllProducts(1, 9999);
-      if (response.success) {
-        setAllProducts(response.products);
-        setTotalProducts(response.products.length);
-        updateDisplayedProducts(response.products);
-      } else {
-        enqueueSnackbar(response.message || "Failed to fetch products", {
-          variant: "error",
-        });
-      }
+      const rawProducts = Array.isArray(response?.Products)
+        ? response.Products
+        : Array.isArray(response?.products)
+        ? response.products
+        : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response)
+        ? response
+        : [];
+      setAllProducts(rawProducts);
+      setTotalProducts(rawProducts.length);
+      updateDisplayedProducts(rawProducts);
     } catch (error) {
       console.error("Error fetching products:", error);
       enqueueSnackbar(error.message || "Failed to fetch products", {
@@ -370,7 +373,8 @@ const Products = () => {
   };
 
   const updateDisplayedProducts = (productsToFilter = allProducts) => {
-    const filtered = productsToFilter.filter((product) => {
+    const safeList = Array.isArray(productsToFilter) ? productsToFilter : [];
+    const filtered = safeList.filter((product) => {
       const matchesSearch = searchQuery
         ? (product.pName?.toLowerCase() || "").includes(
             searchQuery.toLowerCase()

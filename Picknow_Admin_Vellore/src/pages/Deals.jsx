@@ -71,7 +71,14 @@ const Deals = () => {
       setLoading(true);
       setError(null);
       const response = await getAllDeals();
-      setDeals(response.deals);
+      const rawDeals = Array.isArray(response?.deals)
+        ? response.deals
+        : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response)
+        ? response
+        : [];
+      setDeals(rawDeals);
     } catch (err) {
       setError(err.message || 'Failed to fetch deals');
     } finally {
@@ -317,7 +324,7 @@ const Deals = () => {
       )}
 
       <Grid container spacing={3}>
-        {deals.map((deal) => (
+        {(Array.isArray(deals) ? deals : []).map((deal) => (
           <Grid item xs={12} sm={6} md={4} key={deal._id}>
             <Card sx={{ 
               borderRadius: 0, 

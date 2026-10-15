@@ -60,8 +60,17 @@ const Reports = () => {
         params.endDate = endDate;
       }
       const data = await fetchReports(params);
-      if (data.success) {
+      if (data && data.success) {
         setReportData(data);
+      } else {
+        setReportData({
+          salesSummary: { totalOrders: 0, totalRevenue: 0, totalShipping: 0, totalDiscount: 0, averageOrderValue: 0 },
+          paymentMethods: [],
+          orderStatuses: [],
+          productSales: [],
+          lowStockReport: [],
+          exchangeReport: { total: 0, pending: 0, approved: 0, rejected: 0, completed: 0, reasonsList: [] }
+        });
       }
     } catch (err) {
       console.warn("Failed to load live reports, using fallback", err);

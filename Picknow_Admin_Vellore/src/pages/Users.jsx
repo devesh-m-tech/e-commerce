@@ -79,29 +79,43 @@ const Users = () => {
     try {
       setLoading(true);
       const [usersResponse, ordersResponse] = await Promise.all([
-        userApi.getAllUsers(),
-        fetchOrders()
+        userApi.getAllUsers().catch(() => ({ success: false, users: [] })),
+        fetchOrders().catch(() => ({ success: false, orders: [] }))
       ]);
 
-      if (usersResponse.success) {
-        // Calculate delivered order count for each user
-        const userOrderCount = {};
-        ordersResponse.orders.forEach(order => {
-          if (order.user && order.orderStatus === 'DELIVERED') {
-            const userId = order.user._id || order.user;
-            userOrderCount[userId] = (userOrderCount[userId] || 0) + 1;
-          }
-        });
+      const rawOrders = Array.isArray(ordersResponse?.orders)
+        ? ordersResponse.orders
+        : Array.isArray(ordersResponse?.data)
+        ? ordersResponse.data
+        : Array.isArray(ordersResponse)
+        ? ordersResponse
+        : [];
+      
+      const rawUsers = Array.isArray(usersResponse?.users)
+        ? usersResponse.users
+        : Array.isArray(usersResponse?.data)
+        ? usersResponse.data
+        : Array.isArray(usersResponse)
+        ? usersResponse
+        : [];
 
-        // Combine user data with their delivered order count
-        const usersWithStats = usersResponse.users.map(user => ({
-          ...user,
-          orderCount: userOrderCount[user._id] || 0
-        }));
+      // Calculate delivered order count for each user
+      const userOrderCount = {};
+      rawOrders.forEach(order => {
+        if (order?.user && order?.orderStatus === 'DELIVERED') {
+          const userId = order.user._id || order.user;
+          userOrderCount[userId] = (userOrderCount[userId] || 0) + 1;
+        }
+      });
 
-        setUsers(usersWithStats);
-        setOrders(ordersResponse.orders);
-      }
+      // Combine user data with their delivered order count
+      const usersWithStats = rawUsers.map(user => ({
+        ...user,
+        orderCount: userOrderCount[user?._id] || 0
+      }));
+
+      setUsers(usersWithStats);
+      setOrders(rawOrders);
     } catch (error) {
       enqueueSnackbar(error.message || 'Failed to fetch data', { variant: 'error' });
     } finally {
@@ -126,10 +140,10 @@ const Users = () => {
     setPage(0);
   };
 
-  const filteredUsers = users.filter(user => 
-    user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.phone?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredUsers = (Array.isArray(users) ? users : []).filter(user => 
+    (user?.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()) ||
+    (user?.email || '').toLowerCase().includes((searchQuery || '').toLowerCase()) ||
+    (user?.phone || '').toLowerCase().includes((searchQuery || '').toLowerCase())
   );
 
   const handleEdit = (user) => {
@@ -219,15 +233,15 @@ const Users = () => {
   };
 
   const handleExportToExcel = () => {
-    const exportData = users.map(user => ({
-      'ID': user._id,
-      'Name': user.name,
-      'Email': user.email,
-      'Phone': user.phone,
-      'Status': user.status,
-      'Created At': new Date(user.createdAt).toLocaleDateString(),
-      'Orders Count': user.orderCount || 0,
-      'Wallet Balance': user.walletBalance || 0
+    const exportData = (Array.isArray(users) ? users : []).map(user => ({
+      'ID': user?._id || '',
+      'Name': user?.name || '',
+      'Email': user?.email || '',
+      'Phone': user?.phone || '',
+      'Status': user?.status || 'active',
+      'Created At': user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : '',
+      'Orders Count': user?.orderCount || 0,
+      'Wallet Balance': user?.walletBalance || 0
     }));
 
     const ws = XLSX.utils.json_to_sheet(exportData);

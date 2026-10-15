@@ -288,6 +288,52 @@ export const handleAdminMockRequest = (config) => {
     };
   }
 
+  // Admin users (specific route before general user)
+  if (url.includes("/admin/users") || url.includes("/admin/admins")) {
+    return {
+      success: true,
+      admins: [
+        { _id: "admin_sds_01", name: "Deepa Lakshmi", email: "admin@shrideepaalayasilks.com", role: "super_admin", status: "active", createdAt: "2026-01-15" },
+        { _id: "admin_sds_02", name: "Kavitha R", email: "inventory@shrideepaalayasilks.com", role: "manager", status: "active", createdAt: "2026-03-20" }
+      ]
+    };
+  }
+
+  // Transactions (specific route before general user)
+  if (url.includes("/transaction") || url.includes("/transactions")) {
+    return {
+      success: true,
+      data: {
+        transactions: [
+          {
+            _id: "txn_01",
+            transactionId: "TXN-781928",
+            userId: { _id: "usr_1", name: "Priya Sharma", email: "priya@example.com", contact: "9876543210" },
+            user: { name: "Priya Sharma", email: "priya@example.com" },
+            amount: 28500,
+            type: "credit",
+            status: "completed",
+            description: "Online payment for Order #ORD-98211",
+            createdAt: "2026-09-12T10:30:00Z"
+          },
+          {
+            _id: "txn_02",
+            transactionId: "TXN-781929",
+            userId: { _id: "usr_2", name: "Ananya Iyer", email: "ananya@example.com", contact: "9789012345" },
+            user: { name: "Ananya Iyer", email: "ananya@example.com" },
+            amount: 22400,
+            type: "credit",
+            status: "completed",
+            description: "Online payment for Order #ORD-98212",
+            createdAt: "2026-09-14T14:15:00Z"
+          }
+        ],
+        pagination: { currentPage: 1, totalPages: 1, totalTransactions: 2, limit: 10 },
+        summary: { totalCredit: 50900, totalDebit: 0, netAmount: 50900, totalTransactions: 2, completedTransactions: 2, pendingTransactions: 0, failedTransactions: 0 }
+      }
+    };
+  }
+
   // Users / Customers
   if (url.includes("/users") || url.includes("/user")) {
     return {
@@ -300,14 +346,175 @@ export const handleAdminMockRequest = (config) => {
     };
   }
 
-  // Admin users
-  if (url.includes("/admin/users")) {
+  // Vendors
+  if (url.includes("/vendor")) {
     return {
       success: true,
-      admins: [
-        { _id: "admin_sds_01", name: "Deepa Lakshmi", email: "admin@shrideepaalayasilks.com", role: "super_admin", status: "Active" },
-        { _id: "admin_sds_02", name: "Kavitha R", email: "inventory@shrideepaalayasilks.com", role: "manager", status: "Active" }
+      vendors: [
+        {
+          _id: "ven_sds_1",
+          vendorName: "Sri Kanchi Handlooms",
+          businessInfo: { businessName: "Sri Kanchi Handlooms Pvt Ltd", businessType: "Manufacturer" },
+          email: "contact@kanchihandlooms.in",
+          phoneNumber: "9840112233",
+          status: "active",
+          kycStatus: "verified",
+          createdAt: "2026-05-10"
+        },
+        {
+          _id: "ven_sds_2",
+          vendorName: "Varanasi Silk Weavers Guild",
+          businessInfo: { businessName: "Varanasi Silk Crafts", businessType: "Weaver Society" },
+          email: "varanasi.weavers@gmail.com",
+          phoneNumber: "9450998877",
+          status: "active",
+          kycStatus: "verified",
+          createdAt: "2026-06-01"
+        },
+        {
+          _id: "ven_sds_3",
+          vendorName: "Madurai Temple Jewels",
+          businessInfo: { businessName: "Madurai Heritage Craft Works", businessType: "Jewellery Artisan" },
+          email: "maduraijewels@crafts.com",
+          phoneNumber: "9944556677",
+          status: "active",
+          kycStatus: "verified",
+          createdAt: "2026-06-20"
+        }
       ]
+    };
+  }
+
+  // Blogs
+  if (url.includes("/blog")) {
+    return {
+      success: true,
+      blogs: [
+        {
+          _id: "blog_1",
+          title: "The Art of Kanchipuram Korvai Weaving",
+          description: "Discover the heritage of centuries-old pure silk weaving with genuine gold zari borders and temple motifs.",
+          canonicalUrl: "https://shrideepaalayasilks.com/blog/kanchipuram-korvai-art",
+          metaTitle: "Kanchipuram Silk Saree Weaving Guide",
+          metaDescription: "Learn how authentic Kanchipuram silk sarees are handwoven by master artisans.",
+          metaKeywords: "kanchipuram, silk saree, wedding, handloom",
+          image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80",
+          createdAt: "2026-07-01"
+        },
+        {
+          _id: "blog_2",
+          title: "How to Style Traditional Temple Jewellery for Weddings",
+          description: "A complete guide to pairing antique Lakshmi chokers and Kasu Malai with bridal silk sarees.",
+          canonicalUrl: "https://shrideepaalayasilks.com/blog/temple-jewellery-styling",
+          metaTitle: "Temple Jewellery Styling Guide",
+          metaDescription: "Bridal jewellery combinations for grand South Indian muhurthams.",
+          metaKeywords: "temple jewellery, kasu malai, bridal, 22k gold",
+          image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=600&q=80",
+          createdAt: "2026-07-15"
+        }
+      ]
+    };
+  }
+
+  // Combos
+  if (url.includes("/combo")) {
+    return {
+      success: true,
+      combos: [
+        {
+          _id: "combo_sds_1",
+          ccName: "Bridal Silk Saree & Temple Jewellery Royale Combo",
+          ccDescription: "Pure Kanchipuram Silk Saree paired with 22K Gold Finish Temple Lakshmi Choker Set.",
+          ccPrice: 34999,
+          ccOffer: 25,
+          ccStatus: "Active",
+          ccImage: ["https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80"],
+          ccProducts: [
+            { _id: "prod_sds_1", pName: "Crimson Red Kanchipuram Pure Silk Saree", pPrice: 28500, quantity: 1 },
+            { _id: "prod_sds_3", pName: "22K Gold Finish Temple Lakshmi Choker Set", pPrice: 8999, quantity: 1 }
+          ],
+          createdAt: "2026-08-01"
+        }
+      ]
+    };
+  }
+
+  // Deals
+  if (url.includes("/deal") || url.includes("/deals")) {
+    return {
+      success: true,
+      deals: [
+        {
+          _id: "deal_1",
+          title: "Muhurtham Silk Special — Festive 25% Off",
+          content: "Limited-period festive pricing on handwoven Kanchipuram and Banarasi bridal sarees.",
+          startDate: "2026-09-01",
+          endDate: "2026-12-31",
+          status: "active",
+          products: []
+        }
+      ]
+    };
+  }
+
+  // Exchanges
+  if (url.includes("/exchange")) {
+    return {
+      success: true,
+      exchanges: [
+        {
+          _id: "exch_01",
+          exchangeId: "EX-10023",
+          orderId: "ORD-98211",
+          customerName: "Priya Sharma",
+          customerEmail: "priya@example.com",
+          customerPhone: "9876543210",
+          reason: "Size Mismatch (Requested L)",
+          status: "PENDING",
+          exchangeOrderStatus: "REQUESTED",
+          createdAt: "2026-09-10"
+        }
+      ],
+      stats: { total: 1, pending: 1, approved: 0, rejected: 0, completed: 0 }
+    };
+  }
+
+  // Shipping / Delivery
+  if (url.includes("/delivery") || url.includes("/shipp")) {
+    return {
+      success: true,
+      data: [
+        { state: "Tamil Nadu", productdeliveryfee: 0, combodeliveryfee: 0, above500_deliveryfee: 0 },
+        { state: "Karnataka", productdeliveryfee: 50, combodeliveryfee: 80, above500_deliveryfee: 0 },
+        { state: "Andhra Pradesh", productdeliveryfee: 60, combodeliveryfee: 90, above500_deliveryfee: 0 },
+        { state: "All Other States", productdeliveryfee: 80, combodeliveryfee: 120, above500_deliveryfee: 0 }
+      ]
+    };
+  }
+
+
+
+  // Reports
+  if (url.includes("/report")) {
+    return {
+      success: true,
+      salesSummary: { totalOrders: 348, totalRevenue: 1485600, totalShipping: 0, totalDiscount: 185000, averageOrderValue: 4268 },
+      paymentMethods: [
+        { method: "UPI / QR", count: 210, amount: 890000 },
+        { method: "Cards", count: 98, amount: 450000 },
+        { method: "Net Banking", count: 40, amount: 145600 }
+      ],
+      orderStatuses: [
+        { status: "Delivered", count: 295 },
+        { status: "Processing", count: 38 },
+        { status: "Pending", count: 15 }
+      ],
+      productSales: [
+        { pName: "Crimson Red Kanchipuram Pure Silk Saree", sold: 46, revenue: 1311000 },
+        { pName: "Peacock Blue Banarasi Katan Silk Saree", sold: 29, revenue: 649600 }
+      ],
+      lowStockReport: [],
+      exchangeReport: { total: 1, pending: 1, approved: 0, rejected: 0, completed: 0, reasonsList: ["Size Mismatch"] }
     };
   }
 

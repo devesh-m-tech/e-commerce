@@ -82,11 +82,12 @@ const Vendors = () => {
     setPage(0);
   };
 
-  const filteredVendors = vendors.filter(vendor => 
-    vendor.vendorName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    vendor.businessInfo?.businessName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    vendor.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    vendor.phoneNumber?.toLowerCase().includes(searchQuery.toLowerCase())
+  const safeVendors = Array.isArray(vendors) ? vendors : [];
+  const filteredVendors = safeVendors.filter(vendor => 
+    vendor?.vendorName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    vendor?.businessInfo?.businessName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    vendor?.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    vendor?.phoneNumber?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleViewDetails = (vendor) => {

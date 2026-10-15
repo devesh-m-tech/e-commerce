@@ -6,7 +6,7 @@ const defaultAdapter = axios.getAdapter(axios.defaults.adapter);
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
-  timeout: 5000,
+  timeout: 1500,
   headers: {
     'Content-Type': 'application/json',
   },
