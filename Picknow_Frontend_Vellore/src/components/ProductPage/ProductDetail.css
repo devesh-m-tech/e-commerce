@@ -1,0 +1,764 @@
+/* ============================================================
+   SHRI DEEPAALAYA SILKS — LUXURY EDITORIAL PRODUCT DETAIL
+   ============================================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --sds-maroon: #6D1734;
+  --sds-burgundy: #4A1025;
+  --sds-gold: #C5A15A;
+  --sds-gold-dark: #A88338;
+  --sds-dark: #282321;
+  --sds-charcoal: #3D3532;
+  --sds-grey: #8C827A;
+  --sds-light: #FAF7F2;
+  --sds-ivory: #FFF9F0;
+  --sds-border: #EDE2D2;
+  --sds-border-light: #F4ECE1;
+  --sds-shadow: 0 4px 20px rgba(40, 35, 33, 0.04);
+  --sds-shadow-hover: 0 16px 36px rgba(109, 23, 52, 0.08);
+
+  /* Legacy variable mappings to prevent breaking child elements */
+  --surgical-blue: var(--sds-maroon);
+  --surgical-dark: var(--sds-dark);
+  --surgical-grey: var(--sds-grey);
+  --surgical-light: var(--sds-light);
+  --premium-orange: var(--sds-gold);
+  --surgical-shadow: var(--sds-shadow);
+  --surgical-border: var(--sds-border);
+}
+
+.ProductDetail-container {
+  padding-top: 30px;
+  padding-bottom: 60px;
+  background: var(--sds-light);
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* ── MAIN PRODUCT LAYOUT ── */
+.product-surgical-layout {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 20px 32px;
+  display: grid;
+  grid-template-columns: 560px 1fr;
+  grid-template-areas:
+    "gallery info"
+    "relocated info";
+  gap: 40px 60px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* ── GALLERY COLUMN ── */
+.gallery-column-surgical {
+  grid-area: gallery;
+  position: sticky;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: fit-content;
+}
+
+.left-side-redesign-surgical {
+  grid-area: relocated;
+}
+
+.info-pillar-surgical {
+  grid-area: info;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 640px;
+}
+
+.gallery-main-row-surgical {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+/* Thumbs Pillar */
+.thumbs-vertical-pillar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 76px;
+  flex-shrink: 0;
+}
+
+.thumb-cell {
+  width: 76px;
+  height: 95px;
+  border-radius: 2px;
+  border: 1px solid var(--sds-border);
+  cursor: pointer;
+  background: #ffffff;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 2px;
+}
+
+.thumb-cell.active {
+  border-color: var(--sds-maroon);
+  box-shadow: 0 0 0 1px var(--sds-maroon);
+}
+
+.thumb-cell:hover {
+  border-color: var(--sds-gold);
+}
+
+.thumb-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Main Image Stage */
+.main-stage-surgical {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 2px;
+  border: 1px solid var(--sds-border);
+  aspect-ratio: 3 / 4;
+  max-width: 480px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--sds-shadow);
+  cursor: zoom-in;
+}
+
+.main-stage-surgical img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.main-stage-surgical:hover img {
+  transform: scale(1.06);
+}
+
+.main-stage-surgical.single-image {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.aesthetic-zoom-label {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 6px 12px;
+  border-radius: 2px;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--sds-dark);
+  border: 1px solid var(--sds-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  letter-spacing: 1px;
+  z-index: 10;
+}
+
+/* ── PRODUCT INFORMATION PILLAR ── */
+.brand-micro-tag {
+  font-family: 'Karla', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--sds-maroon);
+  letter-spacing: 1.5px;
+  background: var(--sds-ivory);
+  padding: 5px 12px;
+  border-radius: 2px;
+  width: fit-content;
+  border: 1px solid var(--sds-border);
+}
+
+.hero-title-surgical {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: var(--sds-dark);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.rating-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--sds-gold);
+}
+
+.reviews-count {
+  color: var(--sds-grey);
+  font-family: 'Karla', sans-serif;
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+/* ── LUXURY PRICING ISLAND ── */
+.pricing-island-surgical {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 20px 24px;
+  background: #ffffff;
+  border: 1px solid var(--sds-border);
+  border-radius: 2px;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(40, 35, 33, 0.02);
+}
+
+.surgical-now {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--sds-maroon);
+  letter-spacing: -0.5px;
+}
+
+.surgical-was {
+  font-size: 1.15rem;
+  color: var(--sds-grey);
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.surgical-save {
+  background: var(--sds-maroon);
+  color: var(--sds-ivory);
+  font-family: 'Karla', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 2px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Delivery Tag */
+.delivery-info-tag {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: var(--sds-ivory);
+  border: 1px solid var(--sds-border);
+  border-radius: 2px;
+  width: 100%;
+  color: var(--sds-dark);
+  font-family: 'Karla', sans-serif;
+  font-size: 0.825rem;
+  font-weight: 600;
+}
+
+.delivery-info-tag svg {
+  color: var(--sds-maroon);
+  flex-shrink: 0;
+}
+
+.delivery-info-tag .free-tag {
+  color: #166534;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* ── VARIANT SECTIONS ── */
+.variant-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.variant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.v-label {
+  font-family: 'Karla', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--sds-dark);
+}
+
+.v-selected {
+  font-family: 'Karla', sans-serif;
+  font-size: 0.8rem;
+  color: var(--sds-grey);
+  font-weight: 500;
+}
+
+.v-bubbles-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.v-bubble {
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--sds-border);
+  border-radius: 2px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+  background: #ffffff;
+  position: relative;
+}
+
+.v-bubble:hover {
+  border-color: var(--sds-maroon);
+  background: var(--sds-ivory);
+}
+
+.v-bubble.active {
+  border-color: var(--sds-maroon);
+  background: var(--sds-maroon);
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(109, 23, 52, 0.25);
+}
+
+.v-name {
+  font-family: 'Karla', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.v-price {
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.v-stock {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #166534;
+}
+
+.v-bubble.active .v-stock {
+  color: #fef08a;
+}
+
+/* ── ACTION CONSOLE (BUTTONS) ── */
+.action-console-surgical {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #ffffff;
+  border: 1px solid var(--sds-border);
+  padding: 20px;
+  border-radius: 2px;
+  width: 100%;
+  box-shadow: var(--sds-shadow);
+}
+
+.action-row-upper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.action-row-lower {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.surgical-stepper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 6px 12px;
+  background: var(--sds-light);
+  border: 1px solid var(--sds-border);
+  border-radius: 2px;
+}
+
+.surgical-stepper button {
+  width: 32px;
+  height: 32px;
+  border-radius: 2px;
+  border: 1px solid var(--sds-border);
+  background: #ffffff;
+  color: var(--sds-dark);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.surgical-stepper button:hover:not(:disabled) {
+  background: var(--sds-maroon);
+  color: #ffffff;
+  border-color: var(--sds-maroon);
+}
+
+.qty-value {
+  font-family: 'Karla', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  min-width: 24px;
+  text-align: center;
+  color: var(--sds-dark);
+}
+
+/* Primary Add to Cart Button */
+.atc-button-surgical {
+  height: 52px !important;
+  flex: 1;
+  padding: 0 24px;
+  background: var(--sds-dark);
+  color: #ffffff;
+  border: none;
+  border-radius: 2px;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(40, 35, 33, 0.15);
+}
+
+.atc-button-surgical:hover:not(:disabled) {
+  background: var(--sds-maroon);
+  box-shadow: 0 6px 20px rgba(109, 23, 52, 0.3);
+  transform: translateY(-1px);
+}
+
+.atc-button-surgical.added {
+  background: #166534;
+}
+
+/* Buy Now Button */
+.buy-now-button-surgical {
+  height: 52px !important;
+  flex: 1;
+  padding: 0 24px;
+  background: var(--sds-gold);
+  color: var(--sds-dark);
+  border: none;
+  border-radius: 2px;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(197, 161, 90, 0.25);
+}
+
+.buy-now-button-surgical:hover {
+  background: var(--sds-gold-dark);
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(168, 131, 56, 0.35);
+  transform: translateY(-1px);
+}
+
+/* ── ATTRIBUTE SPECIFICATION GRID (SAREES & JEWELLERY) ── */
+.sds-saree-spec-grid {
+  margin-top: 24px;
+  background: #ffffff;
+  border: 1px solid var(--sds-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.sds-spec-header {
+  background: var(--sds-ivory);
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--sds-border);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--sds-maroon);
+  letter-spacing: 0.5px;
+}
+
+.sds-spec-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--sds-border-light);
+  font-family: 'Karla', sans-serif;
+  font-size: 0.85rem;
+}
+
+.sds-spec-row:last-child {
+  border-bottom: none;
+}
+
+.sds-spec-label {
+  font-weight: 700;
+  color: var(--sds-charcoal);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.sds-spec-value {
+  color: var(--sds-dark);
+  font-weight: 500;
+}
+
+/* ── TRUST & AUTHENTICITY BADGES ── */
+.trust-badges-grid-surgical {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.trust-badge-card {
+  padding: 14px 12px;
+  background: #ffffff;
+  border: 1px solid var(--sds-border);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+}
+
+.trust-badge-card svg {
+  color: var(--sds-maroon);
+  width: 22px;
+  height: 22px;
+}
+
+.trust-badge-title {
+  font-family: 'Karla', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--sds-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.trust-badge-desc {
+  font-size: 0.7rem;
+  color: var(--sds-grey);
+}
+
+/* ── TABS & SPECIFICATIONS ── */
+.details-tabs {
+  margin-top: 30px;
+  background: #ffffff;
+  border: 1px solid var(--sds-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.tab-nav {
+  display: flex;
+  background: var(--sds-ivory);
+  border-bottom: 1px solid var(--sds-border);
+}
+
+.tab-link {
+  padding: 16px 28px;
+  font-family: 'Karla', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--sds-grey);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.tab-link:hover {
+  color: var(--sds-maroon);
+}
+
+.tab-link.active {
+  color: var(--sds-maroon);
+  background: #ffffff;
+  border-bottom: 2px solid var(--sds-maroon);
+}
+
+.tab-pane {
+  padding: 28px 24px;
+}
+
+.product-description-text {
+  font-family: 'Karla', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--sds-charcoal);
+}
+
+.read-more-btn {
+  margin-top: 12px;
+  background: none;
+  border: none;
+  color: var(--sds-maroon);
+  font-family: 'Karla', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Specs Grid */
+.specs-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+.spec-item {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--sds-border-light);
+  font-family: 'Karla', sans-serif;
+  font-size: 0.875rem;
+}
+
+.spec-item:nth-child(even) {
+  background: var(--sds-light);
+}
+
+.spec-item:last-child {
+  border-bottom: none;
+}
+
+.spec-label {
+  font-weight: 700;
+  color: var(--sds-dark);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.spec-value {
+  color: var(--sds-charcoal);
+}
+
+/* Action Button Utilities */
+.action-buttons-group-surgical {
+  display: flex;
+  gap: 10px;
+}
+
+.wishlist-circle-btn,
+.share-circle-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 2px;
+  border: 1px solid var(--sds-border);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--sds-dark);
+  transition: all 0.2s ease;
+}
+
+.wishlist-circle-btn:hover,
+.share-circle-btn:hover {
+  border-color: var(--sds-maroon);
+  color: var(--sds-maroon);
+  background: var(--sds-ivory);
+}
+
+.wishlist-circle-btn.active {
+  border-color: var(--sds-maroon);
+  color: var(--sds-maroon);
+}
+
+/* Mobile Sticky Bar */
+.mobile-sticky-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(8px);
+  padding: 12px 16px;
+  border-top: 1px solid var(--sds-border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 1000;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.mobile-action-pill-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 2px;
+  border: 1px solid var(--sds-border);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sds-dark);
+}
+
+.reviews-mini-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.review-micro-item {
+  padding: 14px 16px;
+  background: var(--sds-light);
+  border: 1px solid var(--sds-border-light);
+  border-radius: 2px;
+}
+
+.review-text {
+  margin-top: 6px;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.85rem;
+  color: var(--sds-charcoal);
+  line-height: 1.5;
+}

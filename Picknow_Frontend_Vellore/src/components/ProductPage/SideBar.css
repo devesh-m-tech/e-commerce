@@ -1,0 +1,273 @@
+/* ============================================================
+   SHRI DEEPAALAYA SILKS — Catalog Sidebar Filter Styles
+   Editorial Luxury Design Standard (Maroon, Gold, Ivory, Square Corners)
+   ============================================================ */
+
+.sidebar {
+  background: #FCFBF7;
+  height: 100%;
+  font-family: var(--font-sans);
+  color: #282321;
+}
+
+.sidebar-header-premium {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid #EDE2D2;
+}
+
+.sidebar-header-premium h4 {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1A1615;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.reset-mini-link {
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6D1734;
+  background: #FFF8EC;
+  border: 1px solid #C5A15A;
+  padding: 3px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reset-mini-link:hover {
+  background: #6D1734;
+  color: #FFFFFF;
+}
+
+/* ── Filter Sections ── */
+.sidebar-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #F0EAE1;
+}
+
+.sidebar-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.filter-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-size: 0.92rem;
+  color: #1A1615;
+  cursor: pointer;
+  user-select: none;
+  letter-spacing: 0.01em;
+}
+
+.filter-title:hover {
+  color: #6D1734;
+}
+
+/* ── Active Filters ── */
+.active-filters {
+  background: #FFF9F0;
+  border: 1px solid #C5A15A;
+  border-radius: 2px;
+  padding: 8px 10px;
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.active-filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #FFFFFF;
+  color: #6D1734;
+  padding: 3px 8px;
+  border-radius: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid #EDE2D2;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.active-filter-tag:hover {
+  background: #6D1734;
+  color: #FFFFFF;
+  border-color: #6D1734;
+}
+
+/* ── Luxury Reset Button ── */
+.sidebar-action-footer {
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #EDE2D2;
+}
+
+.luxury-reset-btn {
+  width: 100%;
+  padding: 11px;
+  background: #FFFFFF;
+  border: 1px solid #6D1734;
+  border-radius: 2px;
+  color: #6D1734;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(109, 23, 52, 0.08);
+}
+
+.luxury-reset-btn:hover {
+  background: #6D1734;
+  color: #FFFFFF;
+  border-color: #C5A15A;
+  box-shadow: 0 4px 14px rgba(109, 23, 52, 0.22);
+  transform: translateY(-1px);
+}
+
+.reset-icon-svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.5s ease;
+}
+
+.luxury-reset-btn:hover .reset-icon-svg {
+  transform: rotate(180deg);
+}
+
+/* ── Category Tree / List ── */
+.category-filter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.category-filter-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #4A423D;
+  transition: all 0.2s ease;
+}
+
+.category-filter-item:hover {
+  background-color: #FFF8EC;
+  color: #6D1734;
+}
+
+.category-filter-item.active {
+  background-color: #6D1734;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+/* ── Ratings & Stars ── */
+.rating {
+  color: #C5A15A;
+  margin-right: 5px;
+}
+
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.star-rating:hover {
+  background-color: #FFF8EC;
+}
+
+.star-rating .count {
+  color: #8C8075;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+/* ── Price Slider Luxury Overrides (MUI) ── */
+.sidebar .MuiSlider-root {
+  color: #6D1734 !important;
+}
+
+.sidebar .MuiSlider-thumb {
+  border-radius: 2px !important;
+  background-color: #6D1734 !important;
+  border: 2px solid #C5A15A !important;
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.sidebar .MuiSlider-track {
+  background-color: #6D1734 !important;
+  border: none !important;
+}
+
+.sidebar .MuiSlider-rail {
+  background-color: #EDE2D2 !important;
+  opacity: 1 !important;
+}
+
+/* Checkbox luxury overrides */
+.sidebar .MuiCheckbox-root {
+  color: #C5A15A !important;
+  padding: 4px 8px !important;
+}
+
+.sidebar .MuiCheckbox-root.Mui-checked {
+  color: #6D1734 !important;
+}
+
+.sidebar .MuiFormControlLabel-label {
+  font-family: var(--font-sans) !important;
+  font-size: 13px !important;
+  color: #38322E !important;
+}
+
+/* MUI Select overrides */
+.sidebar .MuiOutlinedInput-root {
+  border-radius: 2px !important;
+  background-color: #FFFFFF !important;
+  font-size: 12.5px !important;
+}
+
+.sidebar .MuiOutlinedInput-notchedOutline {
+  border-color: #EDE2D2 !important;
+}
+
+.sidebar .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #C5A15A !important;
+}
+
+.sidebar .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #6D1734 !important;
+}

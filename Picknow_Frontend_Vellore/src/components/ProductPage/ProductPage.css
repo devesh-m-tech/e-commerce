@@ -1,0 +1,387 @@
+/* ============================================================
+   SHRI DEEPAALAYA SILKS — All Products Page Styles
+   Editorial Luxury Design Standard (Maroon, Gold, Ivory, Square Corners)
+   ============================================================ */
+
+.sds-products-page {
+  min-height: 100vh;
+  background-color: #FAF8F5;
+  background-image: radial-gradient(circle at 50% 15%, #FFFFFF 0%, #FAF8F5 70%, #F5F1E8 100%);
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ── 1. Catalog Editorial Hero Banner ── */
+.sds-catalog-hero {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #ECE7DE;
+  padding: clamp(2rem, 3.5vw, 3rem) var(--container-px) clamp(1.75rem, 3vw, 2.5rem);
+  text-align: center;
+  position: relative;
+}
+
+.sds-catalog-hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #C5A15A 50%, transparent);
+}
+
+.sds-breadcrumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8C8075;
+  margin-bottom: 0.85rem;
+}
+
+.sds-breadcrumb a {
+  color: #6D1734;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.sds-breadcrumb a:hover {
+  color: #4A1025;
+  text-decoration: underline;
+}
+
+.sds-breadcrumb .current {
+  color: #282321;
+  font-weight: 700;
+}
+
+.sds-catalog-label {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #C5A15A;
+  margin-bottom: 0.5rem;
+}
+
+.sds-catalog-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: #1A1615;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  margin: 0 0 0.75rem;
+}
+
+.sds-catalog-subtitle {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(0.95rem, 1.4vw, 1.12rem);
+  color: #554D48;
+  max-width: 680px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* ── 2. Layout & Container ── */
+.product-layout {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  z-index: 1;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  align-items: flex-start;
+  gap: 2rem;
+  padding: 2rem var(--container-px) 4rem;
+  box-sizing: border-box;
+}
+
+/* ── 3. Filter Sidebar ── */
+.filter-sidebar {
+  background: #FCFBF7 !important;
+  padding: 1.5rem 1.25rem;
+  border-radius: 2px !important;
+  border: 1px solid #EDE2D2 !important;
+  box-shadow: 0 4px 16px rgba(40, 35, 33, 0.05);
+  width: 260px !important;
+  position: sticky;
+  top: calc(var(--nav-height, 72px) + 20px);
+  height: fit-content;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.filter-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.filter-sidebar::-webkit-scrollbar-thumb {
+  background: #EDE2D2;
+  border-radius: 2px;
+}
+
+/* Mobile Sidebar Drawer */
+@media (max-width: 1024px) {
+  .filter-sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    height: 100vh;
+    max-height: 100vh;
+    width: 320px !important;
+    max-width: 85vw;
+    z-index: 2100;
+    border-radius: 0 !important;
+    transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    background: #FCFBF7 !important;
+  }
+
+  .filter-sidebar.open {
+    left: 0;
+  }
+}
+
+/* Mobile Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(26, 22, 21, 0.6);
+  backdrop-filter: blur(3px);
+  z-index: 2050;
+}
+
+/* ── 4. Products Main Container ── */
+.products-container {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── 5. Toolbar / Products Header ── */
+.products-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background-color: #FFFFFF;
+  border: 1px solid #EDE2D2;
+  border-radius: 2px;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 2px 8px rgba(40, 35, 33, 0.04);
+}
+
+.header-left-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.products-count {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: #4A423D;
+  letter-spacing: 0.02em;
+}
+
+.mobile-toggle {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background-color: #FFF9F0;
+  border: 1px solid #C5A15A;
+  border-radius: 2px;
+  color: #6D1734;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mobile-toggle:hover {
+  background-color: #6D1734;
+  color: #FFFFFF;
+}
+
+@media (max-width: 1024px) {
+  .mobile-toggle {
+    display: inline-flex;
+  }
+}
+
+.sds-sort-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sds-sort-label {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8C8075;
+}
+
+.sds-sort-select {
+  padding: 7px 28px 7px 12px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #282321;
+  background-color: #FCFBF7;
+  border: 1px solid #EDE2D2;
+  border-radius: 2px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236D1734' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: border-color 0.2s ease;
+}
+
+.sds-sort-select:focus,
+.sds-sort-select:hover {
+  border-color: #6D1734;
+  outline: none;
+}
+
+/* ── 6. Products Grid ── */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.75rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 768px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+/* ── 7. Empty State ── */
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 60px 24px;
+  text-align: center;
+  background-color: #FFFFFF;
+  border: 1px solid #EDE2D2;
+  border-radius: 2px;
+}
+
+.empty-state h3 {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: #1A1615;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  color: #7A6E65;
+  margin-bottom: 1.5rem;
+}
+
+.empty-state-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  background-color: #6D1734;
+  color: #FFFFFF;
+  border: 1px solid #6D1734;
+  border-radius: 2px;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.empty-state-reset-btn:hover {
+  background-color: #4A1025;
+  border-color: #C5A15A;
+}
+
+/* ── 8. Pagination ── */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #EDE2D2;
+}
+
+.pagination-button {
+  min-width: 38px;
+  height: 38px;
+  padding: 0 10px;
+  background-color: #FFFFFF;
+  border: 1px solid #EDE2D2;
+  border-radius: 2px;
+  color: #282321;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-button:hover:not(.disabled) {
+  border-color: #C5A15A;
+  color: #6D1734;
+  background-color: #FFF9F0;
+}
+
+.pagination-button.active {
+  background-color: #6D1734;
+  border-color: #6D1734;
+  color: #FFFFFF;
+}
+
+.pagination-button.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-ellipsis {
+  padding: 0 4px;
+  color: #8C8075;
+}

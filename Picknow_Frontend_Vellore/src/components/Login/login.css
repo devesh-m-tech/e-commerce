@@ -1,0 +1,310 @@
+/* ============================================================
+   SHRI DEEPAALAYA SILKS — Authentication Page Styles
+   Editorial Luxury Design Standard (Maroon, Gold, Ivory, Square Corners)
+   ============================================================ */
+
+.sds-auth-page {
+  min-height: calc(100vh - var(--header-total-height, 108px));
+  min-height: calc(100dvh - var(--header-total-height, 108px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FBF9F5;
+  background-image: radial-gradient(circle at 50% 25%, #FFFFFF 0%, #FAF8F2 70%, #F3EEE5 100%);
+  padding: 3rem var(--container-px);
+  position: relative;
+  box-sizing: border-box;
+}
+
+.sds-auth-card {
+  width: 100%;
+  max-width: 440px;
+  background-color: #FFFFFF;
+  border: 1px solid #C5A15A;
+  box-shadow: 0 16px 48px rgba(40, 35, 33, 0.12);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.sds-auth-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 20px 0;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #6D1734;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.sds-auth-back-link:hover {
+  color: #4A1025;
+  text-decoration: underline;
+}
+
+.sds-auth-header {
+  text-align: center;
+  padding: 18px 24px 14px;
+}
+
+.sds-auth-logo {
+  display: inline-flex;
+  justify-content: center;
+  margin-bottom: 6px;
+  text-decoration: none;
+}
+
+.sds-auth-subtitle {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 12.5px;
+  color: #6E6259;
+  letter-spacing: 0.03em;
+  margin: 0;
+}
+
+/* ── Tab Switcher ── */
+.sds-auth-tabs {
+  display: flex;
+  border-bottom: 1px solid #EDE2D2;
+  background-color: #FCFBF7;
+}
+
+.sds-auth-tab {
+  flex: 1;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8C8075;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sds-auth-tab:hover {
+  color: #6D1734;
+}
+
+.sds-auth-tab.active {
+  color: #1A1615;
+  border-bottom-color: #6D1734;
+  background-color: #FFFFFF;
+}
+
+/* ── Form Body ── */
+.sds-auth-body {
+  padding: 24px 28px 28px;
+  background-color: #FFFFFF;
+}
+
+/* Demo Credentials Fast-Fill Card */
+.sds-demo-credentials-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  background-color: #FFF8EC;
+  border: 1px dashed #C5A15A;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sds-demo-credentials-banner:hover {
+  background-color: #FEF3DF;
+  border-color: #6D1734;
+  transform: translateY(-1px);
+}
+
+.sds-demo-label {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6D1734;
+  margin-bottom: 2px;
+}
+
+.sds-demo-email {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  color: #554A43;
+}
+
+/* ── Inputs ── */
+.sds-input-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.sds-input-wrapper {
+  position: relative;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.sds-input-icon {
+  position: absolute;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.sds-input-wrapper input {
+  width: 100%;
+  padding: 12px 14px 12px 38px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  color: #282321;
+  background-color: #FFFFFF;
+  border: 1px solid #EDE2D2;
+  border-radius: 2px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.sds-input-wrapper input:focus {
+  outline: none;
+  border-color: #6D1734;
+  box-shadow: 0 0 0 1px #6D1734;
+}
+
+.sds-input-wrapper input::placeholder {
+  color: #9C9189;
+}
+
+.sds-pwd-toggle {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: #8C8075;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.sds-pwd-toggle:hover {
+  color: #6D1734;
+}
+
+/* ── Actions Row ── */
+.sds-auth-actions-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -4px;
+  margin-bottom: 18px;
+}
+
+.sds-auth-link {
+  background: transparent;
+  border: none;
+  color: #6D1734;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.sds-auth-link:hover {
+  color: #4A1025;
+  text-decoration: underline;
+}
+
+/* ── Primary Action Button ── */
+.sds-btn-editorial-auth {
+  width: 100%;
+  padding: 14px;
+  background-color: #211E1D;
+  color: #FFFFFF;
+  border: 1px solid #211E1D;
+  border-radius: 2px;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(33, 30, 29, 0.16);
+}
+
+.sds-btn-editorial-auth:hover {
+  background-color: #6D1734;
+  border-color: #C5A15A;
+  box-shadow: 0 6px 20px rgba(109, 23, 52, 0.25);
+}
+
+.sds-btn-editorial-auth:disabled {
+  background-color: #E5DFD7;
+  color: #A89F96;
+  border-color: #E5DFD7;
+  cursor: not-allowed;
+}
+
+.sds-auth-terms {
+  margin-top: 14px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: #7A6E65;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.sds-auth-notice {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: #554A43;
+  margin-bottom: 18px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.sds-auth-switch-link {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.sds-auth-switch-link button {
+  background: transparent;
+  border: none;
+  color: #6D1734;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sds-auth-switch-link button:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .sds-input-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .sds-auth-body {
+    padding: 20px 18px 24px;
+  }
+}
