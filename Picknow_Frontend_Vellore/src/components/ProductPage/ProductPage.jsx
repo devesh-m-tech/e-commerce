@@ -384,31 +384,32 @@ const ProductPage = () => {
           if (query) {
             // Search for products by query term
             const response = await productApi.searchProducts(query);
-            if (response.success && Array.isArray(response.products)) {
-              const activeProducts = response.products.filter(
-                (product) => product.pStatus === "active"
+            const rawProducts = response.products || response.results?.products || [];
+            if (response.success && Array.isArray(rawProducts)) {
+              const activeProducts = rawProducts.filter(
+                (product) => !product.pStatus || product.pStatus.toLowerCase() === "active"
               );
 
               if (activeProducts.length > 0) {
-                // Fetch variants for each active product
+                // Use already populated variants or fetch if empty
                 const productsWithVariants = await Promise.all(
                   activeProducts.map(async (product) => {
-                    try {
-                      const variantResponse = await productApi.getProductVariants(
-                        product._id
+                    if (Array.isArray(product.variants) && product.variants.length > 0 && typeof product.variants[0] === 'object') {
+                      const activeVars = product.variants.filter(
+                        (v) => !v.status || v.status.toLowerCase() === "active"
                       );
+                      return { ...product, variants: activeVars };
+                    }
+                    try {
+                      const variantResponse = await productApi.getProductVariants(product._id);
                       if (variantResponse.success && variantResponse.variants) {
                         const activeVariants = variantResponse.variants.filter(
-                          (variant) => variant.status === "active"
+                          (variant) => !variant.status || variant.status.toLowerCase() === "active"
                         );
-                        return {
-                          ...product,
-                          variants: activeVariants,
-                        };
+                        return { ...product, variants: activeVariants };
                       }
                       return product;
                     } catch (error) {
-                      console.error("Error fetching variants:", error);
                       return product;
                     }
                   })
@@ -438,13 +439,13 @@ const ProductPage = () => {
                 setPage(1);
               }
             }
-          } else if (subcategoryId || categoryId) {
-            // Fetch products by subcategory or category ID
+          } else if (subcategoryId || categoryId || category) {
+            // Fetch products by subcategory or category ID / name
             let response;
             if (subcategoryId) {
               response = await productApi.getProductsBySubCategory(subcategoryId);
             } else {
-              response = await productApi.getProductsByCategory(categoryId);
+              response = await productApi.getProductsByCategory(categoryId || category);
             }
 
             if (response.success && Array.isArray(response.products)) {
@@ -1035,29 +1036,30 @@ const ProductPage = () => {
     // Deduplicate products by pName first
     filtered = deduplicateProductsByName(filtered);
 
-    // Only show active products
-    filtered = filtered.filter((product) => product.pStatus === "Active");
+    // Only show active products (case-insensitive check)
+    filtered = filtered.filter((product) => !product.pStatus || product.pStatus.toLowerCase() === "active");
 
-    // Only show products with variants and at least one active variant
+    // Only show products with valid price or active variants
     filtered = filtered.filter((product) => {
       if (!product.variants || product.variants.length === 0) {
-        return false;
+        return product.pPrice !== undefined;
       }
       const activeVariants = product.variants.filter(
-        (v) => v.status === "active" || v.status === "Active"
+        (v) => !v.status || v.status.toLowerCase() === "active"
       );
       return activeVariants.length > 0;
     });
 
-    // Apply category filter - handle both exact matches and nested categories
-    if (category !== "all") {
+    // Apply category filter - handle exact matches, subcategories, and nested categories
+    if (category && category !== "all") {
       filtered = filtered.filter((product) => {
-        // Check if product category matches exactly or is a subcategory
         const productCategory = product.pCategory?.toLowerCase() || "";
+        const productSubCat = product.pSubCategory?.toLowerCase() || "";
         const selectedCategoryLower = category.toLowerCase();
 
         return (
           productCategory === selectedCategoryLower ||
+          productSubCat === selectedCategoryLower ||
           productCategory.startsWith(`${selectedCategoryLower}/`) ||
           productCategory.includes(`/${selectedCategoryLower}/`) ||
           productCategory.endsWith(`/${selectedCategoryLower}`)
@@ -1070,19 +1072,25 @@ const ProductPage = () => {
       filtered = filtered.filter((product) => brands.includes(product.pBrand));
     }
 
-    // Apply price filter - consider variant prices if available
-    filtered = filtered.filter((product) => {
-      const productPrice = product.pPrice;
-      const variantPrices =
-        product.variants
-          ?.filter((v) => v.status === "active" || v.status === "Active")
-          .map((v) => v.price) || [];
+    // Apply price filter - consider variant prices and base product price
+    if (price && price.length === 2) {
+      filtered = filtered.filter((product) => {
+        const productPrice = Number(product.pPrice) || 0;
+        const variantPrices =
+          product.variants
+            ?.filter((v) => !v.status || v.status.toLowerCase() === "active")
+            .map((v) => Number(v.price) || productPrice) || [];
 
-      const minPrice = Math.min(productPrice, ...variantPrices);
-      const maxPrice = Math.max(productPrice, ...variantPrices);
+        const allPrices = [productPrice, ...variantPrices].filter((p) => !isNaN(p) && p > 0);
+        if (allPrices.length === 0) return true;
+        const minPrice = Math.min(...allPrices);
+        const maxPrice = Math.max(...allPrices);
 
-      return minPrice >= price[0] && maxPrice <= price[1];
-    });
+        return (minPrice >= price[0] && minPrice <= price[1]) ||
+               (maxPrice >= price[0] && maxPrice <= price[1]) ||
+               (minPrice <= price[0] && maxPrice >= price[1]);
+      });
+    }
 
     // Apply rating filter
     if (rating) {
@@ -1094,7 +1102,7 @@ const ProductPage = () => {
               (sum, item) => sum + Number(item.rating),
               0
             ) / totalRatings
-            : 0;
+            : (Number(product.pRating) || 0);
         return avgRating >= rating;
       });
     }

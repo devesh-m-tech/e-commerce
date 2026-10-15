@@ -64,6 +64,18 @@ const productSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
+    lowStockThreshold: {
+      type: Number,
+      default: 10,
+    },
+    pSku: {
+      type: String,
+      default: "",
+    },
+    pVideo: {
+      type: String,
+      default: "",
+    },
     pQuantity: {
       type: Number,
       required: true,

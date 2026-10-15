@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
-const Order = mongoose.model("Order");
+import { Order } from "../models/order.js";
+import productModel from "../models/Product.js";
+import { User } from "../models/User.js";
+import Exchange from "../models/Exchange.js";
 
 export const getIncomeStats = async (req, res) => {
     try {
@@ -243,7 +246,209 @@ export const getSalesTrend = async (req, res) => {
             message: 'Error fetching sales trend'
         });
     }
-    
+};
+
+// Summary of total orders, today's orders & sales, customers, products, pending orders, pending exchange requests, and low-stock products (Requirement 2.A)
+export const getAdminDashboardSummary = async (req, res) => {
+    try {
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const [
+            totalOrders,
+            todayOrdersCount,
+            todayOrdersList,
+            totalCustomers,
+            totalProducts,
+            pendingOrders,
+            pendingExchanges,
+            lowStockProducts,
+            recentOrders,
+            recentExchanges
+        ] = await Promise.all([
+            Order.countDocuments(),
+            Order.countDocuments({ createdAt: { $gte: startOfDay } }),
+            Order.find({
+                createdAt: { $gte: startOfDay },
+                $or: [{ paymentStatus: 'COMPLETED' }, { paymentStatus: 'PAID' }]
+            }),
+            User.countDocuments(),
+            productModel.countDocuments(),
+            Order.countDocuments({ orderStatus: { $in: ['ORDER PLACED', 'PENDING'] } }),
+            Exchange.countDocuments({ status: 'PENDING' }),
+            productModel.find({
+                $expr: {
+                    $lte: ['$pStock', { $ifNull: ['$lowStockThreshold', 10] }]
+                }
+            }).select('pName pSku pStock lowStockThreshold pImage pPrice').sort({ pStock: 1 }).limit(10),
+            Order.find().sort({ createdAt: -1 }).limit(5).populate('user', 'name email'),
+            Exchange.find({ status: 'PENDING' }).sort({ createdAt: -1 }).limit(5)
+        ]);
+
+        const todaySales = todayOrdersList.reduce((sum, o) => sum + (Number(o.finalAmount) || 0), 0);
+
+        res.status(200).json({
+            success: true,
+            summary: {
+                totalOrders,
+                todayOrders: todayOrdersCount,
+                todaySales: Number(todaySales.toFixed(2)),
+                totalCustomers,
+                totalProducts,
+                pendingOrders,
+                pendingExchanges,
+                lowStockCount: lowStockProducts.length,
+                lowStockProducts,
+                recentOrders,
+                recentExchanges
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching dashboard summary:', error);
+        res.status(500).json({ success: false, message: 'Error fetching dashboard summary' });
+    }
+};
+
+// Comprehensive Reports (Requirement 2.G: Daily, weekly, monthly, yearly sales, product-wise sales, stock, payment methods, order and exchange reports)
+export const getComprehensiveReports = async (req, res) => {
+    try {
+        const { range = 'month', startDate: customStart, endDate: customEnd } = req.query;
+
+        const now = new Date();
+        let startDate;
+        let endDate = customEnd ? new Date(customEnd) : new Date();
+
+        if (customStart) {
+            startDate = new Date(customStart);
+        } else if (range === 'today') {
+            startDate = new Date();
+            startDate.setHours(0, 0, 0, 0);
+        } else if (range === 'week') {
+            startDate = new Date();
+            startDate.setDate(startDate.getDate() - 7);
+            startDate.setHours(0, 0, 0, 0);
+        } else if (range === 'year') {
+            startDate = new Date();
+            startDate.setMonth(0, 1);
+            startDate.setHours(0, 0, 0, 0);
+        } else {
+            // Default month
+            startDate = new Date();
+            startDate.setMonth(startDate.getMonth() - 1);
+            startDate.setHours(0, 0, 0, 0);
+        }
+
+        const dateQuery = { createdAt: { $gte: startDate, $lte: endDate } };
+
+        // 1. Fetch matching orders
+        const orders = await Order.find(dateQuery).populate('user', 'name email mobile');
+
+        let totalRevenue = 0;
+        let totalShipping = 0;
+        let totalDiscount = 0;
+        const paymentMethodCounts = {};
+        const orderStatusCounts = {};
+        const productSalesMap = {};
+
+        orders.forEach(order => {
+            if (['CONFIRMED', 'DELIVERED', 'SHIPPED', 'DISPATCHED'].includes(order.orderStatus)) {
+                totalRevenue += Number(order.finalAmount) || 0;
+                totalShipping += Number(order.shippingCharges) || 0;
+                totalDiscount += Number(order.discount) || 0;
+            }
+
+            // Payment method stats
+            const method = order.paymentMethod || 'UNKNOWN';
+            if (!paymentMethodCounts[method]) {
+                paymentMethodCounts[method] = { count: 0, amount: 0 };
+            }
+            paymentMethodCounts[method].count += 1;
+            paymentMethodCounts[method].amount += Number(order.finalAmount) || 0;
+
+            // Order status stats
+            const status = order.orderStatus || 'ORDER PLACED';
+            orderStatusCounts[status] = (orderStatusCounts[status] || 0) + 1;
+
+            // Product sales stats
+            if (order.items && Array.isArray(order.items)) {
+                order.items.forEach(item => {
+                    const pId = item.product?._id ? item.product._id.toString() : item.product?.toString() || 'unknown';
+                    const name = item.product?.pName || item.name || 'Product';
+                    if (!productSalesMap[pId]) {
+                        productSalesMap[pId] = {
+                            id: pId,
+                            name,
+                            quantity: 0,
+                            revenue: 0,
+                        };
+                    }
+                    productSalesMap[pId].quantity += Number(item.quantity) || 1;
+                    productSalesMap[pId].revenue += (Number(item.price) || 0) * (Number(item.quantity) || 1);
+                });
+            }
+        });
+
+        // 2. Fetch Low Stock Report
+        const lowStockProducts = await productModel.find({
+            $expr: {
+                $lte: ['$pStock', { $ifNull: ['$lowStockThreshold', 10] }]
+            }
+        }).select('pName pSku pStock lowStockThreshold pPrice pCategory');
+
+        // 3. Fetch Exchange Report
+        const exchanges = await Exchange.find(dateQuery);
+        const exchangeStats = {
+            total: exchanges.length,
+            pending: exchanges.filter(e => e.status === 'PENDING').length,
+            approved: exchanges.filter(e => e.status === 'APPROVED').length,
+            rejected: exchanges.filter(e => e.status === 'REJECTED').length,
+            completed: exchanges.filter(e => e.status === 'COMPLETED').length,
+            reasons: {}
+        };
+        exchanges.forEach(e => {
+            const r = e.reason || 'Other';
+            exchangeStats.reasons[r] = (exchangeStats.reasons[r] || 0) + 1;
+        });
+
+        res.status(200).json({
+            success: true,
+            dateRange: { start: startDate, end: endDate, range },
+            salesSummary: {
+                totalOrders: orders.length,
+                totalRevenue: Number(totalRevenue.toFixed(2)),
+                totalShipping: Number(totalShipping.toFixed(2)),
+                totalDiscount: Number(totalDiscount.toFixed(2)),
+                averageOrderValue: orders.length > 0 ? Number((totalRevenue / orders.length).toFixed(2)) : 0
+            },
+            paymentMethods: Object.entries(paymentMethodCounts).map(([method, data]) => ({
+                method,
+                count: data.count,
+                amount: Number(data.amount.toFixed(2))
+            })),
+            orderStatuses: Object.entries(orderStatusCounts).map(([status, count]) => ({
+                status,
+                count
+            })),
+            productSales: Object.values(productSalesMap).sort((a, b) => b.quantity - a.quantity),
+            lowStockReport: lowStockProducts.map(p => ({
+                id: p._id,
+                name: p.pName,
+                sku: p.pSku || 'N/A',
+                stock: p.pStock,
+                threshold: p.lowStockThreshold || 10,
+                category: p.pCategory,
+                price: p.pPrice,
+                status: p.pStock <= 0 ? 'Out of Stock' : 'Low Stock'
+            })),
+            exchangeReport: {
+                ...exchangeStats,
+                reasonsList: Object.entries(exchangeStats.reasons).map(([reason, count]) => ({ reason, count }))
+            }
+        });
+    } catch (error) {
+        console.error('Error generating reports:', error);
+        res.status(500).json({ success: false, message: 'Error generating reports' });
+    }
 };
 
 

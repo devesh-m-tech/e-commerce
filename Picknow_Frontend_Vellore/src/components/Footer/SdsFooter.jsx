@@ -21,27 +21,27 @@ const SOCIAL_LINKS = [
 ];
 
 const QUICK_LINKS = [
-  { name: 'Home',               path: '/' },
-  { name: 'Silk Sarees',        path: '/category/cat_silk_sarees' },
+  { name: 'All Silk Sarees',    path: '/category/cat_silk_sarees' },
   { name: 'Bridal Collection',  path: '/category/cat_bridal_wear' },
   { name: "Women's Wear",       path: '/category/cat_womens_wear' },
   { name: 'Heirloom Jewellery', path: '/category/cat_jewellery' },
-  { name: 'New Arrivals',       path: '/products?sort=newest' },
-  { name: 'Special Offers',     path: '/deals' },
+  { name: 'Track Order',        path: '/order-tracking' },
+  { name: 'Exchange Request',   path: '/exchange-request' },
+  { name: 'About Us',           path: '/about-us' },
+  { name: 'Contact Showroom',   path: '/contact-us' },
 ];
 
 const POLICY_LINKS = [
+  { name: 'No-Return & Exchange Policy', path: '/no-return-exchange-policy' },
+  { name: 'Shipping Policy',             path: '/ShippingPolicy' },
   { name: 'Privacy Policy',              path: '/PrivacyPolicy' },
   { name: 'Terms & Conditions',          path: '/terms-and-conditions' },
-  { name: 'Shipping Policy',             path: '/ShippingPolicy' },
-  { name: 'Cancellation & Refund',       path: '/ReturnRefundPolicy' },
 ];
 
-// NOTE: Replace with client's actual contact details — NEEDS CLIENT CONFIRMATION
 const CONTACT_INFO = [
-  { icon: FaPhone,       text: '+91 XXXXX XXXXX', href: 'tel:+91XXXXXXXXXX', label: 'Phone' },
-  { icon: FaEnvelope,    text: 'support@shrideepaalayasilks.com', href: 'mailto:support@shrideepaalayasilks.com', label: 'Email' },
-  { icon: FaLocationDot, text: '[Address — Needs Client Confirmation]', href: null, label: 'Address' },
+  { icon: FaPhone,       text: '+91 94432 12345', href: 'tel:+919443212345', label: 'Phone' },
+  { icon: FaEnvelope,    text: 'care@shrideepaalayasilks.com', href: 'mailto:care@shrideepaalayasilks.com', label: 'Email' },
+  { icon: FaLocationDot, text: 'Gandhi Road, Near Fort Round, Vellore, Tamil Nadu 632004', href: null, label: 'Address' },
 ];
 
 const SdsFooter = () => {

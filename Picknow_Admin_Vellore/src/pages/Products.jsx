@@ -113,6 +113,9 @@ const Products = () => {
     return: "no",
     returnDays: "",
     pType: "product",
+    pSku: "",
+    pVideo: "",
+    lowStockThreshold: 10,
     pMetaTitle: "",
     pMetaKeywords: "",
     pMetaDescription: "",
@@ -432,6 +435,9 @@ const Products = () => {
         return: product.pReturn || "no",
         returnDays: product.pReturnDays || "",
         pType: product.pType || "product",
+        pSku: product.pSku || "",
+        pVideo: product.pVideo || "",
+        lowStockThreshold: product.lowStockThreshold ?? 10,
         pMetaTitle: product.pMetaTitle || "",
         pMetaKeywords: product.pMetaKeywords || "",
         pMetaDescription: product.pMetaDescription || "",
@@ -477,6 +483,9 @@ const Products = () => {
         return: "no",
         returnDays: "",
         pType: "product",
+        pSku: "",
+        pVideo: "",
+        lowStockThreshold: 10,
         pMetaTitle: "",
         pMetaKeywords: "",
         pMetaDescription: "",
@@ -716,6 +725,9 @@ const Products = () => {
         pReturnDays:
           formData.return === "yes" ? Number(formData.returnDays) : 0,
         pType: formData.pType || "product",
+        pSku: formData.pSku || "",
+        pVideo: formData.pVideo || "",
+        lowStockThreshold: Number(formData.lowStockThreshold) || 10,
         pis_voucher_50: formData.pis_voucher_50 || false,
         pis_voucher_100: formData.pis_voucher_100 || false,
         freeshipping: formData.freeshipping || false,
@@ -1190,32 +1202,41 @@ const Products = () => {
   };
 
   // Add function to save new stock
-  const handleStockSubmit = () => {
+  const handleStockSubmit = async () => {
     if (!stockToAdd || isNaN(stockToAdd) || parseInt(stockToAdd) <= 0) {
       setStockError("Please enter a valid positive number");
       return;
     }
 
-    setProducts((prevProducts) =>
-      prevProducts.map((p) => {
-        if (p.id === selectedProduct.id) {
-          const stockToAddNum = parseInt(stockToAdd);
-          const newQuantity = parseInt(p.pQuantity) + stockToAddNum;
-          const currentOverallStock = parseInt(p.pStock || p.pQuantity || 0);
-          return {
-            ...p,
-            pQuantity: newQuantity,
-            pStock: currentOverallStock + stockToAddNum, // Overall stock only increases
-          };
-        }
-        return p;
-      })
-    );
+    try {
+      const stockToAddNum = parseInt(stockToAdd);
+      const currentStock = parseInt(selectedProduct.pStock ?? selectedProduct.pQuantity ?? 0);
+      const newStock = currentStock + stockToAddNum;
 
-    enqueueSnackbar("Stock updated successfully", { variant: "success" });
-    setStockDialogOpen(false);
-    setSelectedProduct(null);
-    setStockToAdd("");
+      await productApi.updateStock(selectedProduct._id, newStock);
+
+      setProducts((prevProducts) =>
+        prevProducts.map((p) => {
+          if (p._id === selectedProduct._id) {
+            return {
+              ...p,
+              pQuantity: newStock,
+              pStock: newStock,
+            };
+          }
+          return p;
+        })
+      );
+
+      enqueueSnackbar(`Stock for "${selectedProduct.pName}" updated to ${newStock}`, {
+        variant: "success",
+      });
+      setStockDialogOpen(false);
+      setSelectedProduct(null);
+      setStockToAdd("");
+    } catch (error) {
+      setStockError(error.message || "Failed to update stock in inventory");
+    }
   };
 
   const handleExportToExcel = () => {
@@ -2021,9 +2042,22 @@ const Products = () => {
                         >
                           {product.pName}
                         </Typography>
+                        {product.pSku && (
+                          <Typography variant="caption" sx={{ color: "primary.main", fontWeight: 600 }}>
+                            SKU: {product.pSku}
+                          </Typography>
+                        )}
                         <Typography variant="body2" color="text.secondary">
-                          {product.pShortDescription}
+                          Stock: <strong>{product.pStock ?? product.pQuantity ?? 0} pcs</strong>
                         </Typography>
+                        {(product.pStock ?? product.pQuantity ?? 0) <= (product.lowStockThreshold || 10) && (
+                          <Chip
+                            label={`Low Stock (≤ ${product.lowStockThreshold || 10})`}
+                            color="error"
+                            size="small"
+                            sx={{ width: "fit-content", fontWeight: 600, fontSize: "0.7rem", height: 20 }}
+                          />
+                        )}
                         <Typography variant="body2" color="text.secondary">
                           Brand: {product.pBrand}
                         </Typography>
@@ -2172,6 +2206,16 @@ const Products = () => {
                             size="small"
                           >
                             <AddCircleIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip title="Quick Restock">
+                          <IconButton
+                            onClick={() => handleAddStock(product)}
+                            color="warning"
+                            size="small"
+                          >
+                            <InventoryIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
 
@@ -2343,17 +2387,57 @@ const Products = () => {
               </Grid>
 
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={12}>
+                <Grid item xs={12} sm={8}>
                   <TextField
                     className="form-field"
                     fullWidth
-                    label="Name"
+                    label="Product Name"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                     required
                     error={!!errors.name}
                     helperText={errors.name}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    className="form-field"
+                    fullWidth
+                    label="Product SKU / Code"
+                    name="pSku"
+                    value={formData.pSku}
+                    onChange={handleChange}
+                    placeholder="e.g. SDS-KAN-001"
+                    helperText="Unique SKU identifier"
+                  />
+                </Grid>
+              </Grid>
+
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    className="form-field"
+                    fullWidth
+                    type="number"
+                    label="Low Stock Alert Threshold"
+                    name="lowStockThreshold"
+                    value={formData.lowStockThreshold}
+                    onChange={handleChange}
+                    inputProps={{ min: 1 }}
+                    helperText="Triggers low-stock alerts when stock drops to or below this (default 10)"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    className="form-field"
+                    fullWidth
+                    label="Product Video URL (MP4 / Web Video)"
+                    name="pVideo"
+                    value={formData.pVideo}
+                    onChange={handleChange}
+                    placeholder="https://.../video.mp4"
+                    helperText="Displayed alongside photos on customer website"
                   />
                 </Grid>
               </Grid>

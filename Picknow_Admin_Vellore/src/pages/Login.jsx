@@ -13,7 +13,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { adminApi } from '../api/adminApi';
 import { vendorApi } from '../api/vendorApi';
-import { PERMISSIONS, ACTIONS } from '../constants/permissions';
+import { PERMISSIONS, ACTIONS, getRoleDefaultPermissions } from '../constants/permissions';
 import { useSnackbar } from 'notistack';
 
 const Login = () => {
@@ -135,13 +135,7 @@ const Login = () => {
   };
 
   const getDefaultPermissions = (role) => {
-    if (role === 'super_admin') {
-      return Object.values(PERMISSIONS).reduce((acc, permission) => ({
-        ...acc,
-        [permission]: [ACTIONS.READ, ACTIONS.WRITE, ACTIONS.DELETE]
-      }), {});
-    }
-    return {};
+    return getRoleDefaultPermissions(role);
   };
 
   return (

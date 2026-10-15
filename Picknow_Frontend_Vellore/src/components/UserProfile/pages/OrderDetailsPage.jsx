@@ -8,6 +8,7 @@ import {
   FiClock,
   FiStar,
   FiXCircle,
+  FiRefreshCw,
 } from "react-icons/fi";
 import {
   formatProfessionalDate,
@@ -213,16 +214,28 @@ const OrderDetailsPage = ({
                         <span className="item-price">{numberFormat(item.price)}</span>
                       </div>
 
-                      {canReview && (
-                        <button
-                          type="button"
-                          className="profile-btn profile-btn-sm profile-btn-outline review-btn"
-                          onClick={() => onOpenReview(item)}
-                        >
-                          <FiStar />
-                          <span>Rate & Review</span>
-                        </button>
-                      )}
+                      <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap" }}>
+                        {canReview && (
+                          <button
+                            type="button"
+                            className="profile-btn profile-btn-sm profile-btn-outline review-btn"
+                            onClick={() => onOpenReview(item)}
+                          >
+                            <FiStar />
+                            <span>Rate & Review</span>
+                          </button>
+                        )}
+                        {isDelivered && (
+                          <Link
+                            to={`/exchange-request?orderId=${order._id}&orderNumber=${order.orderNumber || order._id}&productId=${product._id || ''}&productName=${encodeURIComponent(product.pName || '')}&variantId=${item.variant || ''}`}
+                            className="profile-btn profile-btn-sm profile-btn-outline"
+                            style={{ textDecoration: "none", borderColor: "#7c3aed", color: "#7c3aed" }}
+                          >
+                            <FiRefreshCw />
+                            <span>Request Exchange</span>
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );

@@ -22,7 +22,8 @@ import fs from 'fs';
 import bodyParser from 'body-parser';
 import blogRoutes from "./routes/blogRoutes.js";
 import notificationRoutes from "./routes/notificationRoute.js";
-// import otpRoutes from './routes/otpRoutes.js';
+import otpRoutes from "./routes/otpRoutes.js";
+import exchangeRoutes from "./routes/exchangeRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,12 +31,16 @@ const __dirname = path.dirname(__filename);
 // Create upload directories if they don't exist
 const categoryUploadDir = path.join(__dirname, 'uploads', 'category');
 const subcategoryUploadDir = path.join(__dirname, 'uploads', 'subcategory');
+const exchangeUploadDir = path.join(__dirname, 'uploads', 'exchange');
 
 if (!fs.existsSync(categoryUploadDir)) {
   fs.mkdirSync(categoryUploadDir, { recursive: true });
 }
 if (!fs.existsSync(subcategoryUploadDir)) {
   fs.mkdirSync(subcategoryUploadDir, { recursive: true });
+}
+if (!fs.existsSync(exchangeUploadDir)) {
+  fs.mkdirSync(exchangeUploadDir, { recursive: true });
 }
 
 dotenv.config();
@@ -81,8 +86,8 @@ app.use("/api/variant", productVariantRoutes);  // Mount variant routes under /a
 app.use("/api/brand", brandRoutes);  // Mount brand routes under /api/brand
 app.use("/api/blog", blogRoutes);  // Mount blog routes under /api/blog
 app.use("/api/notifications", notificationRoutes);
-// app.use("/api/fees", fees);  // Mount variant routes under /api/variants
-// app.use('/api/otp', otpRoutes);
+app.use("/api/exchange", exchangeRoutes);
+app.use("/api/otp", otpRoutes);
 
 app.get('/getlog', (req, res) => {
   const logPath = path.join(__dirname, 'logs', 'app.log');

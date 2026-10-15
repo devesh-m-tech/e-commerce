@@ -2,20 +2,21 @@ import React, { useState } from 'react';
 import './ReturnRefundPolicy.css';
 import {
   FaCalendarAlt, FaInfoCircle, FaShieldAlt, FaCheckCircle,
-  FaExclamationTriangle, FaCreditCard, FaTruck, FaUndo,
-  FaGlobe, FaPhone, FaEnvelope, FaMapMarkerAlt,
-  FaTimesCircle, FaExchangeAlt, FaMoneyBillWave
+  FaExclamationTriangle, FaTruck, FaUndo,
+  FaPhone, FaEnvelope, FaMapMarkerAlt,
+  FaTimesCircle, FaExchangeAlt
 } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const sections = [
-  { id: 1, icon: FaCheckCircle,    title: 'Eligibility for Returns' },
-  { id: 2, icon: FaTimesCircle,    title: 'Non-Returnable Items' },
-  { id: 3, icon: FaMoneyBillWave,  title: 'Refund Process' },
-  { id: 4, icon: FaExchangeAlt,    title: 'Replacement / Exchange' },
-  { id: 5, icon: FaUndo,           title: 'Cancellations' },
-  { id: 6, icon: FaTruck,          title: 'Shipping Costs' },
-  { id: 7, icon: FaInfoCircle,     title: 'How to Initiate a Return' },
-  { id: 8, icon: FaPhone,          title: 'Contact Us' },
+  { id: 1, icon: FaTimesCircle,    title: 'Strict No-Return & No-Refund Policy' },
+  { id: 2, icon: FaCheckCircle,    title: 'Controlled Exchange Eligibility (7 Days)' },
+  { id: 3, icon: FaExclamationTriangle, title: 'Mandatory Proof & Tags Requirement' },
+  { id: 4, icon: FaShieldAlt,      title: 'Non-Exchangeable Categories' },
+  { id: 5, icon: FaExchangeAlt,    title: 'Step-by-Step Exchange Process' },
+  { id: 6, icon: FaTruck,          title: 'Reverse Pickup & Verification' },
+  { id: 7, icon: FaUndo,           title: 'Pre-Dispatch Order Cancellations' },
+  { id: 8, icon: FaPhone,          title: 'Store Contact & Assistance' },
 ];
 
 const ReturnRefundPolicy = () => {
@@ -34,20 +35,22 @@ const ReturnRefundPolicy = () => {
       <div className="rr-hero">
         <div className="rr-hero-inner">
           <div className="rr-hero-badge">
-            <FaUndo />
-            <span>Vairaa Wealth Pvt Ltd</span>
+            <FaShieldAlt />
+            <span>Shri Deepaalaya Silks</span>
           </div>
-          <h1 className="rr-hero-title">Cancellation & Refund Policy</h1>
+          <h1 className="rr-hero-title">No-Return & Controlled Exchange Policy</h1>
           <p className="rr-hero-sub">
-            We want you to be completely satisfied. Here's everything you need to know
-            about returns, refunds, and cancellations.
+            Each silk saree and heirloom product at Shri Deepaalaya Silks is handcrafted with exquisite precision. Please review our strict no-return and transparent exchange guidelines before purchase.
           </p>
           <div className="rr-hero-meta">
             <span className="rr-meta-chip">
-              <FaCalendarAlt /> Last Updated: December 2024
+              <FaCalendarAlt /> Effective: 2024–2025
             </span>
             <span className="rr-meta-chip">
-              <FaCheckCircle /> 7-Day Return Window
+              <FaTimesCircle /> No Monetary Refunds
+            </span>
+            <span className="rr-meta-chip">
+              <FaCheckCircle /> 7-Day Controlled Exchange
             </span>
           </div>
         </div>
@@ -57,23 +60,23 @@ const ReturnRefundPolicy = () => {
       <div className="rr-stats-strip">
         <div className="rr-stats-inner">
           <div className="rr-stat">
+            <span className="rr-stat-value">No Returns</span>
+            <span className="rr-stat-label">Strict Store Policy</span>
+          </div>
+          <div className="rr-stat-divider" />
+          <div className="rr-stat">
             <span className="rr-stat-value">7 Days</span>
-            <span className="rr-stat-label">Return Window</span>
+            <span className="rr-stat-label">Exchange Request Window</span>
           </div>
           <div className="rr-stat-divider" />
           <div className="rr-stat">
-            <span className="rr-stat-value">5–7 Days</span>
-            <span className="rr-stat-label">Refund Processing</span>
+            <span className="rr-stat-value">Mandatory</span>
+            <span className="rr-stat-label">Photos & Video Proof</span>
           </div>
           <div className="rr-stat-divider" />
           <div className="rr-stat">
-            <span className="rr-stat-value">Free</span>
-            <span className="rr-stat-label">Return Pickup (Defective)</span>
-          </div>
-          <div className="rr-stat-divider" />
-          <div className="rr-stat">
-            <span className="rr-stat-value">Original</span>
-            <span className="rr-stat-label">Refund to Payment Source</span>
+            <span className="rr-stat-value">100% Inspected</span>
+            <span className="rr-stat-label">Pure Silk Verification</span>
           </div>
         </div>
       </div>
@@ -98,276 +101,242 @@ const ReturnRefundPolicy = () => {
                   </li>
                 ))}
               </ul>
-            </div>
-
-            {/* Quick Help Card */}
-            <div className="rr-help-card">
-              <div className="rr-help-icon"><FaPhone /></div>
-              <p className="rr-help-title">Need Help?</p>
-              <p className="rr-help-sub">Contact us to initiate a return or refund</p>
-              <a href="mailto:support@picknow.in" className="rr-help-btn">
-                Email Support
-              </a>
-              <a href="tel:+917092770118" className="rr-help-phone">
-                +91 7092770118
-              </a>
+              <div className="rr-toc-footer">
+                <Link to="/exchange-request" className="rr-toc-action-btn">
+                  Open Exchange Portal &rarr;
+                </Link>
+              </div>
             </div>
           </aside>
 
-          {/* ── Main Content ── */}
-          <main className="rr-main">
+          {/* ── Content ── */}
+          <main className="rr-content">
 
-            {/* Notice */}
-            <div className="rr-notice">
-              <div className="rr-notice-icon"><FaExclamationTriangle /></div>
-              <p>
-                At <strong>Picknow.in</strong>, operated by <strong>Vairaa Wealth Pvt Ltd</strong>,
-                we want you to be completely satisfied with your purchase. By shopping with us,
-                you agree to the terms below.
-              </p>
-            </div>
-
-            {/* Section 1 — Eligibility */}
-            <div className="rr-section" id="rr-section-1">
-              <div className="rr-section-header">
-                <div className="rr-section-icon"><FaCheckCircle /></div>
-                <h2 className="rr-section-title">1. Eligibility for Returns</h2>
-              </div>
-              <div className="rr-section-body">
-                <p>You may request a return if:</p>
-                <ul className="rr-list rr-list-check">
-                  <li>The product delivered is <strong>defective, damaged, or incorrect.</strong></li>
-                  <li>The product does not match the <strong>description on our website.</strong></li>
-                  <li>The product is eligible under our returnable items list.</li>
-                </ul>
-
-                <div className="rr-eligibility-grid">
-                  <div className="rr-eligibility-card">
-                    <span className="rr-eligibility-label">Return Window</span>
-                    <span className="rr-eligibility-value">Within 7 days of delivery</span>
-                  </div>
-                  <div className="rr-eligibility-card">
-                    <span className="rr-eligibility-label">Condition</span>
-                    <span className="rr-eligibility-value">Unused, original packaging</span>
-                  </div>
-                  <div className="rr-eligibility-card">
-                    <span className="rr-eligibility-label">Required</span>
-                    <span className="rr-eligibility-value">Tags, invoice & accessories</span>
-                  </div>
+            {/* Section 1 */}
+            <section id="rr-section-1" className="rr-section">
+              <div className="rr-sec-header">
+                <div className="rr-sec-icon-wrap danger">
+                  <FaTimesCircle />
+                </div>
+                <div>
+                  <span className="rr-sec-num">Section 1</span>
+                  <h2 className="rr-sec-title">Strict No-Return & No-Refund Policy</h2>
                 </div>
               </div>
-            </div>
-
-            {/* Section 2 — Non-Returnable */}
-            <div className="rr-section" id="rr-section-2">
-              <div className="rr-section-header">
-                <div className="rr-section-icon red"><FaTimesCircle /></div>
-                <h2 className="rr-section-title">2. Non-Returnable Items</h2>
-              </div>
-              <div className="rr-section-body">
-                <p>Certain categories of items are <strong>not eligible for return,</strong> including:</p>
-                <div className="rr-nonreturn-grid">
-                  {[
-                    { emoji: '🥗', label: 'Perishable goods', sub: 'Food, groceries' },
-                    { emoji: '🧴', label: 'Personal care', sub: 'Hygiene products' },
-                    { emoji: '👙', label: 'Innerwear', sub: 'Intimate wear' },
-                    { emoji: '🎨', label: 'Custom items', sub: 'Made-to-order' },
-                    { emoji: '💾', label: 'Digital products', sub: 'Downloads' },
-                  ].map((item, i) => (
-                    <div key={i} className="rr-nonreturn-item">
-                      <span className="rr-nonreturn-emoji">{item.emoji}</span>
-                      <div>
-                        <strong>{item.label}</strong>
-                        <span>{item.sub}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="rr-info-box warning">
-                  <FaExclamationTriangle />
-                  <span>This list is not exhaustive. Product-specific return eligibility is shown on the product page.</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Section 3 — Refund Process */}
-            <div className="rr-section" id="rr-section-3">
-              <div className="rr-section-header">
-                <div className="rr-section-icon"><FaMoneyBillWave /></div>
-                <h2 className="rr-section-title">3. Refund Process</h2>
-              </div>
-              <div className="rr-section-body">
-                <div className="rr-refund-steps">
-                  <div className="rr-refund-step">
-                    <div className="rr-refund-step-num">1</div>
-                    <div className="rr-refund-step-text">
-                      <strong>Return Received</strong>
-                      <span>We receive and inspect the returned product</span>
-                    </div>
-                  </div>
-                  <div className="rr-refund-arrow">→</div>
-                  <div className="rr-refund-step">
-                    <div className="rr-refund-step-num">2</div>
-                    <div className="rr-refund-step-text">
-                      <strong>Approval</strong>
-                      <span>You are notified of approval or rejection</span>
-                    </div>
-                  </div>
-                  <div className="rr-refund-arrow">→</div>
-                  <div className="rr-refund-step">
-                    <div className="rr-refund-step-num">3</div>
-                    <div className="rr-refund-step-text">
-                      <strong>Refund Initiated</strong>
-                      <span>Credited to original payment within 5–7 days</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="rr-info-box">
-                  <FaInfoCircle />
-                  <span>Processing time may vary depending on your bank or payment provider.</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Section 4 — Replacement */}
-            <div className="rr-section" id="rr-section-4">
-              <div className="rr-section-header">
-                <div className="rr-section-icon"><FaExchangeAlt /></div>
-                <h2 className="rr-section-title">4. Replacement / Exchange</h2>
-              </div>
-              <div className="rr-section-body">
-                <ul className="rr-list">
-                  <li>If you receive a <strong>damaged or incorrect product</strong>, we will arrange for a replacement (subject to stock availability).</li>
-                  <li>If replacement is not available, a <strong>full refund</strong> will be issued.</li>
-                </ul>
-                <div className="rr-info-box success">
-                  <FaCheckCircle />
-                  <span>Replacement orders are dispatched within 2–3 business days after return pickup.</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Section 5 — Cancellations */}
-            <div className="rr-section" id="rr-section-5">
-              <div className="rr-section-header">
-                <div className="rr-section-icon"><FaUndo /></div>
-                <h2 className="rr-section-title">5. Cancellations</h2>
-              </div>
-              <div className="rr-section-body">
-                <div className="rr-cancel-cards">
-                  <div className="rr-cancel-card allowed">
-                    <div className="rr-cancel-card-icon">✓</div>
-                    <div>
-                      <strong>Before Shipment</strong>
-                      <p>Orders can be cancelled anytime before they are shipped. Full refund will be processed.</p>
-                    </div>
-                  </div>
-                  <div className="rr-cancel-card restricted">
-                    <div className="rr-cancel-card-icon">✕</div>
-                    <div>
-                      <strong>After Shipment</strong>
-                      <p>Orders cannot be cancelled once shipped. You may return the item after delivery.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Section 6 — Shipping Costs */}
-            <div className="rr-section" id="rr-section-6">
-              <div className="rr-section-header">
-                <div className="rr-section-icon"><FaTruck /></div>
-                <h2 className="rr-section-title">6. Shipping Costs</h2>
-              </div>
-              <div className="rr-section-body">
-                <ul className="rr-list">
-                  <li>Return shipping charges are <strong>borne by Picknow</strong> in case of wrong or defective products.</li>
-                  <li>For other return reasons (e.g., change of mind), shipping costs may be <strong>deducted from the refund.</strong></li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Section 7 — How to Initiate */}
-            <div className="rr-section" id="rr-section-7">
-              <div className="rr-section-header">
-                <div className="rr-section-icon"><FaInfoCircle /></div>
-                <h2 className="rr-section-title">7. How to Initiate a Return</h2>
-              </div>
-              <div className="rr-section-body">
-                <div className="rr-steps">
-                  <div className="rr-step">
-                    <div className="rr-step-num">1</div>
-                    <div className="rr-step-content">
-                      <strong>Contact Support</strong>
-                      <span>Email <a href="mailto:support@picknow.in">support@picknow.in</a> within the eligible return period.</span>
-                    </div>
-                  </div>
-                  <div className="rr-step">
-                    <div className="rr-step-num">2</div>
-                    <div className="rr-step-content">
-                      <strong>Share Details</strong>
-                      <span>Provide your Order ID, invoice copy, and reason for return.</span>
-                    </div>
-                  </div>
-                  <div className="rr-step">
-                    <div className="rr-step-num">3</div>
-                    <div className="rr-step-content">
-                      <strong>Return Arranged</strong>
-                      <span>We will arrange pickup or guide you on return shipment.</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Section 8 — Contact */}
-            <div className="rr-section" id="rr-section-8">
-              <div className="rr-section-header">
-                <div className="rr-section-icon"><FaPhone /></div>
-                <h2 className="rr-section-title">8. Contact Us</h2>
-              </div>
-              <div className="rr-section-body">
-                <p className="rr-contact-intro">
-                  For return, refund, or cancellation queries, reach our Customer Support Team:
+              <div className="rr-sec-body">
+                <p>
+                  At <strong>Shri Deepaalaya Silks</strong>, every pure silk saree, tissue zari fabric, and traditional heirloom creation is inspected individually by our master weavers prior to packaging and dispatch. Due to the delicate nature of pure silk, hand-woven zari, and custom bridal sarees, <strong>we strictly do not accept returns or issue monetary refunds under any circumstances</strong>.
                 </p>
-                <div className="rr-contact-card">
-                  <div className="rr-contact-brand">
-                    <strong>Customer Support Team</strong>
-                    <span>Vairaa Wealth Pvt Ltd – Picknow</span>
-                  </div>
-                  <div className="rr-contact-grid">
-                    <a href="https://picknow.in" target="_blank" rel="noopener noreferrer" className="rr-contact-item">
-                      <div className="rr-contact-item-icon"><FaGlobe /></div>
-                      <div>
-                        <span className="rr-contact-label">Website</span>
-                        <span className="rr-contact-value">picknow.in</span>
-                      </div>
-                    </a>
-                    <a href="tel:+917092770118" className="rr-contact-item">
-                      <div className="rr-contact-item-icon"><FaPhone /></div>
-                      <div>
-                        <span className="rr-contact-label">Phone</span>
-                        <span className="rr-contact-value">+91 7092770118</span>
-                      </div>
-                    </a>
-                    <a href="mailto:support@picknow.in" className="rr-contact-item">
-                      <div className="rr-contact-item-icon"><FaEnvelope /></div>
-                      <div>
-                        <span className="rr-contact-label">Email</span>
-                        <span className="rr-contact-value">support@picknow.in</span>
-                      </div>
-                    </a>
-                    <div className="rr-contact-item">
-                      <div className="rr-contact-item-icon"><FaMapMarkerAlt /></div>
-                      <div>
-                        <span className="rr-contact-label">Address</span>
-                        <span className="rr-contact-value">34, TM Nagar, Mattuthavani, Madurai, TN - 625107</span>
-                      </div>
-                    </div>
+                <div className="rr-callout warning">
+                  <FaExclamationTriangle className="rr-callout-icon" />
+                  <div>
+                    <strong>Important Notice:</strong> Orders once placed and delivered are non-refundable. All sales are final. Customers are requested to examine sizing, color swatches, and fabric descriptions carefully before placing an order.
                   </div>
                 </div>
               </div>
-            </div>
+            </section>
+
+            {/* Section 2 */}
+            <section id="rr-section-2" className="rr-section">
+              <div className="rr-sec-header">
+                <div className="rr-sec-icon-wrap primary">
+                  <FaCheckCircle />
+                </div>
+                <div>
+                  <span className="rr-sec-num">Section 2</span>
+                  <h2 className="rr-sec-title">Controlled Exchange Eligibility (7 Days)</h2>
+                </div>
+              </div>
+              <div className="rr-sec-body">
+                <p>
+                  While returns are not permitted, we provide a structured <strong>Controlled Exchange Policy</strong> within <strong>7 days</strong> of delivery strictly for eligible criteria:
+                </p>
+                <ul className="rr-list">
+                  <li>
+                    <strong>Manufacturing Flaws:</strong> Significant weave defect, torn fabric, or damaged zari thread identified upon unboxing.
+                  </li>
+                  <li>
+                    <strong>Incorrect Item Received:</strong> Delivery of an item that differs completely in SKU, design, or color from the order confirmation.
+                  </li>
+                  <li>
+                    <strong>Size Mismatch:</strong> In garments with ready stitching (e.g. readymade blouses or kurtis), an exchange for a different size of the exact same design is permitted subject to stock availability.
+                  </li>
+                </ul>
+              </div>
+            </section>
+
+            {/* Section 3 */}
+            <section id="rr-section-3" className="rr-section">
+              <div className="rr-sec-header">
+                <div className="rr-sec-icon-wrap accent">
+                  <FaExclamationTriangle />
+                </div>
+                <div>
+                  <span className="rr-sec-num">Section 3</span>
+                  <h2 className="rr-sec-title">Mandatory Proof & Tags Requirement</h2>
+                </div>
+              </div>
+              <div className="rr-sec-body">
+                <p>
+                  To prevent misuse and protect authentic artisan silk, exchange requests must satisfy the following strict criteria:
+                </p>
+                <div className="rr-grid-2">
+                  <div className="rr-card">
+                    <h4>1. Continuous Unboxing Video</h4>
+                    <p>
+                      An uncut video starting from showing the sealed outer parcel label, opening the package, and revealing the defect or error.
+                    </p>
+                  </div>
+                  <div className="rr-card">
+                    <h4>2. Original Tags & Folds</h4>
+                    <p>
+                      The product must be in its original pristine fold with all silk authenticity tags, price tags, and packaging intact and untampered.
+                    </p>
+                  </div>
+                  <div className="rr-card">
+                    <h4>3. Unused & Unworn</h4>
+                    <p>
+                      Items must not have been worn, washed, ironed, perfumed, or altered in any manner (no fall/pico stitching performed).
+                    </p>
+                  </div>
+                  <div className="rr-card">
+                    <h4>4. 7-Day Window</h4>
+                    <p>
+                      The exchange request must be initiated through our portal within 7 calendar days from the courier delivery timestamp.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Section 4 */}
+            <section id="rr-section-4" className="rr-section">
+              <div className="rr-sec-header">
+                <div className="rr-sec-icon-wrap neutral">
+                  <FaShieldAlt />
+                </div>
+                <div>
+                  <span className="rr-sec-num">Section 4</span>
+                  <h2 className="rr-sec-title">Non-Exchangeable Categories</h2>
+                </div>
+              </div>
+              <div className="rr-sec-body">
+                <p>
+                  The following items are completely ineligible for exchanges:
+                </p>
+                <ul className="rr-list">
+                  <li>Customized, tailored, or altered sarees (including sarees with Fall & Pico stitched or blouse fabric cut).</li>
+                  <li>Sarees purchased during Clearance, Festive Flash Sales, or marked as "Final Sale".</li>
+                  <li>Subtle natural variations in handloom texture, slubs, or hand-spun zari threads (these are hallmarks of genuine handwoven craftsmanship, not defects).</li>
+                  <li>Minor color variations arising from digital screen resolutions or photography lighting.</li>
+                </ul>
+              </div>
+            </section>
+
+            {/* Section 5 */}
+            <section id="rr-section-5" className="rr-section">
+              <div className="rr-sec-header">
+                <div className="rr-sec-icon-wrap info">
+                  <FaExchangeAlt />
+                </div>
+                <div>
+                  <span className="rr-sec-num">Section 5</span>
+                  <h2 className="rr-sec-title">Step-by-Step Exchange Process</h2>
+                </div>
+              </div>
+              <div className="rr-sec-body">
+                <ol className="rr-steps">
+                  <li>
+                    <strong>Step 1 — Submit Request Online:</strong> Go to the <Link to="/exchange-request" style={{ color: '#6D1734', fontWeight: 'bold' }}>Exchange Portal</Link> or click "Request Exchange" under your delivered order in My Orders.
+                  </li>
+                  <li>
+                    <strong>Step 2 — Upload Verification Proof:</strong> Upload clear photographs of the product, the defect area, tags, and the unboxing video proof.
+                  </li>
+                  <li>
+                    <strong>Step 3 — Administrative Review:</strong> Our quality assurance team will examine the uploaded evidence within 24–48 business hours.
+                  </li>
+                  <li>
+                    <strong>Step 4 — Reverse Pickup:</strong> Upon approval, our courier partner will collect the item from your delivery address.
+                  </li>
+                  <li>
+                    <strong>Step 5 — Physical Verification & Replacement:</strong> Once received at our Vellore facility and verified, a fresh replacement piece will be dispatched immediately.
+                  </li>
+                </ol>
+              </div>
+            </section>
+
+            {/* Section 6 */}
+            <section id="rr-section-6" className="rr-section">
+              <div className="rr-sec-header">
+                <div className="rr-sec-icon-wrap success">
+                  <FaTruck />
+                </div>
+                <div>
+                  <span className="rr-sec-num">Section 6</span>
+                  <h2 className="rr-sec-title">Reverse Pickup & Verification</h2>
+                </div>
+              </div>
+              <div className="rr-sec-body">
+                <p>
+                  Reverse pickup is arranged free of charge for approved manufacturing defects or wrong item deliveries. Please ensure the saree is securely packed in its original box with all accompanying certificates and invoices. If reverse pickup is unserviceable at your pincode, our support team will guide you through standard insured dispatch.
+                </p>
+              </div>
+            </section>
+
+            {/* Section 7 */}
+            <section id="rr-section-7" className="rr-section">
+              <div className="rr-sec-header">
+                <div className="rr-sec-icon-wrap warning">
+                  <FaUndo />
+                </div>
+                <div>
+                  <span className="rr-sec-num">Section 7</span>
+                  <h2 className="rr-sec-title">Pre-Dispatch Order Cancellations</h2>
+                </div>
+              </div>
+              <div className="rr-sec-body">
+                <p>
+                  Orders can be cancelled exclusively <strong>prior to shipment/dispatch</strong> (while status shows "ORDER PLACED"). Once an order has been packed and handed over to the courier partner, cancellations cannot be processed.
+                </p>
+              </div>
+            </section>
+
+            {/* Section 8 */}
+            <section id="rr-section-8" className="rr-section">
+              <div className="rr-sec-header">
+                <div className="rr-sec-icon-wrap primary">
+                  <FaPhone />
+                </div>
+                <div>
+                  <span className="rr-sec-num">Section 8</span>
+                  <h2 className="rr-sec-title">Store Contact & Assistance</h2>
+                </div>
+              </div>
+              <div className="rr-sec-body">
+                <p>
+                  For assistance regarding your exchange request or questions on fabric care, our dedicated customer desk is available:
+                </p>
+                <div className="rr-contact-grid">
+                  <div className="rr-contact-card">
+                    <FaEnvelope className="rr-contact-icon" />
+                    <strong>Email Support</strong>
+                    <a href="mailto:care@shrideepaalayasilks.com">care@shrideepaalayasilks.com</a>
+                    <span>Response within 24 hours</span>
+                  </div>
+                  <div className="rr-contact-card">
+                    <FaPhone className="rr-contact-icon" />
+                    <strong>Customer Care & WhatsApp</strong>
+                    <a href="tel:+919443212345">+91 94432 12345</a>
+                    <span>Mon – Sat, 10:00 AM – 8:00 PM</span>
+                  </div>
+                  <div className="rr-contact-card">
+                    <FaMapMarkerAlt className="rr-contact-icon" />
+                    <strong>Store Address</strong>
+                    <span>Gandhi Road, Vellore, Tamil Nadu - 632004</span>
+                  </div>
+                </div>
+              </div>
+            </section>
 
           </main>
         </div>

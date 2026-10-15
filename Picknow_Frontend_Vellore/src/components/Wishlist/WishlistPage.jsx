@@ -5,7 +5,7 @@ import ProductCard from "../ProductPage/ProductCard";
 import ModernLoader from "../Loading/ModernLoader";
 import { Helmet } from "react-helmet";
 import { Heart, ShoppingBag } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useSnackbar } from "notistack";
 // import Footer from "../Footer/Footer"; // Removed to prevent duplication
 import "./WishlistPage.css";
@@ -94,31 +94,36 @@ const WishlistPage = () => {
   return (
     <div className="wishlist-page-container">
       <Helmet>
-        <title>My Favorites | Picknow</title>
+        <title>My Wishlist | Shri Deepaalaya Silks</title>
       </Helmet>
 
-      <div className="wishlist-minimal-header">
-        <div className="container">
-           <div className="compact-title-row">
-              <div className="title-left">
-              
-                 <h2>My Collection</h2>
-              </div>
-              <div className="items-badge-sleek">
-                 {wishlistItems.length} Saved Items
-              </div>
-           </div>
-           <div className="header-divider-slim"></div>
+      <div className="wishlist-container">
+        {/* Header */}
+        <div className="wishlist-header">
+          <div className="wishlist-breadcrumb">
+            <Link to="/">Home</Link>
+            <span className="wishlist-breadcrumb-sep">/</span>
+            <span>Wishlist</span>
+          </div>
+          <div className="wishlist-title-row">
+            <div className="wishlist-title-left">
+              <h1>My Wishlist</h1>
+              <p>Handpicked silk sarees and jewellery curated for your special moments.</p>
+            </div>
+            <div className="wishlist-count-badge">
+              <Heart size={14} fill="var(--color-maroon, #6D1734)" stroke="var(--color-maroon, #6D1734)" />
+              {wishlistItems.length} {wishlistItems.length === 1 ? 'Piece Saved' : 'Pieces Saved'}
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="container py-4 min-vh-75 wishlist-content-main">
+        {/* Content */}
         {loading ? (
           <div className="wishlist-loader-box">
             <ModernLoader />
           </div>
         ) : wishlistItems.length > 0 ? (
-          <div className="premium-discovery-grid">
+          <div className="wishlist-products-grid">
             {wishlistItems.map((item) => (
               <div key={item._id} className="wishlist-item-wrapper">
                 <ProductCard 
@@ -127,29 +132,42 @@ const WishlistPage = () => {
                   onAddToCartSuccess={handleRemove}
                 />
                 <button 
-                    className="remove-wish-btn" 
-                    onClick={() => handleRemove(item._id)}
-                    title="Remove"
+                  className="remove-wish-btn" 
+                  onClick={() => handleRemove(item._id)}
+                  title="Remove from wishlist"
+                  aria-label="Remove item"
                 >
-                    &times;
+                  &times;
                 </button>
               </div>
             ))}
           </div>
         ) : (
-          <div className="empty-wishlist-hero">
-            <div className="empty-visual">
-                <ShoppingBag size={60} strokeWidth={1} />
+          <div className="wishlist-empty-state">
+            <div className="wishlist-empty-icon-wrap">
+              <Heart size={34} strokeWidth={1.5} />
             </div>
-            <h2>Start your collection...</h2>
-            <p>Your favorite premium finds will appear here.</p>
-            <button className="btn-explore-now" onClick={() => navigate('/products')}>
-                Discover Products
-            </button>
+            <h2 className="wishlist-empty-title">Your Wishlist is Empty</h2>
+            <p className="wishlist-empty-desc">
+              Explore our handcrafted Kanchipuram silk sarees, pure zari weaves, and heirloom bridal collections to curate your dream ensemble.
+            </p>
+            <div className="wishlist-empty-actions">
+              <button 
+                className="wishlist-empty-btn-primary" 
+                onClick={() => navigate('/category/cat_silk_sarees')}
+              >
+                Shop Silk Sarees
+              </button>
+              <button 
+                className="wishlist-empty-btn-secondary" 
+                onClick={() => navigate('/products')}
+              >
+                Browse All Products
+              </button>
+            </div>
           </div>
         )}
       </div>
-      {/* Footer removed to prevent duplication */}
     </div>
   );
 };

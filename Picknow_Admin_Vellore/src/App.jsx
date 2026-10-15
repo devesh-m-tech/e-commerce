@@ -20,6 +20,8 @@ import Blog from './pages/Blog';
 import Users from './pages/Users';
 import UserDetails from './pages/UserDetails';
 import Shipping from './pages/Shipping';
+import Exchanges from './pages/Exchanges';
+import Reports from './pages/Reports';
 // import Offers from './pages/Offers';
 import { SnackbarProvider } from 'notistack';
 import { OrderNotificationProvider } from './context/OrderNotificationContext';
@@ -273,6 +275,8 @@ const App = () => {
                 <Route path="users" element={<Users />} />
                 <Route path="users/:id" element={<UserDetails />} />
                 <Route path="shipping" element={<Shipping />} />
+                <Route path="exchanges" element={<Exchanges />} />
+                <Route path="reports" element={<Reports />} />
                 <Route path="brands" element={<Brands />} />
                 <Route path="blog" element={<Blog />} />
               </Route>

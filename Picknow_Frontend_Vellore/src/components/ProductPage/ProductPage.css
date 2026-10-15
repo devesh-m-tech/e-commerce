@@ -109,18 +109,21 @@
 /* ── 3. Filter Sidebar ── */
 .filter-sidebar {
   background: #FCFBF7 !important;
-  padding: 1.5rem 1.25rem;
+  padding: 1.25rem 1rem !important;
   border-radius: 2px !important;
   border: 1px solid #EDE2D2 !important;
   box-shadow: 0 4px 16px rgba(40, 35, 33, 0.05);
-  width: 260px !important;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
   position: sticky;
   top: calc(var(--nav-height, 72px) + 20px);
   height: fit-content;
   max-height: calc(100vh - 120px);
   overflow-y: auto;
+  overflow-x: hidden;
   flex-shrink: 0;
-  box-sizing: border-box;
+  box-sizing: border-box !important;
 }
 
 .filter-sidebar::-webkit-scrollbar {

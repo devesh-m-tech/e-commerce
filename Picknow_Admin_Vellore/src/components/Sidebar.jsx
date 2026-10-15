@@ -12,6 +12,8 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import { useOrderNotifications } from '../context/OrderNotificationContext';
 
 const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
@@ -24,9 +26,10 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     { text: 'Products', icon: <InventoryIcon />, path: '/products' },
     { text: 'Categories', icon: <CategoryIcon />, path: '/categories' },
     { text: 'Vendors', icon: <PeopleIcon />, path: '/vendors' },
-    { text: 'Offers', icon: <LocalOfferIcon />, path: '/offers' },
-    { text: 'Deals', icon: <ShoppingBasketIcon />, path: '/deals' },
     { text: 'Orders', icon: <ShoppingCartIcon />, path: '/orders' },
+    { text: 'Exchanges', icon: <SwapHorizIcon />, path: '/exchanges' },
+    { text: 'Reports', icon: <AssessmentIcon />, path: '/reports' },
+    { text: 'Deals', icon: <ShoppingBasketIcon />, path: '/deals' },
     { text: 'Shipping', icon: <LocalShippingIcon />, path: '/shipping' },
     { text: 'Admin Users', icon: <AdminPanelSettingsIcon />, path: '/admin-users' },
   ];
