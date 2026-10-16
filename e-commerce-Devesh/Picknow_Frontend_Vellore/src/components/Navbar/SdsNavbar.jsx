@@ -525,7 +525,7 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
                     <div className="sds-nav-dropdown-menu" role="menu">
                       {link.dropdown.map((item) => (
                         <Link
-                          key={item.path}
+                          key={`${item.path}-${item.label}`}
                           to={item.path}
                           className="sds-dropdown-item"
                           role="menuitem"

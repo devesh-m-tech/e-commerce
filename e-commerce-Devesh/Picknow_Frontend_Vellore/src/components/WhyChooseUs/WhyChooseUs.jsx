@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FiTruck, FiRotateCcw, FiShield, FiHeadphones } from 'react-icons/fi';
+import { FiTruck, FiCheckCircle, FiShield, FiHeadphones } from 'react-icons/fi';
 
 const WhyChooseUs = () => {
   const items = [
@@ -12,10 +12,10 @@ const WhyChooseUs = () => {
       color: '#ff5e00' // Primary Orange
     },
     {
-      id: 'returns',
-      title: 'Easy Returns',
-      desc: '7-day hassle-free returns',
-      Icon: FiRotateCcw,
+      id: 'authentic',
+      title: '100% Authentic',
+      desc: 'Silk Mark Certified handloom',
+      Icon: FiCheckCircle,
       color: '#ff8c00' // Secondary Orange
     },
     {

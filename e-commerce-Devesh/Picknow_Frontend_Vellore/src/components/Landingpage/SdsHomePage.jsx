@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Heart, ShieldCheck, Truck, RotateCcw, Award, Sparkles, ArrowRight } from 'lucide-react';
+import { Heart, ShieldCheck, Truck, CheckCircle, Award, Sparkles, ArrowRight } from 'lucide-react';
 import { productApi } from '../../APi/productApi';
 import { categoryApi } from '../../APi/categoryApi';
 import axiosInstance from '../../APi/axiosInstance';
@@ -148,7 +148,7 @@ const SectionHeader = ({ eyebrow, title, viewAllPath }) => (
 const TRUST_ITEMS = [
   { icon: Truck,       title: 'Free Shipping',       desc: 'On orders above ₹999 · Pan India delivery' },
   { icon: ShieldCheck, title: 'Secure Payments',     desc: 'Razorpay · UPI · All major cards accepted' },
-  { icon: RotateCcw,   title: 'Easy Returns',        desc: '7-day hassle-free return policy' },
+  { icon: CheckCircle, title: '100% Authentic',      desc: 'Silk Mark Certified & pure handloom' },
   { icon: Award,       title: 'Genuine Products',    desc: 'Handpicked, quality-assured ethnic wear' },
 ];
 
