@@ -82,11 +82,17 @@ const TransactionHistory = () => {
     setError('');
     try {
       const response = await userApi.getAllUsersTransactions(filters);
-      if (response.success) {
-        setTransactions(response.data.transactions);
-        setPagination(response.data.pagination);
-        setSummary(response.data.summary);
-      }
+      const data = response?.data || response || {};
+      const txList = Array.isArray(data.transactions)
+        ? data.transactions
+        : Array.isArray(response?.transactions)
+        ? response.transactions
+        : Array.isArray(response)
+        ? response
+        : [];
+      setTransactions(txList);
+      if (data.pagination) setPagination(prev => ({ ...prev, ...data.pagination }));
+      if (data.summary) setSummary(prev => ({ ...prev, ...data.summary }));
     } catch (err) {
       setError(err.message || 'Failed to fetch transaction history');
     } finally {
@@ -118,16 +124,17 @@ const TransactionHistory = () => {
   // Memoize export function
   const handleExportToExcel = useCallback(() => {
     // Prepare the data for export
-    const exportData = transactions.map(transaction => ({
-      'Transaction ID': transaction._id,
-      'User Name': transaction.userId?.name || 'N/A',
-      'User Email': transaction.userId?.email || 'N/A',
-      'User Contact': transaction.userId?.contact || 'N/A',
-      'Amount': transaction.amount,
-      'Type': transaction.type.toUpperCase(),
-      'Description': transaction.description,
-      'Status': transaction.status.toUpperCase(),
-      'Date': new Date(transaction.createdAt).toLocaleString()
+    const safeTx = Array.isArray(transactions) ? transactions : [];
+    const exportData = safeTx.map(transaction => ({
+      'Transaction ID': transaction?._id || 'N/A',
+      'User Name': transaction?.userId?.name || 'N/A',
+      'User Email': transaction?.userId?.email || 'N/A',
+      'User Contact': transaction?.userId?.contact || 'N/A',
+      'Amount': transaction?.amount || 0,
+      'Type': (transaction?.type || 'credit').toUpperCase(),
+      'Description': transaction?.description || '',
+      'Status': (transaction?.status || 'completed').toUpperCase(),
+      'Date': transaction?.createdAt ? new Date(transaction.createdAt).toLocaleString() : 'N/A'
     }));
 
     // Create worksheet
@@ -218,7 +225,7 @@ const TransactionHistory = () => {
             variant="outlined"
             onClick={handleExportToExcel}
             startIcon={<FileDownloadIcon />}
-            disabled={transactions.length === 0}
+            disabled={!Array.isArray(transactions) || transactions.length === 0}
             sx={{
               borderRadius: 0,
               textTransform: 'uppercase',
@@ -260,7 +267,7 @@ const TransactionHistory = () => {
                 Total Credit
               </Typography>
               <Typography variant="h5" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 700, color: '#2e7d32' }}>
-                ₹{summary.totalCredit.toLocaleString('en-IN')}
+                ₹{(summary?.totalCredit ?? 0).toLocaleString('en-IN')}
               </Typography>
             </CardContent>
           </Card>
@@ -272,7 +279,7 @@ const TransactionHistory = () => {
                 Total Debit
               </Typography>
               <Typography variant="h5" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 700, color: '#d32f2f' }}>
-                ₹{summary.totalDebit.toLocaleString('en-IN')}
+                ₹{(summary?.totalDebit ?? 0).toLocaleString('en-IN')}
               </Typography>
             </CardContent>
           </Card>
@@ -283,8 +290,8 @@ const TransactionHistory = () => {
               <Typography sx={{ color: '#7D7571', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }} gutterBottom>
                 Net Balance
               </Typography>
-              <Typography variant="h5" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 700, color: summary.netAmount >= 0 ? "#2e7d32" : "#d32f2f" }}>
-                ₹{summary.netAmount.toLocaleString('en-IN')}
+              <Typography variant="h5" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 700, color: (summary?.netAmount ?? 0) >= 0 ? "#2e7d32" : "#d32f2f" }}>
+                ₹{(summary?.netAmount ?? 0).toLocaleString('en-IN')}
               </Typography>
             </CardContent>
           </Card>
@@ -296,7 +303,7 @@ const TransactionHistory = () => {
                 Total Transactions
               </Typography>
               <Typography variant="h5" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 700, color: '#6D1734' }}>
-                {summary.totalTransactions.toLocaleString('en-IN')}
+                {(summary?.totalTransactions ?? 0).toLocaleString('en-IN')}
               </Typography>
             </CardContent>
           </Card>
@@ -440,7 +447,7 @@ const TransactionHistory = () => {
                   <CircularProgress />
                 </TableCell>
               </TableRow>
-            ) : transactions.length === 0 ? (
+            ) : (!Array.isArray(transactions) || transactions.length === 0) ? (
               <TableRow>
                 <TableCell colSpan={7} align="center">
                   <Typography variant="body2" color="textSecondary">
@@ -449,33 +456,33 @@ const TransactionHistory = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              transactions.map((transaction) => (
-                <TableRow key={transaction._id}>
+              (Array.isArray(transactions) ? transactions : []).map((transaction) => (
+                <TableRow key={transaction?._id || Math.random()}>
                   <TableCell>
                     <Typography variant="body2" fontFamily="monospace">
-                      {transaction._id.slice(-8)}
+                      {transaction?._id ? transaction._id.slice(-8) : 'N/A'}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="subtitle2">
-                      {transaction.userId?.name || 'N/A'}
+                      {transaction?.userId?.name || 'N/A'}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                      {transaction.userId?.email || 'N/A'}
+                      {transaction?.userId?.email || 'N/A'}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                      {transaction.userId?.contact || 'N/A'}
+                      {transaction?.userId?.contact || 'N/A'}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="subtitle2" fontWeight="bold">
-                      ₹{transaction.amount.toLocaleString()}
+                      ₹{(transaction?.amount ?? 0).toLocaleString()}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={transaction.type.toUpperCase()}
-                      color={getTypeColor(transaction.type)}
+                      label={(transaction?.type || 'credit').toUpperCase()}
+                      color={getTypeColor(transaction?.type)}
                       size="small"
                       sx={{ borderRadius: 0, fontWeight: 600, fontSize: '0.7rem' }}
                     />

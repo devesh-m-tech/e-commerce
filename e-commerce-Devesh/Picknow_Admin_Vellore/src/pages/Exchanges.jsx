@@ -62,10 +62,15 @@ const Exchanges = () => {
         status: activeTab === "ALL" ? "" : activeTab,
         search: searchQuery
       });
-      if (res.success) {
-        setExchanges(res.exchanges || []);
-        if (res.stats) setStats(res.stats);
-      }
+      const rawExchanges = Array.isArray(res?.exchanges)
+        ? res.exchanges
+        : Array.isArray(res?.data)
+        ? res.data
+        : Array.isArray(res)
+        ? res
+        : [];
+      setExchanges(rawExchanges);
+      if (res?.stats) setStats(res.stats);
     } catch (err) {
       console.warn("Could not fetch exchanges from backend:", err);
       // Fallback mock for demo if backend offline
@@ -276,12 +281,12 @@ const Exchanges = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {exchanges.map((ex) => (
-                <TableRow key={ex._id} hover>
+              {(Array.isArray(exchanges) ? exchanges : []).map((ex) => (
+                <TableRow key={ex?._id || Math.random()} hover>
                   <TableCell>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>#{ex._id.slice(-6).toUpperCase()}</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>#{ex?._id ? ex._id.slice(-6).toUpperCase() : 'REQ'}</Typography>
                     <Typography variant="caption" color="text.secondary">
-                      {new Date(ex.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
+                      {ex?.createdAt ? new Date(ex.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : 'Recent'}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -457,7 +462,7 @@ const Exchanges = () => {
                     PRODUCT PHOTOS ({selectedExchange.photos?.length || 0}):
                   </Typography>
                   <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", maxHeight: 260, overflowY: "auto" }}>
-                    {selectedExchange.photos?.length > 0 ? (
+                    {Array.isArray(selectedExchange?.photos) && selectedExchange.photos.length > 0 ? (
                       selectedExchange.photos.map((photo, i) => (
                         <a key={i} href={photo} target="_blank" rel="noopener noreferrer">
                           <img

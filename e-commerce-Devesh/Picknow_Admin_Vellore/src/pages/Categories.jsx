@@ -100,10 +100,17 @@ const Categories = () => {
     try {
       setLoading(true);
       const response = await categoryApi.getAllCategories();
-      if (response) {
-        setAllCategories(response);
-        setCategories(response);
-      }
+      const rawCategories = Array.isArray(response)
+        ? response
+        : Array.isArray(response?.Categories)
+        ? response.Categories
+        : Array.isArray(response?.categories)
+        ? response.categories
+        : Array.isArray(response?.data)
+        ? response.data
+        : [];
+      setAllCategories(rawCategories);
+      setCategories(rawCategories);
     } catch (error) {
       console.error('Error fetching categories:', error);
       enqueueSnackbar(error.message || 'Failed to fetch categories', { 
@@ -310,12 +317,13 @@ const Categories = () => {
 
   const handleExportToExcel = () => {
     // Prepare the data for export
-    const exportData = categories.map(category => ({
-      'Category Name': category.cName,
-      'Description': category.cDescription,
-      'Status': category.cStatus,
-      'Number of Products': category.products || 0,
-      'Created At': new Date(category.createdAt).toLocaleDateString()
+    const safeCategories = Array.isArray(categories) ? categories : [];
+    const exportData = safeCategories.map(category => ({
+      'Category Name': category?.cName || '',
+      'Description': category?.cDescription || '',
+      'Status': category?.cStatus || 'active',
+      'Number of Products': category?.products || 0,
+      'Created At': category?.createdAt ? new Date(category.createdAt).toLocaleDateString() : ''
     }));
 
     // Create worksheet
@@ -576,10 +584,11 @@ const Categories = () => {
   };
 
   const filteredCategories = useMemo(() => {
-    return allCategories.filter(category => {
-      const searchLower = searchQuery.toLowerCase();
-      const name = (category.cName || '').toLowerCase();
-      const description = (category.cDescription || '').toLowerCase();
+    const list = Array.isArray(allCategories) ? allCategories : [];
+    return list.filter(category => {
+      const searchLower = (searchQuery || '').toLowerCase();
+      const name = (category?.cName || '').toLowerCase();
+      const description = (category?.cDescription || '').toLowerCase();
 
       return name.includes(searchLower) || description.includes(searchLower);
     });
@@ -592,11 +601,13 @@ const Categories = () => {
   };
 
   const paginatedCategories = useMemo(() => {
+    const list = Array.isArray(filteredCategories) ? filteredCategories : [];
     const startIndex = page * rowsPerPage;
-    return filteredCategories.slice(startIndex, startIndex + rowsPerPage);
+    return list.slice(startIndex, startIndex + rowsPerPage);
   }, [filteredCategories, page, rowsPerPage]);
 
   const renderCategoryList = (categories, level = 0) => {
+    if (!Array.isArray(categories)) return null;
     return categories.map((category) => (
       <div key={category._id}>
         <div style={{ marginLeft: `${level * 20}px` }}>

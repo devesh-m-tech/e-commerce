@@ -145,6 +145,27 @@ const ComboOffers = () => {
     e.target.onerror = null; // Prevent infinite loop
   };
 
+  const fetchCombos = async () => {
+    try {
+      const response = await comboApi.getAllCombos();
+      const rawCombos = Array.isArray(response)
+        ? response
+        : Array.isArray(response?.combos)
+        ? response.combos
+        : Array.isArray(response?.data)
+        ? response.data
+        : [];
+      
+      const sortedCombos = rawCombos.sort((a, b) =>
+        new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+      );
+      setComboOffers(sortedCombos);
+    } catch (error) {
+      console.error('Error fetching combos:', error);
+      setComboOffers([]);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -581,24 +602,6 @@ const ComboOffers = () => {
         ))
       );
     });
-
-  const fetchCombos = async () => {
-    try {
-      const response = await comboApi.getAllCombos();
-      if (response) {
-        // Sort combos by creation date (newest first)
-        const sortedCombos = response.sort((a, b) =>
-          new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        setComboOffers(sortedCombos);
-      }
-    } catch (error) {
-      console.error('Error fetching combos:', error);
-      enqueueSnackbar(error.message || 'Failed to fetch combos', {
-        variant: 'error'
-      });
-    }
-  };
 
   const handleExportToExcel = () => {
     // Prepare the data for export

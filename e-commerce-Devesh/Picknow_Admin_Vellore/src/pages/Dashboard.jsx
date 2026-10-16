@@ -221,10 +221,10 @@ const Dashboard = () => {
         setDashboardSummary(summaryData.summary);
         if (Array.isArray(summaryData.summary.lowStockProducts) && summaryData.summary.lowStockProducts.length > 0) {
           setLowStockList(summaryData.summary.lowStockProducts);
-        } else if (lowStockData?.products) {
+        } else if (Array.isArray(lowStockData?.products)) {
           setLowStockList(lowStockData.products);
         }
-      } else if (lowStockData?.products) {
+      } else if (Array.isArray(lowStockData?.products)) {
         setLowStockList(lowStockData.products);
       }
 
@@ -1359,7 +1359,7 @@ const Dashboard = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {lowStockList.slice(0, 6).map((item) => {
+                        {(Array.isArray(lowStockList) ? lowStockList : []).slice(0, 6).map((item) => {
                           const stock = Number(item.pStock ?? item.pQuantity ?? 0);
                           const isCritical = stock <= 2;
                           return (
