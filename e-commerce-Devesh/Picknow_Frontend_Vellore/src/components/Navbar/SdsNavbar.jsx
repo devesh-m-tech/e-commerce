@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { createPortal } from 'react-dom';
-import { Search, ShoppingCart, Heart, User, LogOut, Menu, X, ArrowRight, ChevronRight, Sparkles, Tag, Palette, Folder } from 'lucide-react';
+import { Search, ShoppingCart, Heart, User, LogOut, Menu, X, ArrowRight, ChevronRight, Sparkles, Tag, Palette, Folder, Mic, MicOff } from 'lucide-react';
 import { useSnackbar } from 'notistack';
 import { cartApi } from '../../APi/cartApi';
 import { getWishlist } from '../../APi/userApi';
@@ -206,8 +206,10 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
   const [colorSuggestions, setColorSuggestions] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const searchRef = useRef(null);
   const navRef = useRef(null);
+  const recognitionRef = useRef(null);
 
   // Scroll handler
   useEffect(() => {
@@ -354,10 +356,96 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
   const handleSearch = (term = searchText) => {
     if (!term || !term.trim()) return;
     const clean = term.trim();
+    if (isListening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }
     navigate(`/products?q=${encodeURIComponent(clean)}`);
     setSearchText('');
     setSearchOpen(false);
   };
+
+  // ── Voice Search via Web Speech API ────────────────────────────
+  const toggleVoiceSearch = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      enqueueSnackbar('Voice search requires Chrome, Edge, or Safari browser. Please type your search.', {
+        variant: 'info'
+      });
+      return;
+    }
+
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognitionRef.current = recognition;
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = 'en-IN'; // Optimized for Indian English & saree keywords
+
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
+        }
+
+        const heard = finalTranscript || interimTranscript;
+        if (heard) {
+          setSearchText(heard);
+        }
+
+        if (finalTranscript && finalTranscript.trim()) {
+          setTimeout(() => {
+            handleSearch(finalTranscript.trim());
+          }, 350);
+        }
+      };
+
+      recognition.onerror = (event) => {
+        console.warn('Voice search error:', event.error);
+        setIsListening(false);
+        if (event.error === 'not-allowed') {
+          enqueueSnackbar('Microphone permission denied. Please allow microphone access in your browser.', {
+            variant: 'warning'
+          });
+        }
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.start();
+    } catch (err) {
+      console.error('Speech recognition error:', err);
+      setIsListening(false);
+    }
+  };
+
+  // Stop voice recognition when search panel closes or unmounts
+  useEffect(() => {
+    if (!searchOpen && recognitionRef.current && isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }
+  }, [searchOpen, isListening]);
 
   const handleCategorySuggestionClick = (cat) => {
     const catName = typeof cat === 'string' ? cat : cat.name || cat.categoryName;
@@ -531,18 +619,40 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
               >
                 <div className="sds-search-panel-inner">
                   {/* Search Input Box */}
-                  <div className="sds-search-input-box">
+                  <div className={`sds-search-input-box ${isListening ? 'sds-voice-active' : ''}`}>
                     <Search size={20} className="sds-search-box-icon" />
                     <input
                       ref={searchRef}
                       type="search"
-                      placeholder="Search by product name, color, or collection (e.g. Kanchipuram, Red, Jewellery)…"
+                      placeholder={
+                        isListening
+                          ? "Listening... Speak now (பேசுங்கள்)..."
+                          : "Search by product name, color, or collection (e.g. Kanchipuram, Red, Jewellery)…"
+                      }
                       value={searchText}
                       onChange={(e) => setSearchText(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                       aria-label="Search products"
                       className="sds-search-box-input"
                     />
+
+                    {/* Luxury Voice Search Button */}
+                    <button
+                      type="button"
+                      onClick={toggleVoiceSearch}
+                      className={`sds-search-voice-btn ${isListening ? 'listening' : ''}`}
+                      title={isListening ? 'Listening... Click to stop (பேசலாம்)' : 'Voice Search (பேசி தேடலாம்)'}
+                      aria-label="Voice search"
+                    >
+                      {isListening ? (
+                        <span className="sds-voice-listening-wrap">
+                          <Mic size={17} className="sds-mic-pulse" />
+                        </span>
+                      ) : (
+                        <Mic size={17} />
+                      )}
+                    </button>
+
                     {searchText && (
                       <button
                         type="button"
@@ -563,6 +673,29 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
                       <X size={18} />
                     </button>
                   </div>
+
+                  {/* Active Voice Listening Banner */}
+                  {isListening && (
+                    <motion.div
+                      className="sds-voice-status-banner"
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                    >
+                      <span className="sds-voice-pulse-dot" />
+                      <span className="sds-voice-status-text">
+                        Listening... Speak product name, color, or style (e.g. <em>"Kanchipuram Silk Saree"</em>, <em>"Bridal Red"</em>, <em>"Temple Jewellery"</em>)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={toggleVoiceSearch}
+                        className="sds-voice-stop-btn"
+                        aria-label="Stop voice search"
+                      >
+                        Stop
+                      </button>
+                    </motion.div>
+                  )}
 
                   {/* Trending suggestions when search is empty */}
                   {!searchText && (
