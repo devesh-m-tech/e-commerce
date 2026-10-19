@@ -64,6 +64,83 @@ export const DUMMY_CATEGORIES = [
       { _id: "sub_chettinad", name: "Chettinad Cotton", status: 1 },
       { _id: "sub_chanderi", name: "Chanderi Cotton", status: 1 }
     ]
+  },
+  {
+    _id: "cat_designer_lehengas",
+    cName: "Designer Lehengas",
+    cDescription: "Artisanal zardozi, chikankari & royal flared bridal & festive lehengas",
+    cImage: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=600&q=80",
+    cStatus: 1,
+    subCategories: [
+      { _id: "sub_bridal_lh", name: "Bridal Lehengas", status: 1 },
+      { _id: "sub_festive_lh", name: "Festive Lehengas", status: 1 }
+    ]
+  },
+  {
+    _id: "cat_temple_jewellery",
+    cName: "Temple Jewellery",
+    cDescription: "Authentic South Indian antique matte gold kasu mala and kemp harams",
+    cImage: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=80",
+    cStatus: 1,
+    subCategories: [
+      { _id: "sub_kasu_haram", name: "Kasu Haram", status: 1 },
+      { _id: "sub_peacock_jhumkas", name: "Peacock Jhumkas", status: 1 }
+    ]
+  },
+  {
+    _id: "cat_pure_kanchipuram",
+    cName: "Pure Kanchipuram",
+    cDescription: "Heritage handwoven pure zari Kanchipuram pattu sarees",
+    cImage: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80",
+    cStatus: 1,
+    subCategories: [
+      { _id: "sub_pure_korvai", name: "Korvai Handloom", status: 1 },
+      { _id: "sub_pure_muhurtham", name: "Muhurtham Silk", status: 1 }
+    ]
+  },
+  {
+    _id: "cat_banarasi_brocade",
+    cName: "Banarasi Brocade",
+    cDescription: "Pure Katan silk Banarasi sarees with regal antique gold kadhwa jaal",
+    cImage: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=600&q=80",
+    cStatus: 1,
+    subCategories: [
+      { _id: "sub_katan_silk", name: "Katan Silk", status: 1 },
+      { _id: "sub_banarasi_georgette", name: "Banarasi Georgette", status: 1 }
+    ]
+  },
+  {
+    _id: "cat_anarkalis_gowns",
+    cName: "Anarkalis & Gowns",
+    cDescription: "Floor-sweeping pure silk and flowy georgette Anarkali suit sets",
+    cImage: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=600&q=80",
+    cStatus: 1,
+    subCategories: [
+      { _id: "sub_silk_anarkali", name: "Silk Anarkalis", status: 1 },
+      { _id: "sub_festive_gowns", name: "Festive Gowns", status: 1 }
+    ]
+  },
+  {
+    _id: "cat_designer_blouses",
+    cName: "Designer Blouses",
+    cDescription: "Handcrafted bridal aari work, zardozi embroidery & raw silk blouse pieces",
+    cImage: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80",
+    cStatus: 1,
+    subCategories: [
+      { _id: "sub_aari_blouse", name: "Aari Work Blouses", status: 1 },
+      { _id: "sub_maggam_blouse", name: "Maggam Work", status: 1 }
+    ]
+  },
+  {
+    _id: "cat_handloom_dupattas",
+    cName: "Handloom Dupattas",
+    cDescription: "Pure organza, Kalamkari hand-painted & Banarasi silk dupattas",
+    cImage: "https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=600&q=80",
+    cStatus: 1,
+    subCategories: [
+      { _id: "sub_organza_dup", name: "Organza Dupattas", status: 1 },
+      { _id: "sub_banarasi_dup", name: "Banarasi Dupattas", status: 1 }
+    ]
   }
 ];
 

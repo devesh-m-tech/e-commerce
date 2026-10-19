@@ -22,3 +22,6 @@ Picknow_Backend_Vellore/logs/
 .DS_Store
 Thumbs.db
 .playwright-mcp/
+
+# Root verification screenshots
+/*.png

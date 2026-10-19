@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Heart, ShieldCheck, Truck, CheckCircle, Award, Sparkles, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Heart, ShieldCheck, Truck, CheckCircle, Award, Sparkles, ArrowRight, ArrowLeftRight, Pause, Play, ChevronsRight, Flame, ChevronLeft, ChevronRight, Clock, Star, Shield } from 'lucide-react';
 import { productApi } from '../../APi/productApi';
 import { categoryApi } from '../../APi/categoryApi';
 import axiosInstance from '../../APi/axiosInstance';
@@ -81,10 +81,14 @@ const ProductCard = ({ product }) => {
           loading="lazy"
           width={400}
           height={533}
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80';
+          }}
         />
         {discount && (
           <div className="sds-product-badge-wrap">
-            <span className="sds-badge">{discount}% OFF</span>
+            <span className="sds-badge sds-badge-animated">{discount}% OFF</span>
           </div>
         )}
         {!inStock && (
@@ -92,6 +96,11 @@ const ProductCard = ({ product }) => {
             <span className="sds-badge" style={{ background: 'rgba(40,35,33,0.7)' }}>Out of Stock</span>
           </div>
         )}
+        <div className="sds-product-hover-overlay" aria-hidden="true">
+          <span className="sds-product-quick-btn">
+            Explore Deal <ArrowRight size={13} />
+          </span>
+        </div>
       </div>
       <div className="sds-product-info">
         <h3 className="sds-product-name">{name}</h3>
@@ -146,22 +155,97 @@ const SectionHeader = ({ eyebrow, title, viewAllPath }) => (
 
 // ── Trust Indicators ─────────────────────────────────────────
 const TRUST_ITEMS = [
-  { icon: Truck,       title: 'Free Shipping',       desc: 'On orders above ₹999 · Pan India delivery' },
-  { icon: ShieldCheck, title: 'Secure Payments',     desc: 'Razorpay · UPI · All major cards accepted' },
-  { icon: CheckCircle, title: '100% Authentic',      desc: 'Silk Mark Certified & pure handloom' },
-  { icon: Award,       title: 'Genuine Products',    desc: 'Handpicked, quality-assured ethnic wear' },
+  { 
+    icon: Truck,
+    badge: 'Express Delivery',
+    title: 'Free Express Shipping',
+    desc: 'Complimentary insured shipping on all orders above ₹999. Swift Pan-India dispatch with end-to-end tracking.',
+    highlight: 'Dispatched in 24-48h'
+  },
+  { 
+    icon: ShieldCheck,
+    badge: '100% Encrypted',
+    title: 'Secure Payments',
+    desc: 'Bank-grade encrypted checkout via Razorpay, UPI, Net Banking & all major credit/debit cards.',
+    highlight: 'Zero Payment Risk'
+  },
+  { 
+    icon: CheckCircle,
+    badge: 'Silk Mark Certified',
+    title: '100% Authentic Silk',
+    desc: 'Every Kanchipuram and Banarasi weave carries an authorized Silk Mark certifying genuine pure silk and zari.',
+    highlight: 'Purity Guaranteed'
+  },
+  { 
+    icon: Award,
+    badge: 'Heritage Looms',
+    title: 'Direct From Weavers',
+    desc: 'Ethically sourced directly from master handloom weaving clusters across Tamil Nadu, upholding generations of art.',
+    highlight: 'Artisan Crafted'
+  },
 ];
 
 // ── Main Homepage Component ───────────────────────────────────
 const SdsHomePage = () => {
-  const [categories, setCategories]     = useState([]);
-  const [featuredProducts, setFeatured] = useState([]);
-  const [latestProducts, setLatest]     = useState([]);
-  const [offerProducts, setOffers]      = useState([]);
-  const [loading, setLoading]           = useState(true);
-  const [email, setEmail]               = useState('');
-  const [emailSent, setEmailSent]       = useState(false);
+  const [categories, setCategories]             = useState([]);
+  const [categoryDirection, setCategoryDirection] = useState('ltr');
+  const [isCategoryPaused, setIsCategoryPaused]   = useState(false);
+  const [featuredProducts, setFeatured]         = useState([]);
+  const [latestProducts, setLatest]             = useState([]);
+  const [offerProducts, setOffers]              = useState([]);
+  const [loading, setLoading]                   = useState(true);
+  const [email, setEmail]                       = useState('');
+  const [emailSent, setEmailSent]               = useState(false);
+  const [timeLeft, setTimeLeft]                 = useState({ hours: 8, minutes: 42, seconds: 15 });
+  const offersScrollRef                         = useRef(null);
+  const [activeStoryImg, setActiveStoryImg]     = useState(0);
   const navigate = useNavigate();
+
+  const storyImages = [
+    {
+      url: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80',
+      caption: 'Pure Handloom Kanchipuram',
+      desc: 'Woven with certified pure mulberry silk and pure gold korvai zari.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=800&q=80',
+      caption: 'Heirloom Bridal Drapes',
+      desc: 'Celebrating sacred muhurthams and grand wedding receptions.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=800&q=80',
+      caption: 'Antique Temple Jewellery',
+      desc: 'Handcrafted 22K gold-plated heirloom jewels with kemp stones.'
+    }
+  ];
+
+  // Auto-switch brand story image every 5.5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveStoryImg((prev) => (prev + 1) % 3);
+    }, 5500);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Real-time ticking countdown timer for Special Offers
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
+        if (prev.minutes > 0) return { ...prev, minutes: 59, seconds: 59 };
+        if (prev.hours > 0) return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
+        return { hours: 12, minutes: 0, seconds: 0 };
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const scrollOffers = (direction) => {
+    if (offersScrollRef.current) {
+      const scrollAmount = direction === 'left' ? -340 : 340;
+      offersScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -176,7 +260,12 @@ const SdsHomePage = () => {
         ]);
 
         const rawCatList = Array.isArray(catRes) ? catRes : (catRes?.categories || []);
-        const catList = rawCatList.length > 0 ? rawCatList : DUMMY_CATEGORIES;
+        // Combine raw categories with DUMMY_CATEGORIES to ensure all rich categories are present
+        const combinedCats = [
+          ...rawCatList,
+          ...DUMMY_CATEGORIES.filter(dc => !rawCatList.some(rc => (rc.cName || '').toLowerCase() === dc.cName.toLowerCase()))
+        ];
+        const catList = combinedCats.length > 0 ? combinedCats : DUMMY_CATEGORIES;
 
         const rawProdList = featRes?.products || (Array.isArray(featRes) ? featRes : []);
         const prodList = rawProdList.length > 0 ? rawProdList : DUMMY_PRODUCTS;
@@ -185,12 +274,12 @@ const SdsHomePage = () => {
         const latList = rawLatList.slice(0, 8);
 
         const rawDealList = dealsRes?.data?.results?.products || dealsRes?.data?.products || [];
-        const dealList = rawDealList.length > 0 ? rawDealList : prodList.slice(0, 4);
+        const dealList = rawDealList.length > 0 ? rawDealList : prodList;
 
-        setCategories(catList.slice(0, 10));
+        setCategories(catList);
         setFeatured(prodList.slice(0, 8));
         setLatest(latList.slice(0, 8));
-        setOffers(dealList.slice(0, 4));
+        setOffers(dealList.slice(0, 8));
       } catch (err) {
         console.error('SdsHomePage: fetch error', err);
       } finally {
@@ -313,54 +402,101 @@ const SdsHomePage = () => {
         </motion.button>
       </section>
 
-      {/* ── 2. SHOP BY CATEGORY ─────────────────────────────── */}
-      <section className="sds-section" id="shop-by-category" aria-label="Shop by category">
+      {/* ── 2. SHOP BY CATEGORY (INFINITE LOOP SCROLL ANIMATION LTR) ── */}
+      <section className="sds-section sds-category-section" id="shop-by-category" aria-label="Shop by category">
         <div className="sds-container">
-          <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+          <div className="sds-category-header-wrap">
             <span className="sds-section-label">Browse Collections</span>
             <h2 className="sds-section-title">Shop by Category</h2>
+
+            <div className="sds-category-controls">
+              <button 
+                type="button"
+                className={`sds-category-ctrl-btn ${categoryDirection === 'ltr' ? 'active' : ''}`}
+                onClick={() => setCategoryDirection(prev => prev === 'ltr' ? 'rtl' : 'ltr')}
+                title="Toggle scroll direction"
+                aria-label={`Scroll direction: ${categoryDirection === 'ltr' ? 'Left to Right' : 'Right to Left'}`}
+              >
+                <ArrowLeftRight size={13} />
+                <span>{categoryDirection === 'ltr' ? 'Left to Right' : 'Right to Left'}</span>
+              </button>
+
+              <button 
+                type="button"
+                className="sds-category-ctrl-btn"
+                onClick={() => setIsCategoryPaused(prev => !prev)}
+                title={isCategoryPaused ? "Resume scroll loop" : "Pause scroll loop"}
+                aria-label={isCategoryPaused ? "Resume scroll loop" : "Pause scroll loop"}
+              >
+                {isCategoryPaused ? <Play size={13} /> : <Pause size={13} />}
+                <span>{isCategoryPaused ? 'Resume' : 'Pause'}</span>
+              </button>
+            </div>
           </div>
-          <div className="sds-categories-grid">
-            {loading
-              ? Array.from({ length: 6 }).map((_, i) => <CatSkeleton key={i} />)
-              : categories.length > 0
-                ? categories.map((cat) => (
-                    <Link
-                      key={cat._id}
-                      to={`/category/${cat._id}?name=${encodeURIComponent(cat.cName)}`}
-                      className="sds-category-card"
-                    >
-                      <div className="sds-category-img-ring">
-                        <img
-                          src={cat.cImage || 'https://cdn-icons-png.flaticon.com/512/3061/3061730.png'}
-                          alt={cat.cName}
-                          loading="lazy"
-                          width={120}
-                          height={120}
-                        />
-                      </div>
-                      <span className="sds-category-label">{cat.cName}</span>
-                    </Link>
-                  ))
-                : (
-                  // Fallback static categories
-                  [
-                    { label: 'Silk Sarees',       path: '/category/cat_silk_sarees',    emoji: '🥻' },
-                    { label: 'Bridal Collection', path: '/category/cat_bridal_wear',    emoji: '👑' },
-                    { label: "Women's Wear",      path: '/category/cat_womens_wear',    emoji: '✨' },
-                    { label: 'Jewellery',         path: '/category/cat_jewellery',      emoji: '💎' },
-                    { label: 'Cotton Sarees',     path: '/category/cat_cotton_sarees',  emoji: '🌸' },
-                  ].map((c) => (
-                    <Link key={c.path} to={c.path} className="sds-category-card">
-                      <div className="sds-category-img-ring" style={{ fontSize: '2.5rem', lineHeight: 1 }}>
-                        {c.emoji}
-                      </div>
-                      <span className="sds-category-label">{c.label}</span>
-                    </Link>
-                  ))
-                )
-            }
-          </div>
+        </div>
+
+        {/* Marquee Wrapper with soft edge gradients and infinite loop */}
+        <div className="sds-categories-marquee-wrapper">
+          {loading ? (
+            <div className="sds-categories-group" style={{ justifyContent: 'center' }}>
+              {Array.from({ length: 8 }).map((_, i) => <CatSkeleton key={i} />)}
+            </div>
+          ) : (
+            <div className={`sds-categories-track direction-${categoryDirection} ${isCategoryPaused ? 'is-paused' : ''}`}>
+              {/* Group 1 */}
+              <div className="sds-categories-group">
+                {(categories.length > 0 ? categories : DUMMY_CATEGORIES).map((cat, idx) => (
+                  <Link
+                    key={`cat-g1-${cat._id || idx}`}
+                    to={`/category/${cat._id}?name=${encodeURIComponent(cat.cName)}`}
+                    className="sds-category-card"
+                  >
+                    <div className="sds-category-img-ring">
+                      <img
+                        src={cat.cImage || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80'}
+                        alt={cat.cName}
+                        loading="lazy"
+                        width={125}
+                        height={125}
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80';
+                        }}
+                      />
+                    </div>
+                    <span className="sds-category-label">{cat.cName}</span>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Group 2 (Identical clone for seamless, gap-free infinite loop) */}
+              <div className="sds-categories-group" aria-hidden="true">
+                {(categories.length > 0 ? categories : DUMMY_CATEGORIES).map((cat, idx) => (
+                  <Link
+                    key={`cat-g2-${cat._id || idx}`}
+                    to={`/category/${cat._id}?name=${encodeURIComponent(cat.cName)}`}
+                    className="sds-category-card"
+                    tabIndex="-1"
+                  >
+                    <div className="sds-category-img-ring">
+                      <img
+                        src={cat.cImage || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80'}
+                        alt={cat.cName}
+                        loading="lazy"
+                        width={125}
+                        height={125}
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80';
+                        }}
+                      />
+                    </div>
+                    <span className="sds-category-label">{cat.cName}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -408,55 +544,292 @@ const SdsHomePage = () => {
       {!loading && offerProducts.length > 0 && (
         <>
           <div className="sds-promo-banner">
-            <div className="sds-promo-banner-text">
-              <h3>Festive Season Offers</h3>
-              <p>Handpicked sarees and jewellery at exclusive prices — limited time only.</p>
+            {/* Animated Ambient Light Orbs & Golden Shimmer */}
+            <div className="sds-promo-ambient" aria-hidden="true">
+              <motion.div 
+                className="sds-promo-orb sds-promo-orb-1"
+                animate={{
+                  x: [0, 35, -25, 0],
+                  y: [0, -25, 20, 0],
+                  opacity: [0.35, 0.7, 0.4, 0.35],
+                  scale: [1, 1.18, 0.92, 1]
+                }}
+                transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <motion.div 
+                className="sds-promo-orb sds-promo-orb-2"
+                animate={{
+                  x: [0, -30, 25, 0],
+                  y: [0, 20, -20, 0],
+                  opacity: [0.25, 0.55, 0.35, 0.25],
+                  scale: [1, 0.9, 1.15, 1]
+                }}
+                transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+              />
+              <div className="sds-promo-shimmer-sweep" />
             </div>
-            <Link to="/deals" className="sds-btn sds-btn-ghost-white">
-              View All Offers
-            </Link>
+
+            <div className="sds-promo-banner-content">
+              <div className="sds-promo-banner-text">
+                <div className="sds-promo-badge">
+                  <Flame size={13} className="sds-flame-flicker" />
+                  <span>Limited Festive Season Deal</span>
+                  <span className="sds-live-dot" />
+                </div>
+                <h3>
+                  Festive Season <span className="sds-text-gold-gradient">Offers</span>
+                </h3>
+                <p>Handpicked sarees and jewellery at exclusive prices — limited time only.</p>
+              </div>
+
+              <div className="sds-promo-action-group">
+                <Link to="/deals" className="sds-promo-cta-btn">
+                  <span>View All Offers</span>
+                  <span className="sds-cta-chevrons" aria-hidden="true">
+                    <ChevronsRight size={18} />
+                  </span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Seamless Animated Offers Ribbon Ticker */}
+            <div className="sds-promo-ticker-wrap" aria-hidden="true">
+              <div className="sds-promo-ticker-track">
+                {[1, 2].map((groupNum) => (
+                  <div key={groupNum} className="sds-promo-ticker-group">
+                    <span className="sds-ticker-item"><Sparkles size={12} /> FLAT 25% OFF ON KANCHIPURAM SILKS</span>
+                    <span className="sds-ticker-bullet">•</span>
+                    <span className="sds-ticker-item"><Sparkles size={12} /> TEMPLE JEWELLERY SETS FROM ₹3,499</span>
+                    <span className="sds-ticker-bullet">•</span>
+                    <span className="sds-ticker-item"><Sparkles size={12} /> BRIDAL LEHENGAS EXTRA 15% OFF</span>
+                    <span className="sds-ticker-bullet">•</span>
+                    <span className="sds-ticker-item"><Sparkles size={12} /> FREE SILK MARK CERTIFIED PURITY</span>
+                    <span className="sds-ticker-bullet">•</span>
+                    <span className="sds-ticker-item"><Sparkles size={12} /> FREE EXPRESS DELIVERY PAN-INDIA</span>
+                    <span className="sds-ticker-bullet">•</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-          <section className="sds-section sds-section-alt" aria-label="Deals and offers">
+          <section className="sds-section sds-section-alt sds-offers-section" aria-label="Deals and offers">
             <div className="sds-container">
-              <SectionHeader eyebrow="Limited Time" title="Special Offers" viewAllPath="/deals" />
-              <div className="sds-products-grid">
-                {offerProducts.map((p) => <ProductCard key={p._id} product={p} />)}
+              <div className="sds-offers-header-row">
+                <div className="sds-section-header-left">
+                  <div className="sds-offers-eyebrow-row">
+                    <span className="sds-section-label">Limited Time</span>
+                    <div className="sds-offers-countdown">
+                      <Clock size={12} className="sds-clock-icon" />
+                      <span className="sds-countdown-label">Ends in:</span>
+                      <span className="sds-time-digits">
+                        <span className="sds-time-box">{String(timeLeft.hours).padStart(2, '0')}h</span>
+                        <span className="sds-time-sep">:</span>
+                        <span className="sds-time-box">{String(timeLeft.minutes).padStart(2, '0')}m</span>
+                        <span className="sds-time-sep">:</span>
+                        <span className="sds-time-box sds-time-sec">{String(timeLeft.seconds).padStart(2, '0')}s</span>
+                      </span>
+                    </div>
+                  </div>
+                  <h2 className="sds-section-title">Special Offers</h2>
+                </div>
+
+                <div className="sds-offers-header-right">
+                  <Link to="/deals" className="sds-view-all">
+                    <span>View All</span>
+                    <ArrowRight size={14} />
+                  </Link>
+                  <div className="sds-offers-nav-buttons">
+                    <button 
+                      type="button"
+                      className="sds-nav-arrow-btn"
+                      onClick={() => scrollOffers('left')}
+                      aria-label="Previous offers"
+                      title="Scroll left"
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
+                    <button 
+                      type="button"
+                      className="sds-nav-arrow-btn sds-nav-arrow-btn-pulse"
+                      onClick={() => scrollOffers('right')}
+                      aria-label="Next offers"
+                      title="Scroll right"
+                    >
+                      <ChevronRight size={18} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Animated Carousel Track with Smooth Momentum Scroll */}
+              <div 
+                className="sds-offers-carousel-track" 
+                ref={offersScrollRef}
+              >
+                {offerProducts.map((p, idx) => (
+                  <motion.div 
+                    key={p._id || idx}
+                    className="sds-offer-carousel-item"
+                    initial={{ opacity: 0, y: 25 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.45, delay: idx * 0.08, ease: "easeOut" }}
+                  >
+                    <ProductCard product={p} />
+                  </motion.div>
+                ))}
               </div>
             </div>
           </section>
         </>
       )}
 
-      {/* ── 6. BRAND STORY ───────────────────────────────────── */}
-      <section className="sds-section" aria-label="About Shri Deepaalaya Silks">
+      {/* ── 6. BRAND STORY (ANIMATED CRAFTSMANSHIP & HERITAGE SHOWCASE) ── */}
+      <section className="sds-section sds-brand-story-section" aria-label="About Shri Deepaalaya Silks">
         <div className="sds-container">
           <div className="sds-brand-story">
-            {/* Text */}
-            <div className="sds-brand-story-text">
-              <span className="sds-section-label" style={{ textAlign: 'left' }}>Our Story</span>
-              <h2>Craftsmanship,<br />Passed Through Generations</h2>
-              <p>
-                At Shri Deepaalaya Silks, every saree tells a story of skilled artisans, traditional
-                looms, and a deep love for India's rich textile heritage. We source directly from
-                weavers across Tamil Nadu and beyond, ensuring that every thread is a promise of
-                authenticity and quality.
-              </p>
-              <p>
-                From bridal Kanjivaram silks to everyday cotton weaves, our collection celebrates
-                the beauty of Indian ethnic fashion — for every occasion, every woman.
-              </p>
-              <Link to="/categories" className="sds-btn sds-btn-primary" style={{ marginTop: '1.5rem', display: 'inline-flex' }}>
-                Explore All Collections
-              </Link>
-            </div>
+            {/* Left: Text & Animated Heritage Stats */}
+            <motion.div 
+              className="sds-brand-story-text"
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.65, ease: "easeOut" }}
+            >
+              <div className="sds-story-eyebrow-pill">
+                <Sparkles size={13} className="sds-sparkle-spin" />
+                <span>Our Heritage & Craftsmanship</span>
+              </div>
 
-            {/* Image / placeholder */}
-            <div className="sds-brand-story-placeholder" aria-hidden="true">
-              <SdsLogo width={160} />
-              <span style={{ fontFamily: 'var(--font-sans)', fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-                Photography coming soon
-              </span>
-            </div>
+              <h2 className="sds-brand-story-heading">
+                Craftsmanship, <br />
+                <span className="sds-text-gold-gradient">Passed Through Generations</span>
+              </h2>
+
+              <p className="sds-brand-story-lead">
+                At Shri Deepaalaya Silks, every saree tells a story of master artisans, heritage
+                looms, and an unwavering devotion to India's finest textile traditions. We source directly from
+                artisan weaving clusters across Tamil Nadu and Varanasi.
+              </p>
+
+              <p>
+                From heirloom bridal Kanjivaram silks woven with pure gold korvai zari to featherlight daily cotton drapes, 
+                every weave is an enduring celebration of authenticity, beauty, and grace.
+              </p>
+
+              {/* Animated Heritage Stats Counters */}
+              <div className="sds-heritage-stats-grid">
+                <div className="sds-stat-card">
+                  <span className="sds-stat-number">35<span className="sds-stat-plus">+</span></span>
+                  <span className="sds-stat-label">Years of Weaving Legacy</span>
+                </div>
+                <div className="sds-stat-card">
+                  <span className="sds-stat-number">100<span className="sds-stat-plus">%</span></span>
+                  <span className="sds-stat-label">Silk Mark Certified Purity</span>
+                </div>
+                <div className="sds-stat-card">
+                  <span className="sds-stat-number">50K<span className="sds-stat-plus">+</span></span>
+                  <span className="sds-stat-label">Delighted Celebrations</span>
+                </div>
+              </div>
+
+              <div className="sds-story-actions">
+                <Link to="/categories" className="sds-story-cta-btn">
+                  <span>Explore All Collections</span>
+                  <ArrowRight size={16} className="sds-cta-arrow-icon" />
+                </Link>
+                <div className="sds-story-trust-chip">
+                  <ShieldCheck size={16} className="sds-shield-gold" />
+                  <span>Certified Pure Handloom</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Right: Animated Showcase Visual Frame & Floating Badges */}
+            <motion.div 
+              className="sds-brand-story-visual-wrap"
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.65, ease: "easeOut", delay: 0.15 }}
+            >
+              {/* Ambient Golden Glow Aura */}
+              <div className="sds-story-ambient-glow" aria-hidden="true" />
+
+              {/* Main Image Frame */}
+              <div className="sds-story-image-card">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeStoryImg}
+                    className="sds-story-active-image-wrap"
+                    initial={{ opacity: 0, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
+                    transition={{ duration: 0.6, ease: "easeInOut" }}
+                  >
+                    <img 
+                      src={storyImages[activeStoryImg].url} 
+                      alt={storyImages[activeStoryImg].caption}
+                      className="sds-story-photo"
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80';
+                      }}
+                    />
+                    <div className="sds-story-photo-gradient" />
+                    
+                    {/* Bottom Caption Overlay */}
+                    <div className="sds-story-photo-caption">
+                      <span className="sds-story-caption-title">{storyImages[activeStoryImg].caption}</span>
+                      <p className="sds-story-caption-desc">{storyImages[activeStoryImg].desc}</p>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Floating Micro-Badge Top Right */}
+                <motion.div 
+                  className="sds-story-floating-badge sds-floating-badge-top"
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <Award size={18} className="sds-badge-icon-gold" />
+                  <div>
+                    <strong>Silk Mark Certified</strong>
+                    <span>100% Pure Mulberry Silk</span>
+                  </div>
+                </motion.div>
+
+                {/* Floating Micro-Badge Bottom Left */}
+                <motion.div 
+                  className="sds-story-floating-badge sds-floating-badge-bottom"
+                  animate={{ y: [0, 8, 0] }}
+                  transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                >
+                  <Star size={18} className="sds-badge-icon-gold" />
+                  <div>
+                    <strong>Heritage Korvai Weave</strong>
+                    <span>Handwoven in Kanchipuram</span>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Interactive Thumbnail Switchers */}
+              <div className="sds-story-thumbnail-nav">
+                {storyImages.map((img, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className={`sds-story-thumb-btn ${activeStoryImg === i ? 'active' : ''}`}
+                    onClick={() => setActiveStoryImg(i)}
+                    aria-label={`View photo ${i + 1}: ${img.caption}`}
+                  >
+                    <span className="sds-thumb-bar" />
+                    <span className="sds-thumb-label">{img.caption}</span>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -465,24 +838,120 @@ const SdsHomePage = () => {
         <div className="sds-ornament-gem" />
       </div>
 
-      {/* ── 7. TRUST INDICATORS ──────────────────────────────── */}
-      <section className="sds-section sds-section-alt" aria-label="Why shop with us">
+      {/* ── 7. TRUST INDICATORS (ANIMATED SHOP WITH CONFIDENCE) ── */}
+      <section className="sds-section sds-section-alt sds-trust-section" aria-label="Why shop with us">
         <div className="sds-container">
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <span className="sds-section-label">Why Choose Us</span>
-            <h2 className="sds-section-title">Shop with Confidence</h2>
-          </div>
-          <div className="sds-trust-grid">
+          <motion.div 
+            className="sds-trust-header"
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            <div className="sds-story-eyebrow-pill">
+              <Sparkles size={13} className="sds-sparkle-spin" />
+              <span>Why Choose Shri Deepaalaya Silks</span>
+            </div>
+            <h2 className="sds-section-title">
+              Shop with <span className="sds-trust-title-accent">Unwavering Confidence</span>
+            </h2>
+            <p className="sds-trust-subtitle">
+              Cherishing your life's grand celebrations with authentic handloom silks, fair artisan pricing, and royal hospitality.
+            </p>
+          </motion.div>
+
+          <motion.div 
+            className="sds-trust-grid"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: { staggerChildren: 0.12 }
+              }
+            }}
+          >
             {TRUST_ITEMS.map((item) => (
-              <div key={item.title} className="sds-trust-item">
-                <div className="sds-trust-icon" aria-hidden="true">
-                  <item.icon size={32} strokeWidth={1.5} />
+              <motion.div 
+                key={item.title} 
+                className="sds-trust-card"
+                variants={{
+                  hidden: { opacity: 0, y: 30 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } }
+                }}
+                whileHover={{ y: -8, transition: { duration: 0.25 } }}
+              >
+                {/* Diagonal Gleam Sweep on Hover */}
+                <div className="sds-trust-card-gleam" aria-hidden="true" />
+
+                {/* Top Badge Pill */}
+                <div className="sds-trust-top-badge">
+                  <span>{item.badge}</span>
                 </div>
-                <span className="sds-trust-title">{item.title}</span>
-                <p className="sds-trust-desc">{item.desc}</p>
-              </div>
+
+                {/* Animated Glowing Icon Orb */}
+                <div className="sds-trust-icon-wrapper">
+                  <div className="sds-trust-icon-halo" aria-hidden="true" />
+                  <div className="sds-trust-icon-circle">
+                    <item.icon size={28} strokeWidth={1.65} className="sds-trust-lucide-icon" />
+                  </div>
+                </div>
+
+                {/* Text Content */}
+                <h3 className="sds-trust-card-title">{item.title}</h3>
+                <p className="sds-trust-card-desc">{item.desc}</p>
+
+                {/* Bottom Highlight Tag */}
+                <div className="sds-trust-highlight-tag">
+                  <CheckCircle size={12} className="sds-trust-highlight-check" />
+                  <span>{item.highlight}</span>
+                </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
+
+          {/* Confidence Guarantee Ribbon */}
+          <motion.div 
+            className="sds-trust-guarantee-ribbon"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <div className="sds-guarantee-item">
+              <ShieldCheck size={20} className="sds-guarantee-icon" />
+              <div>
+                <strong>7-Day Easy Exchange</strong>
+                <span>Hassle-free size & color swaps</span>
+              </div>
+            </div>
+            <div className="sds-guarantee-sep" aria-hidden="true" />
+            <div className="sds-guarantee-item">
+              <Award size={20} className="sds-guarantee-icon" />
+              <div>
+                <strong>Silk Mark Certified</strong>
+                <span>Government authorized purity tag</span>
+              </div>
+            </div>
+            <div className="sds-guarantee-sep" aria-hidden="true" />
+            <div className="sds-guarantee-item">
+              <Star size={20} className="sds-guarantee-icon" />
+              <div>
+                <strong>Luxury Gift Packaging</strong>
+                <span>Tamper-proof auspicious box</span>
+              </div>
+            </div>
+            <div className="sds-guarantee-sep" aria-hidden="true" />
+            <div className="sds-guarantee-item">
+              <Sparkles size={20} className="sds-guarantee-icon" />
+              <div>
+                <strong>Personal Video Shopping</strong>
+                <span>Live saree viewing before dispatch</span>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
