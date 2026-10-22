@@ -1,0 +1,516 @@
+/* ============================================================
+   SHRI DEEPAALAYA SILKS — Global Design System
+   Phase 3: CSS Design Tokens + Base Styles
+   ============================================================ */
+
+/* ── Brand Palette ── */
+:root {
+  --color-maroon:   #6D1734;   /* primary brand */
+  --color-burgundy: #4A1025;   /* dark brand / hover / footer bg */
+  --color-gold:     #C5A15A;   /* accents, borders, highlights */
+  --color-ivory:    #FFF9F0;   /* page / section background */
+  --color-beige:    #EDE2D2;   /* alternate sections, dividers */
+  --color-charcoal: #282321;   /* body text */
+  --color-white:    #FFFFFF;
+
+  /* Semantic aliases */
+  --color-primary:        var(--color-maroon);
+  --color-primary-hover:  var(--color-burgundy);
+  --color-accent:         var(--color-gold);
+  --color-bg:             var(--color-ivory);
+  --color-bg-alt:         var(--color-beige);
+  --color-text:           var(--color-charcoal);
+  --color-text-muted:     #6b5f5a;
+  --color-border:         var(--color-beige);
+  --color-border-accent:  var(--color-gold);
+
+  /* ── Typography ── */
+  --font-serif:  'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans:   'Karla', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-number: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+/* ============================================================
+   GLOBAL NUMERAL SYSTEM: Universal Modern Geometric Digits (0-9, ₹, %, +, ,, .)
+   Applies to all static and dynamic numbers across the entire project.
+   ============================================================ */
+
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 100 900;
+  src: local('Plus Jakarta Sans'), local('Inter'),
+       url('https://fonts.gstatic.com/s/plusjakartasans/v8/LDIbaomQNQcsDxUFnMVeExgfQdf4nFcx_35ggw.woff2') format('woff2');
+  unicode-range: U+0030-0039, U+0025, U+002B, U+20B9, U+002C, U+002E;
+}
+
+@font-face {
+  font-family: 'Karla';
+  font-style: normal;
+  font-weight: 100 900;
+  src: local('Plus Jakarta Sans'), local('Inter'),
+       url('https://fonts.gstatic.com/s/plusjakartasans/v8/LDIbaomQNQcsDxUFnMVeExgfQdf4nFcx_35ggw.woff2') format('woff2');
+  unicode-range: U+0030-0039, U+0025, U+002B, U+20B9, U+002C, U+002E;
+}
+
+@font-face {
+  font-family: 'Georgia';
+  font-style: normal;
+  font-weight: 100 900;
+  src: local('Plus Jakarta Sans'), local('Inter'),
+       url('https://fonts.gstatic.com/s/plusjakartasans/v8/LDIbaomQNQcsDxUFnMVeExgfQdf4nFcx_35ggw.woff2') format('woff2');
+  unicode-range: U+0030-0039, U+0025, U+002B, U+20B9, U+002C, U+002E;
+}
+
+@font-face {
+  font-family: 'Times New Roman';
+  font-style: normal;
+  font-weight: 100 900;
+  src: local('Plus Jakarta Sans'), local('Inter'),
+       url('https://fonts.gstatic.com/s/plusjakartasans/v8/LDIbaomQNQcsDxUFnMVeExgfQdf4nFcx_35ggw.woff2') format('woff2');
+  unicode-range: U+0030-0039, U+0025, U+002B, U+20B9, U+002C, U+002E;
+}
+
+  /* ── Type Scale (fluid, clamp-based) ── */
+  --text-hero:    clamp(2.5rem, 7vw, 6rem);
+  --text-h1:      clamp(2rem, 4.5vw, 3.5rem);
+  --text-h2:      clamp(1.5rem, 3vw, 2.25rem);
+  --text-h3:      clamp(1.15rem, 2vw, 1.5rem);
+  --text-body:    1rem;
+  --text-sm:      0.875rem;
+  --text-xs:      0.75rem;
+
+  /* ── Nav label style ── */
+  --nav-label-size:    12px;
+  --nav-label-spacing: 0.15em;
+  --nav-label-weight:  500;
+
+  /* ── Layout ── */
+  --container-max:        1440px;
+  --container-px:         clamp(1rem, 5vw, 5rem);
+  --announcement-height:  36px;
+  --nav-height:           72px;
+  --nav-height-sm:        64px;
+  --header-total-height:  108px;
+  --sds-navbar-height:    72px;
+
+  /* ── Corners — square with max 2px ── */
+  --radius-sm: 2px;
+  --radius:    2px;
+  --radius-lg: 2px;
+
+  /* ── Shadows ── */
+  --shadow-sm:   0 1px 3px rgba(40, 35, 33, 0.08);
+  --shadow-md:   0 4px 16px rgba(40, 35, 33, 0.10);
+  --shadow-lg:   0 12px 40px rgba(40, 35, 33, 0.14);
+
+  /* ── Transitions ── */
+  --transition-fast:   150ms ease;
+  --transition-base:   220ms ease;
+  --transition-smooth: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-variant-numeric: tabular-nums lining-nums;
+  -webkit-font-feature-settings: "tnum" 1, "lnum" 1;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+html {
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+/* ── Base body ── */
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+/* ── Headings use serif ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  line-height: 1.2;
+  color: var(--color-charcoal);
+}
+
+/* ── Links ── */
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: color var(--transition-base);
+}
+
+/* ── Form elements ── */
+button, input, textarea, select {
+  font-family: var(--font-sans);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Focus visible (accessibility) ── */
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
+/* ── Input focus reset ── */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* ============================================================
+   BUTTON SYSTEM — Square corners, brand-coloured
+   Prefixed .sds-btn to avoid Bootstrap 5 conflict
+   ============================================================ */
+
+.sds-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 28px;
+  font-family: var(--font-sans) !important;
+  font-size: var(--nav-label-size) !important;
+  font-weight: var(--nav-label-weight) !important;
+  letter-spacing: var(--nav-label-spacing) !important;
+  text-transform: uppercase;
+  border-radius: var(--radius) !important;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
+  text-decoration: none !important;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* Primary: solid maroon */
+.sds-btn-primary {
+  background-color: var(--color-maroon) !important;
+  color: var(--color-white) !important;
+  border-color: var(--color-maroon) !important;
+}
+.sds-btn-primary:hover,
+.sds-btn-primary:focus-visible {
+  background-color: var(--color-burgundy) !important;
+  border-color: var(--color-burgundy) !important;
+  color: var(--color-white) !important;
+}
+
+/* Secondary: transparent with maroon border */
+.sds-btn-secondary {
+  background-color: transparent !important;
+  color: var(--color-maroon) !important;
+  border-color: var(--color-maroon) !important;
+}
+.sds-btn-secondary:hover,
+.sds-btn-secondary:focus-visible {
+  background-color: var(--color-maroon) !important;
+  color: var(--color-white) !important;
+}
+
+/* Ghost gold */
+.sds-btn-ghost {
+  background-color: transparent !important;
+  color: var(--color-charcoal) !important;
+  border-color: var(--color-gold) !important;
+}
+.sds-btn-ghost:hover,
+.sds-btn-ghost:focus-visible {
+  background-color: var(--color-gold) !important;
+  color: var(--color-white) !important;
+}
+
+/* Ghost white (for dark backgrounds) */
+.sds-btn-ghost-white {
+  background-color: transparent !important;
+  color: var(--color-white) !important;
+  border-color: rgba(255,255,255,0.5) !important;
+}
+.sds-btn-ghost-white:hover {
+  background-color: rgba(255,255,255,0.12) !important;
+  border-color: rgba(255,255,255,0.8) !important;
+}
+
+/* ============================================================
+   CARD SYSTEM — Square corners, thin borders
+   ============================================================ */
+
+.card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-beige);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
+}
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Product card: fixed 3:4 aspect ratio image */
+.product-card-img-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 133.33%; /* 3:4 */
+  overflow: hidden;
+  background-color: var(--color-beige);
+}
+.product-card-img-wrap img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-smooth);
+}
+.card:hover .product-card-img-wrap img {
+  transform: scale(1.04);
+}
+
+/* ============================================================
+   SECTION UTILITY
+   ============================================================ */
+
+.sds-container {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-px);
+}
+
+.sds-section {
+  padding-block: clamp(2rem, 4vw, 3.5rem);
+}
+
+.sds-section-alt {
+  background-color: var(--color-beige);
+}
+
+.sds-divider {
+  width: 48px;
+  height: 2px;
+  background: var(--color-gold);
+  margin: 0 auto 1.5rem;
+}
+
+.sds-section-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.sds-section-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-h2);
+  font-weight: 700;
+  color: var(--color-charcoal);
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.sds-section-sub {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  text-align: center;
+  max-width: 540px;
+  margin: 0 auto 1.75rem;
+}
+
+/* ============================================================
+   GRID UTILITIES
+   ============================================================ */
+
+.sds-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.sds-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.sds-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+
+@media (max-width: 1024px) {
+  .sds-grid-4 { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .sds-grid-3, .sds-grid-4 { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  .sds-grid-2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .sds-grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ============================================================
+   BADGE / TAG
+   ============================================================ */
+
+.sds-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background-color: var(--color-maroon);
+  color: var(--color-white);
+  border-radius: var(--radius-sm);
+}
+
+.sds-badge-gold {
+  background-color: var(--color-gold);
+  color: var(--color-white);
+}
+
+.sds-badge-outline {
+  background-color: transparent;
+  color: var(--color-maroon);
+  border: 1px solid var(--color-maroon);
+}
+
+/* ============================================================
+   PRICE & NUMERIC FIGURES FORMATTING (Clean, modern numbers)
+   ============================================================ */
+
+.sds-price,
+.sds-price-current,
+.sds-price-original,
+.sds-price-discount,
+.sds-price-save-badge,
+.sds-product-price-row,
+.sds-product-price-row span,
+.sds-product-badge-wrap .sds-badge,
+.sds-badge,
+.sds-icon-badge,
+.sds-hero-stat-num,
+.sds-rating-num,
+.sds-deal-badge,
+.sds-deal-timer-val,
+.sds-tracking-stat-val,
+.sds-tracking-stage-step,
+.sds-item-qty,
+.sds-item-subtotal,
+.curr-price,
+.old-price,
+.new-price,
+.current-price,
+.original-price,
+.discount-badge,
+.discount-percent,
+.price-tag,
+.price,
+.cart-total,
+.cart-price,
+.item-price,
+.total-price,
+.product-price,
+.order-price,
+.detail-price,
+.detail-mrp,
+.detail-discount,
+.rating-score,
+.rating-count,
+.review-count,
+.order-id,
+.order-number,
+.phone-number,
+.date-text,
+.countdown-box,
+.countdown-digit,
+.quantity-badge,
+.aesthetic-offer-number,
+.wishlist-count-badge {
+  font-family: var(--font-number) !important;
+  font-feature-settings: "tnum" 1, "lnum" 1 !important;
+  font-variant-numeric: tabular-nums lining-nums !important;
+}
+
+.sds-price {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-charcoal);
+  letter-spacing: -0.01em;
+}
+
+.sds-price-original {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  margin-left: 6px;
+}
+
+.sds-price-discount {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #28824a;
+  margin-left: 6px;
+}
+
+/* ============================================================
+   ANNOUNCEMENT BAR
+   ============================================================ */
+
+.sds-announcement-bar {
+  background-color: var(--color-maroon);
+  color: var(--color-white);
+  text-align: center;
+  padding: 0 16px;
+  height: var(--announcement-height, 36px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

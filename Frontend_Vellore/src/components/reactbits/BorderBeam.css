@@ -1,0 +1,42 @@
+.border-beam-container {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 10;
+  padding: var(--border-width, 2px);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+}
+
+.border-beam-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 250%;
+  height: 250%;
+  transform: translate(-50%, -50%);
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 280deg,
+    var(--beam-color-1, #f6d365) 330deg,
+    var(--beam-color-2, #d4af37) 355deg,
+    #ffffff 360deg
+  );
+  animation: borderBeamRotate var(--beam-duration, 8s) linear infinite;
+  animation-direction: var(--beam-direction, normal);
+  filter: drop-shadow(0 0 8px var(--beam-color-2, #d4af37));
+}
+
+@keyframes borderBeamRotate {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}

@@ -1,0 +1,457 @@
+/* ============================================================
+   SHRI DEEPAALAYA SILKS — Exchange Request Portal Styles
+   Luxury Heritage Theme (Maroon, 24K Gold, Warm Ivory)
+   ============================================================ */
+
+.sds-exchange-page {
+  min-height: 85vh;
+  background-color: #FAF8F5;
+  color: var(--color-charcoal, #282321);
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  padding: 32px 0 72px;
+}
+
+.sds-exchange-container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* ── Top Bar & Back Button ── */
+.sds-exchange-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-maroon, #6D1734);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-bottom: 16px;
+  transition: opacity 0.2s;
+}
+
+.sds-exchange-back-btn:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
+.sds-exchange-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+@media (min-width: 768px) {
+  .sds-exchange-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+
+.sds-exchange-title-group h1 {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: clamp(1.8rem, 3.2vw, 2.4rem);
+  font-weight: 700;
+  color: #1A1615;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.01em;
+}
+
+.sds-exchange-title-group p {
+  font-size: 14px;
+  color: #6B5F5A;
+  margin: 0;
+}
+
+/* Strict Policy Card */
+.sds-exchange-policy-box {
+  background: #FFF1F2;
+  border: 1px solid #FECDD3;
+  border-radius: 8px;
+  padding: 14px 18px;
+  max-width: 440px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #9F1239;
+}
+
+.sds-exchange-policy-box strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #881337;
+  font-size: 12.5px;
+  margin-bottom: 4px;
+}
+
+/* ── Tab Navigation ── */
+.sds-exchange-tabs {
+  display: flex;
+  background: #ffffff;
+  border: 1px solid var(--color-beige, #EDE2D2);
+  border-bottom: 2px solid var(--color-beige, #EDE2D2);
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.sds-exchange-tab-btn {
+  flex: 1;
+  padding: 16px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #6B5F5A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  top: 2px;
+}
+
+.sds-exchange-tab-btn:hover {
+  color: var(--color-maroon, #6D1734);
+  background: #FDFBF8;
+}
+
+.sds-exchange-tab-btn.active {
+  color: var(--color-maroon, #6D1734);
+  font-weight: 700;
+  border-bottom-color: var(--color-maroon, #6D1734);
+  background: #ffffff;
+}
+
+/* ── Form Card ── */
+.sds-exchange-card {
+  background: #ffffff;
+  border: 1px solid var(--color-beige, #EDE2D2);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 32px 36px;
+  box-shadow: 0 6px 24px rgba(40, 20, 25, 0.05);
+}
+
+.sds-exchange-section-title {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1A1615;
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #F0E6D8;
+}
+
+.sds-exchange-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.sds-exchange-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sds-exchange-field label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4A403B;
+}
+
+.sds-exchange-field label span {
+  color: #DC2626;
+}
+
+.sds-exchange-field input,
+.sds-exchange-field select,
+.sds-exchange-field textarea {
+  width: 100%;
+  padding: 11px 14px;
+  background: #FCFBF9;
+  border: 1.5px solid #EDE2D2;
+  border-radius: 6px;
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 14px;
+  color: #1A1615;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.sds-exchange-field input:focus,
+.sds-exchange-field select:focus,
+.sds-exchange-field textarea:focus {
+  background: #ffffff;
+  border-color: var(--color-maroon, #6D1734);
+  box-shadow: 0 0 0 3px rgba(109, 23, 52, 0.12);
+}
+
+/* ── Upload Box ── */
+.sds-exchange-upload-box {
+  border: 2px dashed #D4C5B5;
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  background: #FAF8F5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 18px;
+}
+
+.sds-exchange-upload-box:hover {
+  border-color: var(--color-maroon, #6D1734);
+  background: #FFFDF9;
+}
+
+.sds-exchange-upload-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  background: #FDF2F4;
+  color: var(--color-maroon, #6D1734);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sds-exchange-upload-box p {
+  margin: 0 0 4px 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1A1615;
+}
+
+.sds-exchange-upload-box span {
+  font-size: 11.5px;
+  color: #7B7268;
+}
+
+/* Previews Grid */
+.sds-exchange-previews {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.sds-preview-cell {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #EDE2D2;
+}
+
+.sds-preview-cell img,
+.sds-preview-cell video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sds-preview-remove-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: background 0.2s;
+}
+
+.sds-preview-remove-btn:hover {
+  background: #DC2626;
+}
+
+/* Consent Checkbox */
+.sds-exchange-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px;
+  background: #FFFDF8;
+  border: 1px solid #F0E6D8;
+  border-radius: 8px;
+  margin: 24px 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #4A403B;
+}
+
+.sds-exchange-consent input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--color-maroon, #6D1734);
+  cursor: pointer;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* Submit Action Button */
+.sds-exchange-submit-btn {
+  width: 100%;
+  padding: 14px 28px;
+  background: var(--color-maroon, #6D1734);
+  color: #ffffff;
+  border: 1px solid var(--color-maroon, #6D1734);
+  border-radius: 6px;
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(109, 23, 52, 0.25);
+}
+
+.sds-exchange-submit-btn:hover {
+  background: #541127;
+  border-color: #541127;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(109, 23, 52, 0.35);
+}
+
+.sds-exchange-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Tracking Tab Styles ── */
+.sds-exchange-track-box {
+  background: #ffffff;
+  border: 1px solid var(--color-beige, #EDE2D2);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 32px 36px;
+  box-shadow: 0 6px 24px rgba(40, 20, 25, 0.05);
+}
+
+.sds-exchange-track-form {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.sds-exchange-track-form input {
+  flex: 1;
+  padding: 12px 16px;
+  background: #FCFBF9;
+  border: 1.5px solid #EDE2D2;
+  border-radius: 6px;
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 14px;
+  outline: none;
+}
+
+.sds-exchange-track-form input:focus {
+  background: #ffffff;
+  border-color: var(--color-maroon, #6D1734);
+  box-shadow: 0 0 0 3px rgba(109, 23, 52, 0.12);
+}
+
+.sds-exchange-track-btn {
+  padding: 12px 24px;
+  background: var(--color-maroon, #6D1734);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.sds-exchange-track-btn:hover {
+  background: #541127;
+}
+
+/* Status Cards & Badges */
+.sds-status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sds-status-badge.pending {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.sds-status-badge.approved {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.sds-status-badge.received {
+  background: #F3E8FF;
+  color: #6B21A8;
+}
+
+.sds-status-badge.dispatched {
+  background: #E0E7FF;
+  color: #3730A3;
+}
+
+.sds-status-badge.completed {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.sds-status-badge.rejected {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+@media (max-width: 768px) {
+  .sds-exchange-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .sds-exchange-card,
+  .sds-exchange-track-box {
+    padding: 22px 18px;
+  }
+  .sds-exchange-track-form {
+    flex-direction: column;
+  }
+}

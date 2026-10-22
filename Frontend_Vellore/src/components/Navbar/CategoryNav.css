@@ -1,0 +1,218 @@
+/* ============================================================
+   CategoryNav Styles — Clean Sticky Sub-nav & Scroll Area
+   ============================================================ */
+
+.category-nav-wrapper-sleek {
+  position: relative;
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #e8dfd8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(40, 35, 33, 0.04);
+  z-index: 40;
+  transition: all 0.3s ease;
+}
+
+.category-nav-container-sleek {
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .category-nav-container-sleek {
+    padding: 0 0.5rem;
+  }
+}
+
+/* ── Category Scroll Area with Fixed Styled Scrollbar ─────── */
+.category-scroll-area {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 12px 1rem 14px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #c5a059 #f4f0eb;
+}
+
+@media (max-width: 768px) {
+  .category-scroll-area {
+    justify-content: flex-start;
+    gap: 1rem;
+    padding: 10px 0.5rem 12px;
+  }
+}
+
+/* Custom Webkit scrollbar for category-scroll-area */
+.category-scroll-area::-webkit-scrollbar {
+  height: 6px;
+  display: block;
+}
+
+.category-scroll-area::-webkit-scrollbar-track {
+  background: #f4f0eb;
+  border-radius: 10px;
+}
+
+.category-scroll-area::-webkit-scrollbar-thumb {
+  background: #c5a059;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.category-scroll-area::-webkit-scrollbar-thumb:hover {
+  background: #722f37;
+}
+
+/* ── Category Item ─────────────────────────────────────────── */
+.cat-item-sleek {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  min-width: 90px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+  position: relative;
+  text-decoration: none;
+}
+
+.cat-item-sleek:hover {
+  transform: translateY(-3px);
+}
+
+.cat-icon-container {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fdfbf7;
+  border: 2px solid #e8dfd8;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.cat-icon-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.cat-item-sleek:hover .cat-icon-container {
+  border-color: #c5a059;
+  box-shadow: 0 6px 16px rgba(197, 160, 89, 0.25);
+}
+
+.cat-item-sleek:hover .cat-icon-container img {
+  transform: scale(1.08);
+}
+
+.cat-item-sleek.active .cat-icon-container {
+  border-color: #722f37;
+  box-shadow: 0 6px 18px rgba(114, 47, 55, 0.25);
+  border-width: 2.5px;
+}
+
+.cat-name-sleek {
+  font-family: var(--font-sans, -apple-system, sans-serif);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #332b28;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.cat-item-sleek:hover .cat-name-sleek {
+  color: #722f37;
+}
+
+.cat-item-sleek.active .cat-name-sleek {
+  color: #722f37;
+  font-weight: 700;
+}
+
+.cat-item-sleek.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 2.5px;
+  background: #722f37;
+  border-radius: 2px;
+}
+
+/* ── Scroll Arrows ─────────────────────────────────────────── */
+.scroll-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  background: #ffffff;
+  border: 1px solid #e8dfd8;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  color: #722f37;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.scroll-arrow:hover {
+  background: #722f37;
+  color: #ffffff;
+  border-color: #722f37;
+}
+
+.scroll-arrow.left {
+  left: 6px;
+}
+
+.scroll-arrow.right {
+  right: 6px;
+}
+
+/* Skeleton loader */
+.cat-skeleton-loader {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.cat-skeleton-item {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #f1eee9;
+  animation: sdsPulse 1.5s infinite;
+}
+
+@keyframes sdsPulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}

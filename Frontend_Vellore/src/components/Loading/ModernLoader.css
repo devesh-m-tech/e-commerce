@@ -1,0 +1,58 @@
+/* ============================================================
+   SHRI DEEPAALAYA SILKS — Simple Round Loading Spinner
+   Clean, modern, lightweight circular spinner
+   ============================================================ */
+
+.modern-discovery-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 280px;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.modern-discovery-loader.inline {
+  min-height: 120px;
+  padding: 16px;
+}
+
+.sds-simple-round-spinner-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+/* Very simple round circular spinner */
+.sds-simple-round-spinner {
+  width: 46px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 3.5px solid var(--color-beige, #EDE2D2);
+  border-top-color: var(--color-maroon, #6D1734);
+  animation: sdsSimpleRoundSpin 0.75s linear infinite;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+@keyframes sdsSimpleRoundSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.sds-simple-round-loader-msg {
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-text-muted, #7B7268);
+  margin: 0;
+  text-align: center;
+  letter-spacing: 0.02em;
+}

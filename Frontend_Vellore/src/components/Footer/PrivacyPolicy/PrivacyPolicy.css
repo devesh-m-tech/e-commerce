@@ -1,0 +1,747 @@
+/* ═══════════════════════════════════════════════════════════
+   SHRI DEEPAALAYA SILKS — LUXURY HERITAGE POLICY STYLES
+   Royal Deep Maroon: #581126 / #4D0E22 / #330815
+   24K Antique Gold:  #C5A15A / #D4AF37 / #E8D3A7
+   Silk Ivory Base:   #FAF8F5 / #FDFBF7 / #FFFFFF
+═══════════════════════════════════════════════════════════ */
+
+/* ── Base Page ── */
+.sds-policy-page {
+  background-color: #FAF8F5;
+  color: #2D2326;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.sds-policy-page *,
+.sds-policy-page *::before,
+.sds-policy-page *::after {
+  box-sizing: border-box;
+}
+
+.sds-policy-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── Hero Header ── */
+.sds-policy-hero {
+  position: relative;
+  background: radial-gradient(circle at 80% 20%, #6E1834 0%, #4D0E22 65%, #330815 100%);
+  color: #FFFFFF;
+  padding: 52px 0 46px;
+  border-bottom: 2px solid #C5A15A;
+  overflow: hidden;
+}
+
+.sds-policy-hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(197, 161, 90, 0.14) 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.sds-policy-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.sds-bc-link {
+  color: #E8D3A7;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.sds-bc-link:hover {
+  color: #FFFFFF;
+  text-decoration: underline;
+}
+
+.sds-bc-sep {
+  color: rgba(232, 211, 167, 0.45);
+}
+
+.sds-bc-current {
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+.sds-policy-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(197, 161, 90, 0.16);
+  border: 1px solid rgba(197, 161, 90, 0.45);
+  color: #F8E8C8;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.sds-badge-sparkle {
+  color: #F5CD6A;
+}
+
+.sds-policy-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #FFFFFF;
+  margin: 0 0 12px;
+  letter-spacing: -0.3px;
+  position: relative;
+  z-index: 1;
+}
+
+.sds-policy-subtitle {
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.88);
+  max-width: 760px;
+  margin: 0 0 22px;
+  position: relative;
+  z-index: 1;
+}
+
+.sds-policy-meta-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.sds-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 6px 13px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #F5EFE6;
+}
+
+/* ── Body Grid Layout ── */
+.sds-policy-body {
+  padding: 44px 0 70px;
+}
+
+.sds-policy-grid-layout {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  gap: 36px;
+  align-items: start;
+}
+
+/* ── Sidebar TOC ── */
+.sds-policy-sidebar {
+  position: sticky;
+  top: 100px;
+  z-index: 5;
+}
+
+.sds-toc-card {
+  background: #FFFFFF;
+  border-radius: 14px;
+  border: 1px solid #E8DFD3;
+  box-shadow: 0 4px 20px rgba(77, 14, 34, 0.05);
+  overflow: hidden;
+}
+
+.sds-toc-header {
+  background: linear-gradient(135deg, #4D0E22 0%, #6E1834 100%);
+  color: #FFFFFF;
+  padding: 14px 18px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid #C5A15A;
+}
+
+.sds-toc-nav {
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: calc(100vh - 340px);
+  overflow-y: auto;
+}
+
+.sds-toc-link {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 9px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #4A3E42;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.sds-toc-link:hover {
+  background: #F8F2EA;
+  color: #4D0E22;
+}
+
+.sds-toc-link.is-active {
+  background: #4D0E22;
+  color: #FFFFFF;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(77, 14, 34, 0.22);
+}
+
+.sds-toc-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: #C5A15A;
+  margin-right: 10px;
+  min-width: 20px;
+}
+
+.sds-toc-link.is-active .sds-toc-num {
+  color: #F8E8C8;
+}
+
+.sds-toc-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sds-toc-arrow {
+  opacity: 0.35;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.sds-toc-link:hover .sds-toc-arrow {
+  opacity: 1;
+  transform: translateX(3px);
+}
+
+.sds-toc-link.is-active .sds-toc-arrow {
+  opacity: 1;
+  color: #F8E8C8;
+}
+
+/* Sidebar Quick Concierge Box */
+.sds-sidebar-concierge {
+  margin: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #FDFBF7 0%, #F8F2E7 100%);
+  border: 1px dashed #C5A15A;
+  border-radius: 10px;
+}
+
+.sds-concierge-badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #6E1834;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+
+.sds-sidebar-concierge h4 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 14.5px;
+  margin: 0 0 6px;
+  color: #330815;
+}
+
+.sds-sidebar-concierge p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #615357;
+  margin: 0 0 12px;
+}
+
+.sds-concierge-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 12px;
+  background: #4D0E22;
+  color: #FFFFFF;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.sds-concierge-btn:hover {
+  background: #6E1834;
+}
+
+/* ── Content Sections ── */
+.sds-policy-content {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  min-width: 0;
+}
+
+/* Notice Card */
+.sds-policy-notice-card {
+  position: relative;
+  background: #FFFFFF;
+  border-radius: 14px;
+  border: 1px solid #E8DFD3;
+  box-shadow: 0 4px 18px rgba(77, 14, 34, 0.04);
+  padding: 24px 28px 24px 30px;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  overflow: hidden;
+}
+
+.sds-notice-gold-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #C5A15A 0%, #6E1834 100%);
+}
+
+.sds-notice-icon-wrapper {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #FDFBF7;
+  color: #6E1834;
+  border: 1px solid rgba(197, 161, 90, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sds-notice-content h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 18px;
+  color: #330815;
+  margin: 0 0 8px;
+}
+
+.sds-notice-content p {
+  font-size: 14px;
+  line-height: 1.65;
+  color: #4D3D42;
+  margin: 0;
+}
+
+/* General Content Card */
+.sds-content-card {
+  background: #FFFFFF;
+  border-radius: 14px;
+  border: 1px solid #E8DFD3;
+  box-shadow: 0 4px 20px rgba(77, 14, 34, 0.04);
+  padding: 32px 34px;
+  scroll-margin-top: 120px;
+  transition: box-shadow 0.2s;
+}
+
+.sds-content-card:hover {
+  box-shadow: 0 6px 24px rgba(77, 14, 34, 0.07);
+}
+
+.sds-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #EFE6DC;
+}
+
+.sds-card-num-badge {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #4D0E22;
+  background: #F8F2E7;
+  border: 1px solid #C5A15A;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sds-card-header-text h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 21px;
+  color: #330815;
+  margin: 0 0 4px;
+}
+
+.sds-card-header-text p {
+  font-size: 13px;
+  color: #726267;
+  margin: 0;
+}
+
+.sds-card-body {
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: #3A2F33;
+}
+
+.sds-card-body p {
+  margin: 0 0 16px;
+}
+
+/* Feature Grid */
+.sds-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.sds-feature-box {
+  background: #FDFBF7;
+  border: 1px solid #E8DFD3;
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+
+.sds-feature-box strong {
+  display: block;
+  font-size: 14px;
+  color: #4D0E22;
+  margin-bottom: 6px;
+}
+
+.sds-feature-box p {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #55454A;
+  margin: 0;
+}
+
+/* Inline Note */
+.sds-inline-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #FDF9F0;
+  border: 1px solid #DFCC9C;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #73531A;
+  margin-top: 16px;
+}
+
+/* Bullet List */
+.sds-bullet-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sds-bullet-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.sds-bullet-icon {
+  color: #C5A15A;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.sds-bullet-list li strong {
+  color: #330815;
+}
+
+/* Security Cards */
+.sds-security-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.sds-sec-card {
+  background: #FDFBF7;
+  border: 1px solid #E8DFD3;
+  border-radius: 10px;
+  padding: 20px 16px;
+  text-align: center;
+}
+
+.sds-sec-icon-circle {
+  width: 42px;
+  height: 42px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  color: #4D0E22;
+  border: 1px solid #C5A15A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sds-sec-card h4 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 14.5px;
+  color: #330815;
+  margin: 0 0 6px;
+}
+
+.sds-sec-card p {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #615357;
+  margin: 0;
+}
+
+/* Rights Grid */
+.sds-rights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.sds-right-item {
+  background: #FDFBF7;
+  border-left: 3px solid #C5A15A;
+  border-top: 1px solid #E8DFD3;
+  border-right: 1px solid #E8DFD3;
+  border-bottom: 1px solid #E8DFD3;
+  padding: 14px 16px;
+  border-radius: 0 10px 10px 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #4D3D42;
+}
+
+.sds-right-item strong {
+  display: block;
+  font-size: 13.5px;
+  color: #4D0E22;
+  margin-bottom: 4px;
+}
+
+/* ── Contact Official Box ── */
+.sds-contact-card-wrap {
+  border-top: 3px solid #C5A15A;
+}
+
+.sds-official-contact-box {
+  background: #FFFFFF;
+  border-radius: 10px;
+}
+
+.sds-contact-brand-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #EFE6DC;
+}
+
+.sds-sparkle-gold {
+  color: #C5A15A;
+}
+
+.sds-contact-brand-title h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 20px;
+  color: #4D0E22;
+  margin: 0 0 2px;
+}
+
+.sds-contact-brand-title p {
+  font-size: 13px;
+  color: #726267;
+  margin: 0;
+}
+
+.sds-contact-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.sds-contact-tile {
+  background: #FDFBF7;
+  border: 1px solid #E8DFD3;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+
+.sds-tile-interactive:hover {
+  background: #F7EFE5;
+  border-color: #C5A15A;
+  transform: translateY(-2px);
+}
+
+.sds-tile-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: #4D0E22;
+  color: #F8E8C8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sds-tile-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sds-tile-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #7A696E;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.sds-tile-val {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #330815;
+}
+
+.sds-tile-arrow {
+  color: #C5A15A;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.sds-tile-interactive:hover .sds-tile-arrow {
+  transform: translateX(4px);
+}
+
+.sds-grievance-note {
+  background: #F8F2E7;
+  border: 1px solid #DFCC9C;
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #4D3D42;
+}
+
+.sds-grievance-note strong {
+  color: #4D0E22;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE MEDIA QUERIES
+═══════════════════════════════════════════════════════════ */
+@media (max-width: 992px) {
+  .sds-policy-grid-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sds-policy-sidebar {
+    position: static;
+    margin-bottom: 20px;
+  }
+
+  .sds-toc-nav {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    max-height: none;
+  }
+
+  .sds-sidebar-concierge {
+    display: none;
+  }
+
+  .sds-security-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .sds-policy-hero {
+    padding: 34px 0 30px;
+  }
+
+  .sds-policy-title {
+    font-size: 26px;
+  }
+
+  .sds-policy-subtitle {
+    font-size: 14px;
+  }
+
+  .sds-feature-grid,
+  .sds-rights-grid,
+  .sds-contact-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sds-toc-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .sds-content-card {
+    padding: 22px 20px;
+  }
+
+  .sds-policy-notice-card {
+    padding: 20px;
+    flex-direction: column;
+    gap: 14px;
+  }
+}

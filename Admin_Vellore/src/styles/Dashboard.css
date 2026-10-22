@@ -1,0 +1,462 @@
+/* ============================================================
+   SHRI DEEPAALAYA SILKS — Executive Admin Dashboard Styles
+   Royal Maroon (#6D1734), Warm Gold (#C5A15A), Ivory (#FAF8F5)
+   ============================================================ */
+
+.sds-admin-dashboard {
+  min-height: 100vh;
+  background-color: #FAF8F5;
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(197, 161, 90, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 90% 90%, rgba(109, 23, 52, 0.03) 0%, transparent 50%);
+  padding: 1.5rem 1.75rem 3.5rem;
+  box-sizing: border-box;
+  font-family: var(--font-sans, 'Karla', sans-serif);
+}
+
+/* ── 1. Executive Header ── */
+.sds-dashboard-header-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  padding: 1.5rem 1.75rem;
+  background: #FFFFFF;
+  border: 1px solid #EDE2D2;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(40, 35, 33, 0.04);
+  margin-bottom: 1.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.sds-dashboard-header-wrap::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #6D1734 0%, #C5A15A 50%, #4A1025 100%);
+}
+
+.sds-dash-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sds-dash-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #C5A15A;
+}
+
+.sds-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #2e7d32;
+  box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.7);
+  animation: sdsPulse 2s infinite;
+}
+
+@keyframes sdsPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(46, 125, 50, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(46, 125, 50, 0);
+  }
+}
+
+.sds-dash-title {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1A1615;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.sds-dash-subtitle {
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 13px;
+  color: #6b5f5a;
+  margin: 0;
+}
+
+.sds-dash-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ── 2. Top Metric Cards ── */
+.sds-kpi-card {
+  background: #FFFFFF;
+  border: 1px solid #EDE2D2;
+  border-radius: 4px;
+  padding: 1.25rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(40, 35, 33, 0.03);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.sds-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(109, 23, 52, 0.08);
+  border-color: #C5A15A;
+}
+
+.sds-kpi-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #C5A15A;
+  transition: width 0.2s ease;
+}
+
+.sds-kpi-card:hover::before {
+  width: 6px;
+}
+
+.sds-kpi-card.maroon::before { background: #6D1734; }
+.sds-kpi-card.gold::before { background: #C5A15A; }
+.sds-kpi-card.emerald::before { background: #2e7d32; }
+.sds-kpi-card.amber::before { background: #ed6c02; }
+.sds-kpi-card.purple::before { background: #7c3aed; }
+.sds-kpi-card.crimson::before { background: #c62828; }
+
+.sds-kpi-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.sds-kpi-label {
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7A6E65;
+}
+
+.sds-kpi-icon-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sds-kpi-value {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #1A1615;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+
+.sds-kpi-subtext {
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 12px;
+  color: #6b5f5a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sds-kpi-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 2px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.sds-kpi-pill.positive {
+  background: #E8F5E9;
+  color: #2e7d32;
+}
+
+.sds-kpi-pill.warning {
+  background: #FFF3E0;
+  color: #e65100;
+}
+
+.sds-kpi-pill.neutral {
+  background: #FFF8EC;
+  color: #6D1734;
+}
+
+/* ── 3. Charts & Analytics Cards ── */
+.sds-chart-card {
+  background: #FFFFFF;
+  border: 1px solid #EDE2D2;
+  border-radius: 4px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(40, 35, 33, 0.03);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sds-chart-card:hover {
+  border-color: #DCCFBF;
+  box-shadow: 0 4px 14px rgba(40, 35, 33, 0.05);
+}
+
+.sds-chart-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 1.25rem;
+}
+
+.sds-chart-title {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1A1615;
+  margin: 0 0 4px;
+}
+
+.sds-chart-subtitle {
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 12.5px;
+  color: #6b5f5a;
+  margin: 0;
+}
+
+.sds-chart-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sds-segmented-btn {
+  padding: 4px 10px;
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #554D48;
+  background: #FAF8F5;
+  border: 1px solid #EDE2D2;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sds-segmented-btn:hover {
+  background: #FFF8EC;
+  color: #6D1734;
+  border-color: #C5A15A;
+}
+
+.sds-segmented-btn.active {
+  background: #6D1734;
+  color: #FFFFFF;
+  border-color: #6D1734;
+}
+
+/* Custom Chart Tooltip */
+.sds-custom-tooltip {
+  background: #1A1615;
+  color: #FAF8F5;
+  border: 1px solid #C5A15A;
+  border-radius: 2px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  font-family: var(--font-sans, 'Karla', sans-serif);
+}
+
+.sds-tooltip-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #C5A15A;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(197, 161, 90, 0.3);
+  padding-bottom: 2px;
+}
+
+.sds-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  margin: 3px 0;
+}
+
+.sds-tooltip-row span.val {
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+/* Donut Center Label */
+.sds-donut-center-metric {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.sds-donut-center-value {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #6D1734;
+  line-height: 1;
+}
+
+.sds-donut-center-label {
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8C8075;
+  margin-top: 3px;
+}
+
+/* ── 4. Operational Tables & Lists ── */
+.sds-data-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.sds-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-family: var(--font-sans, 'Karla', sans-serif);
+}
+
+.sds-data-table th {
+  padding: 10px 14px;
+  background-color: #FAF8F5;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6b5f5a;
+  border-bottom: 1px solid #EDE2D2;
+  white-space: nowrap;
+}
+
+.sds-data-table td {
+  padding: 11px 14px;
+  font-size: 12.5px;
+  color: #282321;
+  border-bottom: 1px solid #F3EDE2;
+  vertical-align: middle;
+}
+
+.sds-data-table tr:hover td {
+  background-color: #FFFDF9;
+}
+
+.sds-prod-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 2px;
+  object-fit: cover;
+  border: 1px solid #EDE2D2;
+  background-color: #FAF8F5;
+}
+
+/* ── 5. Quick Action Button ── */
+.sds-action-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #6D1734;
+  color: #FFFFFF;
+  border: 1px solid #6D1734;
+  border-radius: 2px;
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 6px rgba(109, 23, 52, 0.15);
+}
+
+.sds-action-btn-primary:hover {
+  background-color: #4A1025;
+  border-color: #C5A15A;
+  box-shadow: 0 4px 12px rgba(109, 23, 52, 0.25);
+  transform: translateY(-1px);
+}
+
+.sds-action-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background-color: #FFFFFF;
+  color: #6D1734;
+  border: 1px solid #C5A15A;
+  border-radius: 2px;
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sds-action-btn-secondary:hover {
+  background-color: #FFF8EC;
+  border-color: #6D1734;
+}
+
+/* Scrollbar refinement */
+.sds-scroll-wrap::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.sds-scroll-wrap::-webkit-scrollbar-thumb {
+  background: #DCCFBF;
+  border-radius: 2px;
+}

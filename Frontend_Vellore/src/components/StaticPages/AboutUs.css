@@ -1,0 +1,716 @@
+/* ============================================================
+   SHRI DEEPAALAYA SILKS — About Us Page Styles
+   Luxury Heritage Editorial Styling (Maroon / Gold / Ivory)
+   Enhanced with React Bits Premium Micro-Interactions
+   ============================================================ */
+
+.sds-about-page {
+  min-height: 100vh;
+  background-color: #faf8f5;
+  color: var(--color-charcoal, #282321);
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  overflow-x: hidden;
+}
+
+/* ── Hero Section ── */
+.sds-about-hero {
+  position: relative;
+  background: radial-gradient(circle at 50% 15%, #fffdfa 0%, #f6efe6 100%);
+  border-bottom: 1px solid #ebd9c4;
+  padding: 80px 24px 68px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.sds-about-hero-backdrop-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 350px;
+  background: radial-gradient(ellipse at center, rgba(229, 184, 105, 0.18) 0%, transparent 70%);
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sds-about-hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(45px);
+}
+
+.sds-about-hero-orb-1 {
+  top: 10%;
+  left: 12%;
+  width: 180px;
+  height: 180px;
+  background: rgba(109, 23, 52, 0.08);
+}
+
+.sds-about-hero-orb-2 {
+  bottom: 12%;
+  right: 15%;
+  width: 220px;
+  height: 220px;
+  background: rgba(197, 161, 90, 0.12);
+}
+
+.sds-about-hero-inner {
+  position: relative;
+  max-width: 860px;
+  margin: 0 auto;
+  z-index: 1;
+}
+
+.sds-about-tagline-container {
+  margin-bottom: 18px;
+}
+
+.sds-about-tagline-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(197, 161, 90, 0.35);
+  border-radius: 50px;
+  padding: 6px 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 14px rgba(109, 23, 52, 0.06);
+}
+
+.sds-about-hero-title {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: clamp(2.1rem, 4.2vw, 3.4rem);
+  font-weight: 700;
+  color: #1a1615;
+  line-height: 1.25;
+  margin: 0 0 20px;
+}
+
+.sds-about-hero-blur-line {
+  justify-content: center;
+}
+
+.sds-about-hero-highlight {
+  display: inline-block;
+  background: linear-gradient(135deg, #6D1734 0%, #941e46 60%, #b8860b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-style: italic;
+  letter-spacing: -0.01em;
+}
+
+.sds-about-hero-sub {
+  font-size: 16.5px;
+  line-height: 1.75;
+  color: #554a43;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.sds-about-hero-sub strong {
+  color: #6D1734;
+}
+
+/* ── Stats Strip ── */
+.sds-about-stats-strip {
+  background: linear-gradient(135deg, #5b1029 0%, #6D1734 50%, #4a0d20 100%);
+  border-top: 1px solid rgba(229, 184, 105, 0.3);
+  border-bottom: 2px solid var(--color-gold, #C5A15A);
+  padding: 36px 24px;
+}
+
+.sds-about-stats-grid {
+  max-width: 1140px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.sds-about-stat-spotlight {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(229, 184, 105, 0.25);
+  border-radius: 12px;
+  backdrop-filter: blur(6px);
+  padding: 20px 16px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.sds-about-stat-spotlight:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(229, 184, 105, 0.6);
+}
+
+.sds-about-stat-item {
+  position: relative;
+  z-index: 2;
+}
+
+.sds-about-stat-value {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: clamp(2rem, 3.2vw, 2.75rem);
+  font-weight: 700;
+  color: #E5B869;
+  line-height: 1;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.sds-about-stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #f7e6e9;
+  opacity: 0.95;
+}
+
+/* ── Heritage Story Section ── */
+.sds-about-section {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 84px 24px;
+}
+
+.sds-about-story-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.sds-about-story-left {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sds-about-kicker-wrap {
+  display: inline-block;
+}
+
+.sds-about-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #6D1734;
+}
+
+.sds-about-h2 {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  font-weight: 700;
+  color: #1a1615;
+  line-height: 1.28;
+  margin: 0;
+}
+
+.sds-about-p {
+  font-size: 15.5px;
+  line-height: 1.8;
+  color: #4a413b;
+  margin: 0;
+}
+
+.sds-about-p strong {
+  color: #1a1615;
+}
+
+.sds-about-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.sds-about-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fcf6ed;
+  border: 1px solid #ebd8be;
+  border-radius: 6px;
+  padding: 9px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #3b322c;
+  cursor: default;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.sds-about-badge-icon {
+  color: #6D1734;
+  font-size: 15px;
+}
+
+/* Story Right: Muhurtham Promise Card */
+.sds-about-promise-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #e7ded2;
+  border-top: 4px solid #6D1734;
+  border-radius: 12px;
+  padding: 38px 34px;
+  box-shadow: 0 16px 36px -8px rgba(40, 20, 25, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow: hidden;
+}
+
+.sds-about-card-icon-wrap {
+  width: 54px;
+  height: 54px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #6D1734 0%, #4a0d20 100%);
+  color: #E5B869;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 6px 16px rgba(109, 23, 52, 0.25);
+  cursor: pointer;
+}
+
+.sds-about-card-title {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 21px;
+  font-weight: 700;
+  color: #1a1615;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.sds-about-card-text {
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: #554a43;
+  margin: 0;
+}
+
+.sds-about-card-callout {
+  background: #faf5ee;
+  border-left: 3.5px solid #C5A15A;
+  border-radius: 0 6px 6px 0;
+  padding: 16px 18px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #4a413b;
+}
+
+.sds-about-card-callout strong {
+  display: block;
+  color: #6D1734;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+/* ── React Bits InfiniteMarquee: Handloom Weaving Process ── */
+.sds-about-marquee-section {
+  background: #f5ece0;
+  border-top: 1px solid #ebd9c4;
+  border-bottom: 1px solid #ebd9c4;
+  padding: 48px 0 52px;
+}
+
+.sds-about-marquee-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.sds-about-marquee-title {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  font-weight: 700;
+  color: #1a1615;
+  margin: 6px 0 0;
+}
+
+.sds-about-marquee-container {
+  max-width: 100%;
+  overflow: hidden;
+  padding: 8px 0;
+}
+
+.sds-about-marquee-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  background: #ffffff;
+  border: 1px solid #e5d3c0;
+  border-radius: 50px;
+  padding: 10px 22px;
+  box-shadow: 0 4px 12px rgba(40, 20, 25, 0.04);
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.sds-about-marquee-chip:hover {
+  border-color: #C5A15A;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(109, 23, 52, 0.08);
+}
+
+.sds-about-chip-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fdf2f4;
+  color: #6D1734;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.sds-about-chip-texts {
+  display: flex;
+  flex-direction: column;
+}
+
+.sds-about-chip-stage {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #C5A15A;
+}
+
+.sds-about-chip-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #282321;
+}
+
+.sds-about-chip-divider {
+  color: #C5A15A;
+  font-size: 11px;
+  margin-left: 10px;
+  opacity: 0.75;
+}
+
+/* ── Values Section with SpotlightCard ── */
+.sds-about-values-wrap {
+  background: #faf6f0;
+  border-bottom: 1px solid #ebd9c4;
+  padding: 88px 24px;
+}
+
+.sds-about-values-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.sds-about-values-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 56px;
+}
+
+.sds-about-values-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+}
+
+.sds-about-value-spotlight-card {
+  background: #ffffff;
+  border: 1px solid #ebd9c4;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(40, 20, 25, 0.04);
+  height: 100%;
+}
+
+.sds-about-value-card-inner {
+  padding: 34px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+}
+
+.sds-about-value-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.sds-about-value-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: #fcf1f3;
+  color: #6D1734;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  transition: transform 0.3s ease;
+}
+
+.sds-about-value-spotlight-card:hover .sds-about-value-icon {
+  transform: scale(1.1) rotate(6deg);
+}
+
+.sds-about-value-pill {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #b8860b;
+  background: #fdf7eb;
+  border: 1px solid #ebd9be;
+  border-radius: 50px;
+  padding: 4px 12px;
+}
+
+.sds-about-value-title {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 19px;
+  font-weight: 700;
+  color: #1a1615;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.sds-about-value-desc {
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: #554a43;
+  margin: 0;
+}
+
+/* ── Showroom Destination CTA with BorderBeam & MagneticButton ── */
+.sds-about-cta-section {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 84px 24px 100px;
+}
+
+.sds-about-cta-box-wrapper {
+  border-radius: 16px;
+}
+
+.sds-about-cta-box {
+  position: relative;
+  background: linear-gradient(135deg, #6D1734 0%, #450d20 100%);
+  border: 1px solid rgba(229, 184, 105, 0.4);
+  border-radius: 16px;
+  padding: 56px 52px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  box-shadow: 0 20px 45px -8px rgba(40, 10, 20, 0.3);
+  overflow: hidden;
+}
+
+.sds-about-cta-text {
+  max-width: 620px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  z-index: 2;
+}
+
+.sds-about-cta-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #E5B869;
+}
+
+.sds-about-cta-title {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: clamp(1.75rem, 2.8vw, 2.4rem);
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.28;
+}
+
+.sds-about-cta-desc {
+  font-size: 15px;
+  line-height: 1.75;
+  color: #f7dede;
+  margin: 0;
+}
+
+.sds-about-cta-address {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: #ebd0be;
+  margin-top: 6px;
+}
+
+.sds-about-pin-pulse {
+  color: #E5B869;
+  font-size: 16px;
+  animation: pinBounce 2s infinite ease-in-out;
+}
+
+@keyframes pinBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.sds-about-cta-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex-shrink: 0;
+  min-width: 210px;
+  position: relative;
+  z-index: 2;
+}
+
+.sds-about-btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f3d489 0%, #E5B869 100%);
+  color: #380b19;
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 14px 28px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  text-align: center;
+  width: 100%;
+}
+
+.sds-about-btn-gold:hover {
+  background: linear-gradient(135deg, #ffffff 0%, #ffd978 100%);
+  box-shadow: 0 8px 24px rgba(229, 184, 105, 0.4);
+  color: #2b0612;
+}
+
+.sds-about-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 13px 28px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  text-align: center;
+  width: 100%;
+}
+
+.sds-about-btn-outline:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: #ffffff;
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(255, 255, 255, 0.1);
+}
+
+/* ── Responsive Queries ── */
+@media (max-width: 960px) {
+  .sds-about-story-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .sds-about-values-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .sds-about-cta-box {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 40px 32px;
+  }
+
+  .sds-about-cta-actions {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .sds-about-cta-actions .magnetic-wrapper {
+    flex: 1;
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sds-about-hero {
+    padding: 56px 16px 44px;
+  }
+
+  .sds-about-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .sds-about-section {
+    padding: 56px 16px;
+  }
+
+  .sds-about-values-wrap {
+    padding: 60px 16px;
+  }
+
+  .sds-about-promise-card {
+    padding: 28px 22px;
+  }
+
+  .sds-about-cta-section {
+    padding: 56px 16px 68px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sds-about-cta-actions {
+    flex-direction: column;
+  }
+
+  .sds-about-cta-actions .magnetic-wrapper {
+    width: 100%;
+  }
+
+  .sds-about-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

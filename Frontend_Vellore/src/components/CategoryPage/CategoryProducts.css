@@ -1,0 +1,102 @@
+/* ============================================================
+   SHRI DEEPAALAYA SILKS — Category Products Filter Styles
+   Harmonized with ProductPage and SideBar luxury design standard
+   ============================================================ */
+
+.sds-subcat-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sds-filter-check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.sds-filter-check-item:hover {
+  background: #FFF9F0;
+}
+
+.sds-filter-check-item.active {
+  background: #FFF8EC;
+}
+
+.sds-filter-check-item input[type="checkbox"] {
+  display: none;
+}
+
+.sds-custom-check {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  border: 1.5px solid #C5A15A;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6D1734;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.sds-filter-check-item.active .sds-custom-check {
+  background: #6D1734;
+  border-color: #6D1734;
+  color: #FFFFFF;
+}
+
+.sds-filter-check-label {
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 13px;
+  color: #38302B;
+  transition: color 0.15s ease;
+}
+
+.sds-filter-check-item.active .sds-filter-check-label {
+  color: #6D1734;
+  font-weight: 600;
+}
+
+/* Other Collections Navigation Links */
+.sds-other-cat-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  border-radius: 2px;
+  text-decoration: none;
+  font-family: var(--font-sans, 'Karla', sans-serif);
+  font-size: 12.5px;
+  color: #554D48;
+  transition: all 0.15s ease;
+}
+
+.sds-other-cat-link:hover {
+  background: #FFF9F0;
+  color: #6D1734;
+  padding-left: 14px;
+}
+
+.sds-other-cat-link.active {
+  background: #FFF8EC;
+  color: #6D1734;
+  font-weight: 700;
+  border-left: 3px solid #6D1734;
+}
+
+.sds-other-cat-arrow {
+  color: #C5A15A;
+  font-size: 14px;
+  transition: transform 0.15s ease;
+}
+
+.sds-other-cat-link:hover .sds-other-cat-arrow {
+  transform: translateX(3px);
+}

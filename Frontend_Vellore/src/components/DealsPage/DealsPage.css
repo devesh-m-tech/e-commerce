@@ -1,0 +1,1051 @@
+/* ═══════════════════════════════════════════════════════════
+   SHRI DEEPAALAYA SILKS — EXCLUSIVE DEALS & OFFERS STYLING
+   Colors: Maroon #581126 / #4D0E22, Gold #C5A15A / #D4AF37, Ivory #FAF8F5
+═══════════════════════════════════════════════════════════ */
+
+.sds-deals-page {
+  background-color: #FAF8F5;
+  color: #2D2326;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.sds-deals-page *,
+.sds-deals-page *::before,
+.sds-deals-page *::after {
+  box-sizing: border-box;
+}
+
+.sds-deals-container {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── Hero Header ── */
+.sds-deals-hero {
+  position: relative;
+  background: radial-gradient(circle at 80% 20%, #6E1834 0%, #4D0E22 65%, #330815 100%);
+  color: #FFFFFF;
+  padding: 50px 0 44px;
+  border-bottom: 2px solid #C5A15A;
+  overflow: hidden;
+}
+
+.sds-deals-hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(197, 161, 90, 0.14) 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.sds-deals-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.sds-deals-breadcrumbs .sds-bc-link {
+  color: #E8D3A7;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.sds-deals-breadcrumbs .sds-bc-link:hover {
+  color: #FFFFFF;
+  text-decoration: underline;
+}
+
+.sds-deals-breadcrumbs .sds-bc-sep {
+  color: rgba(232, 211, 167, 0.45);
+}
+
+.sds-deals-breadcrumbs .sds-bc-current {
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+.sds-deals-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(197, 161, 90, 0.16);
+  border: 1px solid rgba(197, 161, 90, 0.45);
+  color: #F8E8C8;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.sds-badge-sparkle {
+  color: #F5CD6A;
+}
+
+.sds-deals-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #FFFFFF;
+  margin: 0 0 12px;
+  letter-spacing: -0.3px;
+  position: relative;
+  z-index: 1;
+}
+
+.sds-deals-subtitle {
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.88);
+  max-width: 780px;
+  margin: 0 0 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero Stats Bar */
+.sds-deals-stats-bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.sds-dstat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.sds-dstat-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: #F8E8C8;
+}
+
+.sds-dstat-lbl {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.72);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sds-dstat-div {
+  width: 1px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Main Layout ── */
+.sds-deals-main-content {
+  padding: 44px 24px 70px;
+  display: flex;
+  flex-direction: column;
+  gap: 52px;
+}
+
+/* Section Headings */
+.sds-sec-heading {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.sds-sec-eyebrow {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: #8C6A28;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.sds-sec-heading h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 26px;
+  color: #330815;
+  margin: 0 0 8px;
+}
+
+.sds-sec-heading p {
+  font-size: 14.5px;
+  color: #6A5B61;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ── Spotlight Banner Card ── */
+.sds-spotlight-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid #E8DFD3;
+  box-shadow: 0 6px 26px rgba(77, 14, 34, 0.06);
+  overflow: hidden;
+}
+
+.sds-spotlight-inner {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  align-items: center;
+}
+
+.sds-spotlight-text {
+  padding: 40px 44px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sds-spotlight-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FDF4E6;
+  color: #8C6A28;
+  border: 1px solid #E5CFA0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: fit-content;
+}
+
+.sds-spotlight-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 26px;
+  color: #330815;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.sds-spotlight-desc {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: #55454B;
+  margin: 0;
+}
+
+/* Countdown Wrap */
+.sds-countdown-wrap {
+  background: #FDFBF7;
+  border: 1px solid #E8DFD3;
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: fit-content;
+}
+
+.sds-countdown-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #6E1834;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.sds-countdown-grid {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sds-time-box {
+  background: #4D0E22;
+  color: #FFFFFF;
+  border-radius: 6px;
+  padding: 4px 8px;
+  min-width: 44px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.sds-time-val {
+  font-size: 16px;
+  font-weight: 700;
+  color: #F8E8C8;
+  line-height: 1.2;
+}
+
+.sds-time-sub {
+  font-size: 9px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.5px;
+}
+
+.sds-time-colon {
+  font-weight: 700;
+  color: #8C6A28;
+  font-size: 16px;
+}
+
+.sds-spotlight-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.sds-spotlight-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #4D0E22 0%, #6E1834 100%);
+  color: #FFFFFF;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  border: 1px solid rgba(197, 161, 90, 0.4);
+  box-shadow: 0 4px 14px rgba(77, 14, 34, 0.2);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.sds-spotlight-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(77, 14, 34, 0.28);
+}
+
+.sds-spotlight-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  color: #4D0E22;
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 12px 18px;
+  border-radius: 8px;
+  border: 1px solid #D5C2AF;
+  background: #FFFFFF;
+  transition: all 0.2s ease;
+}
+
+.sds-spotlight-btn-secondary:hover {
+  background: #F8F2EA;
+  border-color: #8C6A28;
+}
+
+.sds-spotlight-media {
+  position: relative;
+  height: 100%;
+  min-height: 380px;
+  overflow: hidden;
+}
+
+.sds-spotlight-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.sds-spotlight-card:hover .sds-spotlight-img {
+  transform: scale(1.04);
+}
+
+.sds-spotlight-ribbon {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: #8C6A28;
+  color: #FFFFFF;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Summary Deals Cards ── */
+.sds-summary-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.sds-deal-summary-card {
+  background: #FFFFFF;
+  border-radius: 14px;
+  border: 1px solid #E8DFD3;
+  box-shadow: 0 4px 18px rgba(77, 14, 34, 0.04);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sds-deal-summary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(77, 14, 34, 0.08);
+}
+
+.sds-dsc-image-wrap {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+}
+
+.sds-dsc-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.sds-deal-summary-card:hover .sds-dsc-img {
+  transform: scale(1.06);
+}
+
+.sds-dsc-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #4D0E22;
+  color: #F8E8C8;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  letter-spacing: 0.4px;
+}
+
+.sds-dsc-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.sds-dsc-body h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 17px;
+  color: #330815;
+  margin: 0 0 8px;
+  line-height: 1.35;
+}
+
+.sds-dsc-body p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #615357;
+  margin: 0 0 16px;
+  flex: 1;
+}
+
+.sds-dsc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid #EFE6DC;
+}
+
+.sds-dsc-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8C6A28;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sds-dsc-link {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #4D0E22;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.2s;
+}
+
+.sds-dsc-link:hover {
+  transform: translateX(3px);
+}
+
+/* ── Filter Pills ── */
+.sds-filter-pill-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.sds-cat-pill {
+  background: #FFFFFF;
+  border: 1px solid #D5C2AF;
+  color: #4D3D42;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.sds-cat-pill:hover {
+  background: #F8F2EA;
+  color: #4D0E22;
+  border-color: #8C6A28;
+}
+
+.sds-cat-pill.is-active {
+  background: #4D0E22;
+  color: #FFFFFF;
+  border-color: #4D0E22;
+  box-shadow: 0 2px 10px rgba(77, 14, 34, 0.2);
+}
+
+/* ── Products Grid ── */
+.sds-products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.sds-deal-prod-card {
+  background: #FFFFFF;
+  border-radius: 14px;
+  border: 1px solid #E8DFD3;
+  box-shadow: 0 4px 18px rgba(77, 14, 34, 0.04);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sds-deal-prod-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(77, 14, 34, 0.08);
+}
+
+.sds-prod-img-box {
+  position: relative;
+  height: 240px;
+  overflow: hidden;
+  background: #FAF8F5;
+}
+
+.sds-prod-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.sds-deal-prod-card:hover .sds-prod-img {
+  transform: scale(1.07);
+}
+
+.sds-prod-discount-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #4D0E22;
+  color: #F8E8C8;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.sds-prod-deal-tag {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(51, 8, 21, 0.85);
+  backdrop-filter: blur(4px);
+  color: #F8E8C8;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.3px;
+}
+
+.sds-prod-details {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.sds-prod-category {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #8C6A28;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+
+.sds-prod-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 15px;
+  line-height: 1.4;
+  margin: 0 0 14px;
+  flex: 1;
+}
+
+.sds-prod-title a {
+  color: #330815;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.sds-prod-title a:hover {
+  color: #6E1834;
+}
+
+.sds-prod-pricing {
+  margin-bottom: 14px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.sds-price-stack {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.sds-deal-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #4D0E22;
+}
+
+.sds-orig-price {
+  font-size: 13px;
+  color: #938287;
+  text-decoration: line-through;
+}
+
+.sds-savings-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #2E6B38;
+  background: #EAF7ED;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.sds-prod-actions {
+  display: flex;
+}
+
+.sds-prod-view-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  background: #FDFBF7;
+  border: 1px solid #D5C2AF;
+  color: #4D0E22;
+  text-decoration: none;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.sds-prod-view-btn:hover {
+  background: #4D0E22;
+  color: #FFFFFF;
+  border-color: #4D0E22;
+}
+
+/* Shimmer Loading State */
+.sds-shimmer-card {
+  pointer-events: none;
+}
+
+.sds-shimmer-img {
+  height: 240px;
+  background: linear-gradient(90deg, #F0EBE3 25%, #FAF7F2 50%, #F0EBE3 75%);
+  background-size: 200% 100%;
+  animation: sdsShimmer 1.5s infinite;
+}
+
+.sds-shimmer-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sds-shimmer-line {
+  height: 12px;
+  background: linear-gradient(90deg, #F0EBE3 25%, #FAF7F2 50%, #F0EBE3 75%);
+  background-size: 200% 100%;
+  animation: sdsShimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+.line-sm { width: 40%; }
+.line-md { width: 70%; }
+.line-lg { width: 90%; }
+
+@keyframes sdsShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Empty State */
+.sds-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: #FFFFFF;
+  border-radius: 14px;
+  border: 1px solid #E8DFD3;
+}
+
+.sds-empty-icon {
+  color: #8C6A28;
+  margin-bottom: 12px;
+}
+
+.sds-empty-state h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 20px;
+  color: #330815;
+  margin: 0 0 8px;
+}
+
+.sds-empty-state p {
+  font-size: 14px;
+  color: #6A5B61;
+  margin: 0 0 20px;
+}
+
+/* ── Boutique Voucher Cards ── */
+.sds-vouchers-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.sds-voucher-card {
+  background: #FFFFFF;
+  border: 1px solid #E8DFD3;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(77, 14, 34, 0.04);
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.sds-voucher-left {
+  padding: 22px 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sds-voucher-badge {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #8C6A28;
+  letter-spacing: 0.6px;
+}
+
+.sds-voucher-discount {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #4D0E22;
+}
+
+.sds-voucher-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #55454B;
+  margin: 0;
+  flex: 1;
+}
+
+.sds-voucher-expiry {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  color: #7A696E;
+  margin-top: 4px;
+}
+
+/* Perforated Divider */
+.sds-voucher-divider {
+  position: relative;
+  width: 1px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sds-voucher-dash-line {
+  flex: 1;
+  border-left: 1px dashed #D5C2AF;
+}
+
+.sds-voucher-notch-top,
+.sds-voucher-notch-bottom {
+  width: 16px;
+  height: 8px;
+  background: #FAF8F5;
+  border: 1px solid #E8DFD3;
+  position: absolute;
+  z-index: 2;
+}
+
+.sds-voucher-notch-top {
+  top: -1px;
+  border-top: none;
+  border-radius: 0 0 16px 16px;
+}
+
+.sds-voucher-notch-bottom {
+  bottom: -1px;
+  border-bottom: none;
+  border-radius: 16px 16px 0 0;
+}
+
+.sds-voucher-right {
+  padding: 22px 24px;
+  background: #FDFBF7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 160px;
+}
+
+.sds-code-label {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  color: #8C6A28;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+}
+
+.sds-code-val {
+  font-family: monospace;
+  font-size: 15px;
+  font-weight: 700;
+  color: #330815;
+  background: #FFFFFF;
+  border: 1px solid #D5C2AF;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 1px;
+}
+
+.sds-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: #4D0E22;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.sds-copy-btn:hover {
+  background: #6E1834;
+}
+
+.sds-copy-btn.is-copied {
+  background: #2E6B38;
+}
+
+/* ── Guarantee Card ── */
+.sds-guarantee-card {
+  background: #FFFFFF;
+  border-radius: 14px;
+  border: 1px solid #E8DFD3;
+  padding: 30px 36px;
+  box-shadow: 0 4px 18px rgba(77, 14, 34, 0.04);
+}
+
+.sds-guarantee-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.sds-g-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.sds-g-icon-box {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  background: #FDFBF7;
+  color: #4D0E22;
+  border: 1px solid #E5CFA0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sds-g-info strong {
+  display: block;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 16px;
+  color: #330815;
+  margin-bottom: 4px;
+}
+
+.sds-g-info span {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #615357;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+═══════════════════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .sds-products-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sds-summary-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 868px) {
+  .sds-spotlight-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .sds-spotlight-media {
+    min-height: 260px;
+    order: -1;
+  }
+
+  .sds-spotlight-text {
+    padding: 28px 24px;
+  }
+
+  .sds-products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sds-vouchers-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sds-guarantee-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .sds-summary-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .sds-deals-hero {
+    padding: 34px 0 28px;
+  }
+
+  .sds-deals-title {
+    font-size: 25px;
+  }
+
+  .sds-deals-subtitle {
+    font-size: 14px;
+  }
+
+  .sds-deals-stats-bar {
+    gap: 12px;
+  }
+
+  .sds-dstat-div {
+    display: none;
+  }
+
+  .sds-products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sds-countdown-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .sds-voucher-card {
+    flex-direction: column;
+  }
+
+  .sds-voucher-divider {
+    display: none;
+  }
+
+  .sds-voucher-right {
+    width: 100%;
+    border-top: 1px dashed #D5C2AF;
+    padding: 16px 20px;
+  }
+}

@@ -1,0 +1,34 @@
+.shiny-text {
+  color: #6D1734;
+  background: linear-gradient(
+    120deg,
+    rgba(109, 23, 52, 0.95) 0%,
+    rgba(197, 161, 90, 0.4) 30%,
+    #E5B869 50%,
+    rgba(197, 161, 90, 0.4) 70%,
+    rgba(109, 23, 52, 0.95) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  animation: shine-sweep 4s linear infinite;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.shiny-text.disabled {
+  animation: none;
+  background: none;
+  -webkit-text-fill-color: inherit;
+}
+
+@keyframes shine-sweep {
+  0% {
+    background-position: 150% 0;
+  }
+  100% {
+    background-position: -150% 0;
+  }
+}

@@ -1,0 +1,257 @@
+/* Shri Deepaalaya Silks - Luxury Category Page Styles */
+
+.category-page {
+  padding: 3rem 2rem 5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  background-color: #FAF7F2;
+  min-height: 100vh;
+}
+
+.category-header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+  margin-top: 2rem;
+}
+
+.category-header h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.75rem;
+  font-weight: 600;
+  color: #282321;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.5px;
+}
+
+.category-header p {
+  font-family: 'Karla', sans-serif;
+  color: #8C827A;
+  font-size: 1.05rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+  padding: 0;
+  max-width: 1300px;
+  margin: 0 auto 4rem;
+}
+
+.category-card-luxury {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #EDE2D2;
+  border-radius: 2px;
+  overflow: hidden;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(40, 35, 33, 0.03);
+}
+
+.category-card-luxury:hover {
+  transform: translateY(-6px);
+  border-color: #C5A15A;
+  box-shadow: 0 16px 32px rgba(109, 23, 52, 0.08);
+}
+
+.category-image-wrap {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #FFF9F0;
+}
+
+.category-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.category-card-luxury:hover .category-image-wrap img {
+  transform: scale(1.06);
+}
+
+.category-badge-luxury {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(109, 23, 52, 0.9);
+  color: #FFF9F0;
+  font-family: 'Karla', sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 2px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.category-info-luxury {
+  padding: 1.25rem 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background: #ffffff;
+}
+
+.category-info-luxury h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #282321;
+  margin-bottom: 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.category-card-luxury:hover .category-info-luxury h3 {
+  color: #6D1734;
+}
+
+.category-info-luxury p {
+  font-family: 'Karla', sans-serif;
+  font-size: 0.85rem;
+  color: #8C827A;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  flex-grow: 1;
+}
+
+.category-link-cta {
+  font-family: 'Karla', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #6D1734;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: gap 0.2s ease;
+}
+
+.category-card-luxury:hover .category-link-cta {
+  gap: 10px;
+  color: #C5A15A;
+}
+
+.category-featured {
+  margin-top: 4rem;
+  padding-top: 3rem;
+  border-top: 1px solid #EDE2D2;
+}
+
+.category-featured h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  color: #282321;
+  font-size: 2.25rem;
+  font-weight: 600;
+}
+
+.featured-banners {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+}
+
+.featured-banner {
+  position: relative;
+  border-radius: 2px;
+  overflow: hidden;
+  height: 380px;
+  border: 1px solid #EDE2D2;
+}
+
+.featured-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.featured-banner:hover img {
+  transform: scale(1.04);
+}
+
+.banner-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2.5rem 2rem;
+  background: linear-gradient(
+    to top,
+    rgba(20, 15, 13, 0.92) 0%,
+    rgba(20, 15, 13, 0.6) 60%,
+    transparent 100%
+  );
+  color: #ffffff;
+}
+
+.banner-content h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #FFF9F0;
+  margin-bottom: 0.5rem;
+}
+
+.banner-content p {
+  font-family: 'Karla', sans-serif;
+  font-size: 0.95rem;
+  color: #EDE2D2;
+  margin-bottom: 1.25rem;
+}
+
+.shop-now-btn {
+  display: inline-block;
+  padding: 0.75rem 1.75rem;
+  background: #FFF9F0;
+  color: #282321;
+  text-decoration: none;
+  border-radius: 2px;
+  font-family: 'Karla', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.shop-now-btn:hover {
+  background: #C5A15A;
+  color: #282321;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .category-page {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .category-header h1 {
+    font-size: 2rem;
+  }
+
+  .featured-banners {
+    grid-template-columns: 1fr;
+  }
+
+  .featured-banner {
+    height: 300px;
+  }
+
+  .banner-content {
+    padding: 1.5rem;
+  }
+}
