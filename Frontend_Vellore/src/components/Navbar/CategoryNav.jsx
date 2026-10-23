@@ -24,7 +24,7 @@ const CategoryNav = () => {
       try {
         const response = await categoryApi.getAllCategories();
         const data = Array.isArray(response) ? response : (response.categories || []);
-        setCategories(data);
+        setCategories(data.filter((c) => (c.cStatus || 'active').toLowerCase() === 'active'));
       } catch (error) {
         console.error("Error fetching categories:", error);
       } finally {

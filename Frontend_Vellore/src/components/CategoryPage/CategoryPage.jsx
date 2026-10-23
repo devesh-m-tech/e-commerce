@@ -12,11 +12,13 @@ const CategoryPage = () => {
     const fetchCategories = async () => {
       try {
         const response = await categoryApi.getAllCategories();
+        let list = [];
         if (response && Array.isArray(response)) {
-          setCategories(response);
+          list = response;
         } else if (response?.categories && Array.isArray(response.categories)) {
-          setCategories(response.categories);
+          list = response.categories;
         }
+        setCategories(list.filter((c) => (c.cStatus || 'active').toLowerCase() === 'active'));
       } catch (error) {
         console.error('Failed to fetch categories:', error);
       } finally {

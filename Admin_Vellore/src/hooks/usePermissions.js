@@ -14,8 +14,8 @@ const usePermissions = () => {
   const hasPermission = useCallback((module, action) => {
     if (!currentUser) return false;
     
-    // Super admin has all permissions
-    if (currentUser.role === 'super_admin') return true;
+    // Super admin and store admin have all permissions
+    if (currentUser.role === 'super_admin' || currentUser.role === 'admin') return true;
     
     // Check if user has specific permission
     return Array.isArray(currentUser.permissions?.[module]) && 

@@ -22,7 +22,8 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  ListItemButton
+  ListItemButton,
+  Chip
 } from '@mui/material';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -43,6 +44,10 @@ import FlashOnIcon from '@mui/icons-material/FlashOn';
 import PeopleIcon from '@mui/icons-material/People';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import ArticleIcon from '@mui/icons-material/Article';
+import SettingsIcon from '@mui/icons-material/Settings';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import usePermissions from '../hooks/usePermissions';
 import { PERMISSIONS, ACTIONS } from '../constants/permissions';
 import LogoutConfirmationPopup from './LogoutConfirmationPopup';
@@ -106,23 +111,24 @@ const Layout = () => {
       { text: 'Vendors', path: '/vendors', permission: PERMISSIONS.VENDORS, icon: <StorefrontIcon /> },
       { text: 'Brands', path: '/brands', permission: PERMISSIONS.BRANDS, icon: <StorefrontIcon /> },
       { text: 'Blog', path: '/blog', permission: PERMISSIONS.BLOG, icon: <ArticleIcon /> },
-      { text: 'Voucher-History', path: '/transaction-history', permission: PERMISSIONS.TRANSACTION_HISTORY, icon: <LocalOfferIcon /> },
-      // { text: 'Combo Offers', path: '/combo-offers', permission: PERMISSIONS.COMBO_OFFERS, icon: <ViewModuleIcon /> },
+      // { text: 'Voucher-History', path: '/transaction-history', permission: PERMISSIONS.TRANSACTION_HISTORY, icon: <LocalOfferIcon /> },
+      { text: 'Combo Offers', path: '/combo-offers', permission: PERMISSIONS.COMBO_OFFERS, icon: <ViewModuleIcon /> },
       { text: 'Deals', path: '/deals', permission: PERMISSIONS.DEALS, icon: <FlashOnIcon /> },
       { text: 'Orders', path: '/orders', permission: PERMISSIONS.ORDERS, icon: <ShoppingCartIcon /> },
       { text: 'Shipping', path: '/shipping', permission: PERMISSIONS.SHIPPING, icon: <LocalOfferIcon /> },
       { text: 'Users', path: '/users', permission: PERMISSIONS.USERS, icon: <PeopleIcon /> },
-      { text: 'Admin Users', path: '/admin-users', permission: PERMISSIONS.ADMIN_USERS, icon: <AdminPanelSettingsIcon /> }
+      { text: 'Admin Users', path: '/admin-users', permission: PERMISSIONS.ADMIN_USERS, icon: <AdminPanelSettingsIcon /> },
+      { text: 'Store Settings', path: '/settings', permission: PERMISSIONS.SETTINGS, icon: <SettingsIcon /> }
     ];
 
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     
-    // If super admin, show all items
-    if (currentUser?.role === 'super_admin') {
+    // If super admin or admin, show all items
+    if (currentUser?.role === 'super_admin' || currentUser?.role === 'admin') {
       return items;
     }
 
-    // For regular admin, only show items they have READ permission for
+    // For other roles, only show items they have READ permission for
     return items.filter(item => {
       // Check if user has READ permission for this module
       return currentUser?.permissions?.[item.permission]?.includes(ACTIONS.READ);
@@ -140,8 +146,8 @@ const Layout = () => {
       return;
     }
 
-    // If not super admin, check permissions for current path
-    if (currentUser && currentUser.role !== 'super_admin') {
+    // If not super admin or admin, check permissions for current path
+    if (currentUser && currentUser.role !== 'super_admin' && currentUser.role !== 'admin') {
       // Check if the current path matches any menu item
       const currentMenuItem = menuItems.find(item => {
         const itemPath = item.path.substring(1); // Remove leading slash
@@ -268,8 +274,9 @@ const Layout = () => {
   // Memoize styles with stable references
   const styles = useMemo(() => ({
     appBar: {
-      backgroundColor: '#fff',
-      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+      background: 'linear-gradient(135deg, #420D1E 0%, #6D1734 45%, #521227 100%)',
+      borderBottom: '1px solid rgba(197, 161, 90, 0.4)',
+      boxShadow: '0 4px 20px rgba(40, 10, 20, 0.18)',
       width: '100%', // Always full width
       zIndex: theme.zIndex.drawer + 1, // Make sure AppBar is above the drawer
       position: 'fixed',
@@ -278,9 +285,12 @@ const Layout = () => {
       right: 0,
     },
     toolbar: {
-      minHeight: '56px', // Reduced from 64px
-      backgroundColor: theme.palette.primary.main,
-      padding: isMobile ? '0 8px' : isTablet ? '0 12px' : '0 16px', // Reduced padding
+      minHeight: { xs: '58px', md: '64px' },
+      height: { xs: '58px', md: '64px' },
+      padding: isMobile ? '0 10px' : isTablet ? '0 16px' : '0 24px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
     },
     title: {
       color: '#fff',
@@ -392,7 +402,7 @@ const Layout = () => {
       backgroundColor: '#f8f9fa',
       minHeight: '100vh',
       padding: theme.spacing(1, 0), // Reduced vertical padding
-      paddingTop: { xs: '56px', sm: '56px', md: '56px' }, // Reduced top padding to match the new header height
+      paddingTop: { xs: '60px', sm: '66px', md: '68px' }, // Header height + breathing room
       width: { sm: '100%', md: `calc(100% - ${drawerWidth}px)` },
       ml: { sm: '0', md: `${drawerWidth}px` },
       transition: theme.transitions.create(['margin', 'width'], {
@@ -603,55 +613,273 @@ const Layout = () => {
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <AppBar position="fixed" sx={styles.appBar}>
         <Toolbar sx={styles.toolbar}>
-          {/* Single toggle button for all device sizes */}
-          <Box sx={styles.toggleButtonContainer}>
-            <Tooltip title={sidebarOpen ? "Close Menu" : "Open Menu"}>
+          {/* Left: Menu toggle + Luxury Emblem Crest & Brand Name */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5 } }}>
+            <Tooltip title={sidebarOpen ? "Collapse Navigation" : "Expand Navigation"}>
               <IconButton
                 color="inherit"
                 aria-label={sidebarOpen ? "close sidebar" : "open sidebar"}
                 edge="start"
                 onClick={handleDrawerToggle}
-                sx={styles.menuButton}
-                className="menu-toggle-btn"
+                sx={{
+                  color: '#FAF7F2',
+                  bgcolor: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(197, 161, 90, 0.3)',
+                  borderRadius: '8px',
+                  p: 0.9,
+                  transition: 'all 0.25s ease',
+                  '&:hover': {
+                    bgcolor: 'rgba(197, 161, 90, 0.2)',
+                    borderColor: '#C5A15A',
+                    transform: 'translateY(-1px)',
+                  }
+                }}
               >
                 {sidebarOpen ? 
-                  <CloseIcon className="toggle-icon toggle-icon-enter MuiIcon-closeIcon" /> : 
-                  <MenuIcon className="toggle-icon toggle-icon-exit" />
+                  <CloseIcon sx={{ fontSize: 20 }} /> : 
+                  <MenuIcon sx={{ fontSize: 20 }} />
                 }
               </IconButton>
             </Tooltip>
-          </Box>
-          
-          <Typography variant="h6" component="div" sx={{ 
-            ...styles.title, 
-            flexGrow: { xs: 1, md: 0 }, 
-            ml: 1,
-          }}>
-            Shri Deepaalaya Silks Admin
-          </Typography>
-          
-          <Box sx={styles.userMenuContainer}>
-            <Box sx={styles.userInfoContainer}>
-              <Typography variant="body2" sx={styles.userName}>
-                {userData.name}
-              </Typography>
-              <Typography variant="body2" sx={styles.userEmail}>
-                {userData.email}
-              </Typography>
-            </Box>
-            
-            <Tooltip title="Account menu">
-              <IconButton
-                onClick={handleUserMenuOpen}
-                size="small"
-                aria-controls={open ? 'account-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
+
+            {/* Brand Logo Crest & Regal Wordmark */}
+            <Box
+              onClick={() => navigate('/')}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                cursor: 'pointer',
+                userSelect: 'none',
+              }}
+            >
+              {/* Luxury Emblem Crest Badge */}
+              <Box
+                sx={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: '8px',
+                  bgcolor: 'rgba(197, 161, 90, 0.15)',
+                  border: '1.5px solid #C5A15A',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.25), inset 0 0 6px rgba(197, 161, 90, 0.25)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#F4D086',
+                  fontWeight: 800,
+                  fontFamily: '"Playfair Display", Georgia, serif',
+                  fontSize: '0.92rem',
+                  letterSpacing: '1px',
+                  flexShrink: 0,
+                }}
               >
-                <Avatar sx={styles.avatar}>{getUserInitials()}</Avatar>
+                SDS
+              </Box>
+
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography
+                    sx={{
+                      fontFamily: '"Playfair Display", Georgia, serif',
+                      fontWeight: 700,
+                      fontSize: { xs: '0.98rem', sm: '1.15rem' },
+                      letterSpacing: '0.06em',
+                      color: '#FFFFFF',
+                      lineHeight: 1.15,
+                      textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                    }}
+                  >
+                    SHRI DEEPAALAYA SILKS
+                  </Typography>
+                  <Chip
+                    label="ADMIN"
+                    size="small"
+                    sx={{
+                      height: 18,
+                      fontSize: '0.62rem',
+                      fontWeight: 800,
+                      letterSpacing: '0.08em',
+                      bgcolor: 'rgba(197, 161, 90, 0.25)',
+                      color: '#F4D086',
+                      border: '1px solid rgba(197, 161, 90, 0.5)',
+                      borderRadius: '3px',
+                      display: { xs: 'none', sm: 'inline-flex' }
+                    }}
+                  />
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, mt: 0.25 }}>
+                  <Box
+                    sx={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: '50%',
+                      bgcolor: '#4caf50',
+                      boxShadow: '0 0 6px #4caf50',
+                    }}
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'rgba(244, 208, 134, 0.85)',
+                      fontSize: '0.66rem',
+                      fontWeight: 600,
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      fontFamily: '"Karla", sans-serif',
+                    }}
+                  >
+                    Vellore Boutique Atelier • Pure Silk
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+
+          {/* Center: Live Storefront Quick Link */}
+          <Box sx={{ display: { xs: 'none', lg: 'flex' }, alignItems: 'center' }}>
+            <Button
+              component="a"
+              href="http://localhost:3000"
+              target="_blank"
+              rel="noopener noreferrer"
+              size="small"
+              startIcon={<StorefrontIcon sx={{ fontSize: 16, color: '#F4D086' }} />}
+              endIcon={<OpenInNewIcon sx={{ fontSize: 13, color: 'rgba(244,208,134,0.7)' }} />}
+              sx={{
+                color: '#FFF9F0',
+                bgcolor: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(197, 161, 90, 0.35)',
+                borderRadius: '20px',
+                px: 2,
+                py: 0.45,
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                letterSpacing: '0.04em',
+                textTransform: 'none',
+                transition: 'all 0.25s',
+                '&:hover': {
+                  bgcolor: 'rgba(197, 161, 90, 0.25)',
+                  borderColor: '#F4D086',
+                  transform: 'translateY(-1px)',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.18)',
+                }
+              }}
+            >
+              View Live Storefront
+            </Button>
+          </Box>
+
+          {/* Right: Notifications + Quick Settings + Luxury Profile Card */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1.25 } }}>
+            {/* New Orders Notification Bell */}
+            <Tooltip title={newOrdersCount > 0 ? `${newOrdersCount} New Orders Waiting` : "No new orders"}>
+              <IconButton
+                onClick={() => navigate('/orders')}
+                size="small"
+                sx={{
+                  color: '#FAF7F2',
+                  bgcolor: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(197, 161, 90, 0.25)',
+                  borderRadius: '8px',
+                  p: 0.9,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    bgcolor: 'rgba(197, 161, 90, 0.2)',
+                    borderColor: '#C5A15A',
+                  }
+                }}
+              >
+                <Badge
+                  badgeContent={newOrdersCount}
+                  color="error"
+                  sx={{
+                    '& .MuiBadge-badge': {
+                      fontWeight: 700,
+                      fontSize: '0.68rem',
+                      height: 18,
+                      minWidth: 18,
+                      boxShadow: '0 0 6px rgba(211, 47, 47, 0.6)'
+                    }
+                  }}
+                >
+                  <NotificationsNoneIcon sx={{ fontSize: 20 }} />
+                </Badge>
               </IconButton>
             </Tooltip>
-            
+
+            {/* Quick Store Settings Shortcut */}
+            <Tooltip title="Store & E-Commerce Settings">
+              <IconButton
+                onClick={() => navigate('/settings')}
+                size="small"
+                sx={{
+                  color: '#FAF7F2',
+                  bgcolor: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(197, 161, 90, 0.25)',
+                  borderRadius: '8px',
+                  p: 0.9,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    bgcolor: 'rgba(197, 161, 90, 0.2)',
+                    borderColor: '#C5A15A',
+                  }
+                }}
+              >
+                <SettingsIcon sx={{ fontSize: 20 }} />
+              </IconButton>
+            </Tooltip>
+
+            <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(197, 161, 90, 0.3)', mx: { xs: 0.25, sm: 0.5 }, height: 28, my: 'auto' }} />
+
+            {/* Profile Chip Button */}
+            <Box
+              onClick={handleUserMenuOpen}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.2,
+                bgcolor: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(197, 161, 90, 0.35)',
+                borderRadius: '24px',
+                py: 0.4,
+                px: { xs: 0.6, sm: 1.2 },
+                cursor: 'pointer',
+                transition: 'all 0.25s',
+                '&:hover': {
+                  bgcolor: 'rgba(197, 161, 90, 0.22)',
+                  borderColor: '#F4D086',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.18)',
+                }
+              }}
+            >
+              <Avatar
+                sx={{
+                  width: 32,
+                  height: 32,
+                  bgcolor: '#C5A15A',
+                  color: '#4A1025',
+                  fontWeight: 800,
+                  fontSize: '0.82rem',
+                  border: '1.5px solid #F4D086',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.25)'
+                }}
+              >
+                {getUserInitials()}
+              </Avatar>
+
+              <Box sx={{ display: { xs: 'none', md: 'block' }, textAlign: 'left', pr: 0.5 }}>
+                <Typography sx={{ color: '#FFFFFF', fontWeight: 700, fontSize: '0.82rem', lineHeight: 1.15 }}>
+                  {userData.name}
+                </Typography>
+                <Typography sx={{ color: '#F4D086', fontWeight: 600, fontSize: '0.66rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                  {userData.role ? userData.role.replace('_', ' ') : 'Administrator'}
+                </Typography>
+              </Box>
+
+              <KeyboardArrowDownIcon sx={{ color: 'rgba(255,255,255,0.7)', fontSize: 18, display: { xs: 'none', sm: 'block' } }} />
+            </Box>
+
+            {/* Dropdown Menu */}
             <Menu
               anchorEl={anchorEl}
               id="account-menu"
@@ -660,33 +888,91 @@ const Layout = () => {
               transformOrigin={{ horizontal: 'right', vertical: 'top' }}
               anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               PaperProps={{
-                elevation: 3,
+                elevation: 6,
                 sx: {
-                  overflow: 'visible',
                   mt: 1.5,
-                  width: 220,
-                  '&:before': {
-                    content: '""',
-                    display: 'block',
-                    position: 'absolute',
-                    top: 0,
-                    right: 14,
-                    width: 10,
-                    height: 10,
-                    bgcolor: 'background.paper',
-                    transform: 'translateY(-50%) rotate(45deg)',
-                    zIndex: 0,
-                  },
-                },
+                  width: 260,
+                  borderRadius: '8px',
+                  border: '1px solid #EDE2D2',
+                  overflow: 'hidden',
+                  boxShadow: '0 12px 32px rgba(40, 10, 20, 0.15)',
+                }
               }}
             >
-              <Box sx={styles.menuHeader}>ACCOUNT</Box>
-              <MenuItem dense>
-                <Box>
-                  <Typography variant="body2" fontWeight={500}>{userData.name}</Typography>
-                  <Typography variant="caption">{userData.email}</Typography>
-                  <Typography sx={styles.userRole}>{userData.role}</Typography>
-                </Box>
+              <Box sx={{ px: 2, py: 1.5, bgcolor: '#FAF7F2', borderBottom: '1px solid #EDE2D2' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#6D1734' }}>
+                  {userData.name}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                  {userData.email}
+                </Typography>
+                <Chip
+                  label={userData.role ? userData.role.toUpperCase().replace('_', ' ') : 'ADMINISTRATOR'}
+                  size="small"
+                  sx={{
+                    mt: 0.75,
+                    height: 20,
+                    fontSize: '0.65rem',
+                    fontWeight: 700,
+                    bgcolor: 'rgba(109, 23, 52, 0.08)',
+                    color: '#6D1734',
+                    border: '1px solid rgba(109, 23, 52, 0.25)',
+                  }}
+                />
+              </Box>
+
+              <MenuItem
+                onClick={() => {
+                  handleUserMenuClose();
+                  window.open('http://localhost:3000', '_blank');
+                }}
+                sx={{ py: 1.2, fontSize: '0.85rem', fontWeight: 500 }}
+              >
+                <ListItemIcon sx={{ minWidth: 34, color: '#6D1734' }}>
+                  <StorefrontIcon fontSize="small" />
+                </ListItemIcon>
+                View Live Storefront
+              </MenuItem>
+
+              <MenuItem
+                onClick={() => {
+                  handleUserMenuClose();
+                  navigate('/settings');
+                }}
+                sx={{ py: 1.2, fontSize: '0.85rem', fontWeight: 500 }}
+              >
+                <ListItemIcon sx={{ minWidth: 34, color: '#6D1734' }}>
+                  <SettingsIcon fontSize="small" />
+                </ListItemIcon>
+                Store & Policy Settings
+              </MenuItem>
+
+              <MenuItem
+                onClick={() => {
+                  handleUserMenuClose();
+                  navigate('/admin-users');
+                }}
+                sx={{ py: 1.2, fontSize: '0.85rem', fontWeight: 500 }}
+              >
+                <ListItemIcon sx={{ minWidth: 34, color: '#6D1734' }}>
+                  <AdminPanelSettingsIcon fontSize="small" />
+                </ListItemIcon>
+                Admin Accounts & Roles
+              </MenuItem>
+
+              <Divider sx={{ my: 0.5 }} />
+
+              <MenuItem
+                onClick={() => {
+                  handleUserMenuClose();
+                  handleLogoutClick();
+                }}
+                sx={{ py: 1.2, fontSize: '0.85rem', fontWeight: 600, color: 'error.main' }}
+              >
+                <ListItemIcon sx={{ minWidth: 34, color: 'error.main' }}>
+                  <LogoutIcon fontSize="small" />
+                </ListItemIcon>
+                Sign Out of Admin
               </MenuItem>
             </Menu>
           </Box>

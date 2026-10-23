@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Box,
   Button,
@@ -32,13 +32,20 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
+  TablePagination,
+  Avatar,
+  Tooltip,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import * as XLSX from 'xlsx';
 import { getAllDeals, addDeal, updateDeal, deleteDeal } from '../api/dealsApi';
+import AdminPageHeader from '../components/common/AdminPageHeader';
+import AdminTableToolbar from '../components/common/AdminTableToolbar';
+import AdminTableEmptyState from '../components/common/AdminTableEmptyState';
 
 const Deals = () => {
   const [loading, setLoading] = useState(false);
@@ -46,6 +53,10 @@ const Deals = () => {
   const [deals, setDeals] = useState([]);
   const [open, setOpen] = useState(false);
   const [editDeal, setEditDeal] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -237,15 +248,48 @@ const Deals = () => {
     }
   };
 
+  const filteredDeals = useMemo(() => {
+    const list = Array.isArray(deals) ? deals : [];
+    return list.filter((deal) => {
+      const q = (searchQuery || '').toLowerCase();
+      const matchesSearch =
+        (deal?.title || '').toLowerCase().includes(q) ||
+        (deal?.content || '').toLowerCase().includes(q);
+      const matchesStatus =
+        statusFilter === 'all' ||
+        (deal?.status || '').toLowerCase() === statusFilter.toLowerCase();
+      return matchesSearch && matchesStatus;
+    });
+  }, [deals, searchQuery, statusFilter]);
+
+  const paginatedDeals = useMemo(() => {
+    const startIndex = page * rowsPerPage;
+    return filteredDeals.slice(startIndex, startIndex + rowsPerPage);
+  }, [filteredDeals, page, rowsPerPage]);
+
+  const totalDealsCount = (deals || []).length;
+  const activeDealsCount = useMemo(
+    () => (deals || []).filter((d) => (d.status || '').toLowerCase() === 'active').length,
+    [deals]
+  );
+  const inactiveDealsCount = useMemo(
+    () => (deals || []).filter((d) => (d.status || '').toLowerCase() === 'inactive').length,
+    [deals]
+  );
+  const expiredDealsCount = useMemo(
+    () => (deals || []).filter((d) => (d.status || '').toLowerCase() === 'expired').length,
+    [deals]
+  );
+
   const handleExportToExcel = () => {
-    const exportData = deals.map(deal => ({
-      'ID': deal._id,
-      'Title': deal.title,
-      'Content': deal.content,
+    const exportData = (deals || []).map((deal) => ({
+      ID: deal._id,
+      Title: deal.title,
+      Content: deal.content,
       'Start Date': new Date(deal.startDate).toLocaleDateString(),
       'End Date': new Date(deal.endDate).toLocaleDateString(),
-      'Status': deal.status,
-      'Products': deal.products.length
+      Status: deal.status,
+      'Products Count': deal.products?.length || 0,
     }));
 
     const ws = XLSX.utils.json_to_sheet(exportData);
@@ -254,139 +298,189 @@ const Deals = () => {
     XLSX.writeFile(wb, `deals_list_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
   };
 
-  if (loading && !deals.length) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
   return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
-        <Box>
-          <Typography 
-            variant="h4" 
-            sx={{ 
-              fontFamily: '"Playfair Display", Georgia, serif', 
-              fontWeight: 700, 
-              color: '#6D1734', 
-              letterSpacing: '0.5px',
-              mb: 0.5 
-            }}
-          >
-            Exclusive Deals & Promotions
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#7D7571' }}>
-            Curate limited-time bridal showcases, festive offers, and heirloom silk bundles
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
-            variant="outlined"
-            onClick={handleExportToExcel}
-            startIcon={<FileDownloadIcon />}
-            sx={{
-              borderRadius: 0,
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              fontSize: '0.78rem',
-              borderColor: '#EDE2D2',
-              color: '#6D1734',
-              '&:hover': { borderColor: '#6D1734', backgroundColor: '#FAF7F2' }
-            }}
-          >
-            Export to Excel
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => handleOpen()}
-            sx={{
-              borderRadius: 0,
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              fontSize: '0.78rem',
-              backgroundColor: '#6D1734',
-              '&:hover': { backgroundColor: '#4A1025' }
-            }}
-          >
-            Add Deal
-          </Button>
-        </Box>
-      </Box>
+    <Box className="admin-page-container">
+      <AdminPageHeader
+        title="Exclusive Deals & Promotions"
+        subtitle="Curate limited-time bridal showcases, festive offers, and heirloom silk bundles"
+        icon={LocalOfferIcon}
+        badges={[
+          { label: `Total: ${totalDealsCount}`, color: 'default' },
+          { label: `Active: ${activeDealsCount}`, color: 'success' },
+          ...(expiredDealsCount > 0 ? [{ label: `Expired: ${expiredDealsCount}`, color: 'warning' }] : []),
+          ...(inactiveDealsCount > 0 ? [{ label: `Inactive: ${inactiveDealsCount}`, color: 'error' }] : []),
+        ]}
+        onExport={handleExportToExcel}
+        primaryAction={{
+          label: 'Add Deal',
+          icon: <AddIcon />,
+          onClick: () => handleOpen(),
+        }}
+      />
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2, borderRadius: 0 }}>
+        <Alert severity="error" sx={{ mb: 2, borderRadius: '4px' }}>
           {error}
         </Alert>
       )}
 
-      <Grid container spacing={3}>
-        {(Array.isArray(deals) ? deals : []).map((deal) => (
-          <Grid item xs={12} sm={6} md={4} key={deal._id}>
-            <Card sx={{ 
-              borderRadius: 0, 
-              border: '1px solid #EDE2D2', 
-              boxShadow: '0 4px 15px rgba(109,23,52,0.04)',
-              transition: 'all 0.3s ease',
-              '&:hover': { borderColor: '#C5A15A', transform: 'translateY(-2px)' }
-            }}>
-              <CardMedia
-                component="img"
-                height="220"
-                image={deal.image}
-                alt={deal.title}
-                sx={{ borderRadius: 0, objectFit: 'cover' }}
-              />
-              <CardContent sx={{ p: 2.5 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
-                  <Typography 
-                    variant="h6" 
-                    component="div"
-                    sx={{ 
-                      fontFamily: '"Playfair Display", Georgia, serif', 
-                      fontWeight: 600, 
-                      color: '#282321' 
-                    }}
-                  >
-                    {deal.title}
-                  </Typography>
-                  <Chip
-                    label={deal.status.toUpperCase()}
-                    color={getStatusColor(deal.status)}
-                    size="small"
-                    sx={{ borderRadius: 0, fontSize: '0.7rem', fontWeight: 600 }}
-                  />
-                </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2, minHeight: 40, lineHeight: 1.6 }}>
-                  {deal.content}
-                </Typography>
-                <Box sx={{ p: 1.5, backgroundColor: '#FAF7F2', border: '1px solid #EDE2D2', mb: 1 }}>
-                  <Typography variant="caption" display="block" sx={{ color: '#6D1734', fontWeight: 600, letterSpacing: '0.5px' }}>
-                    VALIDITY
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: '#282321', fontSize: '0.8rem' }}>
-                    {new Date(deal.startDate).toLocaleDateString()} — {new Date(deal.endDate).toLocaleDateString()}
-                  </Typography>
-                </Box>
-                <Typography variant="caption" sx={{ color: '#7D7571', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Linked Products: {deal.products.length}
-                </Typography>
-              </CardContent>
-              <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 2, pt: 0, borderTop: '1px solid #EDE2D2' }}>
-                <IconButton onClick={() => handleOpen(deal)} color="primary" size="small">
-                  <EditIcon fontSize="small" />
-                </IconButton>
-                <IconButton onClick={() => handleDelete(deal._id)} color="error" size="small">
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+      <AdminTableToolbar
+        searchPlaceholder="Search deals by title or content..."
+        searchQuery={searchQuery}
+        onSearchChange={(val) => {
+          setSearchQuery(val);
+          setPage(0);
+        }}
+        filters={[
+          {
+            id: 'status',
+            label: 'Status',
+            value: statusFilter,
+            onChange: (val) => {
+              setStatusFilter(val);
+              setPage(0);
+            },
+            options: [
+              { label: 'All Statuses', value: 'all' },
+              { label: 'Active', value: 'active' },
+              { label: 'Inactive', value: 'inactive' },
+              { label: 'Expired', value: 'expired' },
+            ],
+          },
+        ]}
+        quickFilters={{
+          selected: statusFilter,
+          onChange: (val) => {
+            setStatusFilter(val);
+            setPage(0);
+          },
+          options: [
+            { label: 'All', value: 'all', count: totalDealsCount },
+            { label: 'Active', value: 'active', count: activeDealsCount, color: 'success' },
+            { label: 'Inactive', value: 'inactive', count: inactiveDealsCount, color: 'error' },
+            { label: 'Expired', value: 'expired', count: expiredDealsCount, color: 'warning' },
+          ],
+        }}
+        totalCount={totalDealsCount}
+        filteredCount={filteredDeals.length}
+        onResetFilters={() => {
+          setSearchQuery('');
+          setStatusFilter('all');
+          setPage(0);
+        }}
+      />
+
+      <Paper className="admin-table-paper">
+        <TableContainer>
+          <Table>
+            <TableHead className="admin-table-head">
+              <TableRow>
+                <TableCell className="admin-table-th" width="90px">Banner</TableCell>
+                <TableCell className="admin-table-th">Deal Title & Offer Details</TableCell>
+                <TableCell className="admin-table-th">Validity Period</TableCell>
+                <TableCell className="admin-table-th">Products Linked</TableCell>
+                <TableCell className="admin-table-th">Status</TableCell>
+                <TableCell className="admin-table-th" align="right" width="120px">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {loading && !deals.length ? (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
+                    <CircularProgress sx={{ color: '#6D1734' }} />
+                  </TableCell>
+                </TableRow>
+              ) : paginatedDeals.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
+                    <AdminTableEmptyState
+                      message="No deals found matching your filter criteria"
+                      onResetFilters={() => {
+                        setSearchQuery('');
+                        setStatusFilter('all');
+                        setPage(0);
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+              ) : (
+                paginatedDeals.map((deal) => (
+                  <TableRow key={deal._id} className="admin-table-row" hover>
+                    <TableCell className="admin-table-cell">
+                      {deal.image ? (
+                        <Avatar
+                          src={deal.image}
+                          alt={deal.title}
+                          variant="rounded"
+                          sx={{ width: 64, height: 48, border: '1px solid #EDE2D2', bgcolor: '#FAF7F2' }}
+                        />
+                      ) : (
+                        <Avatar variant="rounded" sx={{ width: 64, height: 48, bgcolor: 'rgba(109,23,52,0.1)', color: '#6D1734' }}>
+                          <LocalOfferIcon />
+                        </Avatar>
+                      )}
+                    </TableCell>
+                    <TableCell className="admin-table-cell">
+                      <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#282321' }}>
+                        {deal.title}
+                      </Typography>
+                      {deal.content && (
+                        <Typography variant="body2" sx={{ color: '#7D7571', fontSize: '0.8rem', mt: 0.25, maxWidth: 360, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {deal.content}
+                        </Typography>
+                      )}
+                    </TableCell>
+                    <TableCell className="admin-table-cell font-number" sx={{ fontSize: '0.82rem', color: '#282321' }}>
+                      {deal.startDate ? new Date(deal.startDate).toLocaleDateString() : '-'} — {deal.endDate ? new Date(deal.endDate).toLocaleDateString() : '-'}
+                    </TableCell>
+                    <TableCell className="admin-table-cell font-number">
+                      <Chip
+                        label={`${deal.products?.length || 0} products`}
+                        size="small"
+                        variant="outlined"
+                        sx={{ borderColor: '#EDE2D2', fontSize: '0.75rem', fontWeight: 600 }}
+                      />
+                    </TableCell>
+                    <TableCell className="admin-table-cell">
+                      <Chip
+                        label={(deal.status || 'active').toUpperCase()}
+                        color={getStatusColor(deal.status)}
+                        size="small"
+                        sx={{ fontSize: '0.7rem', fontWeight: 700 }}
+                      />
+                    </TableCell>
+                    <TableCell className="admin-table-cell" align="right">
+                      <Tooltip title="Edit Deal">
+                        <IconButton onClick={() => handleOpen(deal)} sx={{ color: '#6D1734' }} size="small">
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete Deal">
+                        <IconButton onClick={() => handleDelete(deal._id)} color="error" size="small">
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          component="div"
+          count={filteredDeals.length}
+          page={page}
+          onPageChange={(e, newPage) => setPage(newPage)}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+          rowsPerPageOptions={[10, 25, 50]}
+          className="admin-pagination font-number"
+        />
+      </Paper>
 
       <Dialog 
         open={open} 

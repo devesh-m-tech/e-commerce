@@ -39,6 +39,10 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import CategoryIcon from '@mui/icons-material/Category';
+import AdminPageHeader from '../components/common/AdminPageHeader';
+import AdminTableToolbar from '../components/common/AdminTableToolbar';
+import AdminTableEmptyState from '../components/common/AdminTableEmptyState';
 import * as XLSX from 'xlsx';
 import '../styles/Categories.css';
 import { SAMPLE_IMAGES } from '../utils/sampleData';
@@ -136,6 +140,7 @@ const Categories = () => {
   const [previewImage, setPreviewImage] = useState('');
   const [errors, setErrors] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -589,10 +594,24 @@ const Categories = () => {
       const searchLower = (searchQuery || '').toLowerCase();
       const name = (category?.cName || '').toLowerCase();
       const description = (category?.cDescription || '').toLowerCase();
+      const matchesSearch = name.includes(searchLower) || description.includes(searchLower);
 
-      return name.includes(searchLower) || description.includes(searchLower);
+      const status = (category?.cStatus || 'active').toLowerCase();
+      const matchesStatus = statusFilter === 'all' || status === statusFilter.toLowerCase();
+
+      return matchesSearch && matchesStatus;
     });
-  }, [allCategories, searchQuery]);
+  }, [allCategories, searchQuery, statusFilter]);
+
+  const totalCategoryCount = (allCategories || []).length;
+  const activeCategoryCount = useMemo(
+    () => (allCategories || []).filter(c => (c.cStatus || 'active').toLowerCase() === 'active').length,
+    [allCategories]
+  );
+  const inactiveCategoryCount = useMemo(
+    () => (allCategories || []).filter(c => (c.cStatus || '').toLowerCase() === 'inactive').length,
+    [allCategories]
+  );
 
   const handleSearch = (e) => {
     const newSearchQuery = e.target.value;
@@ -636,90 +655,101 @@ const Categories = () => {
   };
 
   return (
-    <div className="categories-container">
-      <div className="categories-header">
-        <div className="categories-title-btn">
-          <Typography className="categories-title">
-            Categories
-          </Typography>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <Button
-              variant="outlined"
-              onClick={handleExportToExcel}
-              startIcon={<FileDownloadIcon />}
-              sx={{
-                borderColor: 'primary.main',
-                color: 'primary.main',
-                '&:hover': {
-                  borderColor: 'primary.dark',
-                  backgroundColor: 'rgba(109, 23, 52, 0.06)',
-                },
-              }}
-            >
-              Export to Excel
-            </Button>
-            <Button
-              className="add-category-btn"
-              variant="contained"
-              onClick={() => {
-                setEditCategory(null);
-                handleOpen();
-              }}
-              startIcon={<AddIcon />}
-            >
-              Add Category
-            </Button>
-          </div>
-        </div>
-        <div className="search-add-container">
-          <div className="search-container">
-            <TextField
-              className="search-field"
-              placeholder="Search categories..."
-              variant="outlined"
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-              value={searchQuery}
-              onChange={handleSearch}
-            />
-          </div>
+    <div className="admin-page-container">
+      <AdminPageHeader
+        title="Category Management"
+        subtitle="Organize silk saree collections, heirloom jewellery sections, and hierarchical taxonomy"
+        icon={CategoryIcon}
+        badges={[
+          { label: `Total: ${totalCategoryCount}`, color: 'default' },
+          { label: `Active: ${activeCategoryCount}`, color: 'success' },
+          ...(inactiveCategoryCount > 0 ? [{ label: `Inactive: ${inactiveCategoryCount}`, color: 'error' }] : [])
+        ]}
+        onExport={handleExportToExcel}
+        primaryAction={{
+          label: 'Add Category',
+          icon: <AddIcon />,
+          onClick: () => {
+            setEditCategory(null);
+            handleOpen();
+          }
+        }}
+      />
 
-        </div>
-      </div>
+      <AdminTableToolbar
+        searchPlaceholder="Search categories by name or description..."
+        searchQuery={searchQuery}
+        onSearchChange={(val) => {
+          setSearchQuery(val);
+          setPage(0);
+        }}
+        filters={[
+          {
+            id: 'status',
+            label: 'Status',
+            value: statusFilter,
+            onChange: (val) => {
+              setStatusFilter(val);
+              setPage(0);
+            },
+            options: [
+              { label: 'All Statuses', value: 'all' },
+              { label: 'Active', value: 'active' },
+              { label: 'Inactive', value: 'inactive' }
+            ]
+          }
+        ]}
+        quickFilters={{
+          selected: statusFilter,
+          onChange: (val) => {
+            setStatusFilter(val);
+            setPage(0);
+          },
+          options: [
+            { label: 'All', value: 'all', count: totalCategoryCount },
+            { label: 'Active', value: 'active', count: activeCategoryCount, color: 'success' },
+            { label: 'Inactive', value: 'inactive', count: inactiveCategoryCount, color: 'error' }
+          ]
+        }}
+        totalCount={totalCategoryCount}
+        filteredCount={filteredCategories.length}
+        onResetFilters={() => {
+          setSearchQuery('');
+          setStatusFilter('all');
+          setPage(0);
+        }}
+      />
 
-      <TableContainer className="table-container">
-        <Table>
-          <TableHead className="table-header">
-            <TableRow>
-              <TableCell>Category</TableCell>
-              {/* <TableCell>Description</TableCell> */}
-              <TableCell>Status</TableCell>
-              <TableCell>Products</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
+      <Paper className="admin-table-paper">
+        <TableContainer>
+          <Table>
+            <TableHead className="admin-table-head">
               <TableRow>
-                <TableCell colSpan={5} align="center">
-                  <CircularProgress />
-                </TableCell>
+                <TableCell className="admin-table-th">Category</TableCell>
+                <TableCell className="admin-table-th">Status</TableCell>
+                <TableCell className="admin-table-th">Products</TableCell>
+                <TableCell className="admin-table-th" align="right">Actions</TableCell>
               </TableRow>
-            ) : paginatedCategories.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} align="center">
-                  <Typography variant="body1" color="textSecondary">
-                    No categories found
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            ) : (
+            </TableHead>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={4} align="center" sx={{ py: 6 }}>
+                    <CircularProgress sx={{ color: '#6D1734' }} />
+                  </TableCell>
+                </TableRow>
+              ) : paginatedCategories.length === 0 ? (
+                <AdminTableEmptyState
+                  colSpan={4}
+                  title="No categories found"
+                  subtitle="No categories match your search or status filter criteria."
+                  onReset={() => {
+                    setSearchQuery('');
+                    setStatusFilter('all');
+                    setPage(0);
+                  }}
+                />
+              ) : (
               paginatedCategories.map((category) => (
                 <>
                   <TableRow
@@ -1015,6 +1045,7 @@ const Categories = () => {
             )}
           </TableBody>
         </Table>
+        </TableContainer>
         <TablePagination
           component="div"
           count={filteredCategories.length}
@@ -1023,9 +1054,9 @@ const Categories = () => {
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[10, 25, 50]}
-          className="pagination-container"
+          className="admin-pagination font-number"
         />
-      </TableContainer>
+      </Paper>
 
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle className="dialog-title">

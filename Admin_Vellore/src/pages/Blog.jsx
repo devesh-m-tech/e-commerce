@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box,
   Button,
@@ -20,12 +20,20 @@ import {
   Input,
   CircularProgress,
   InputAdornment,
+  TablePagination,
+  Tooltip,
+  Avatar,
 } from '@mui/material';
 import { Edit, Delete, Add, Search } from '@mui/icons-material';
+import ArticleIcon from '@mui/icons-material/Article';
+import * as XLSX from 'xlsx';
 import { toast } from 'react-toastify';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { createBlog, getAllBlogs, updateBlog, deleteBlog } from '../api/blogApi';
+import AdminPageHeader from '../components/common/AdminPageHeader';
+import AdminTableToolbar from '../components/common/AdminTableToolbar';
+import AdminTableEmptyState from '../components/common/AdminTableEmptyState';
 
 const Blog = () => {
   const [blogs, setBlogs] = useState([]);
@@ -45,6 +53,8 @@ const Blog = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     fetchBlogs();
@@ -189,124 +199,153 @@ const Blog = () => {
   };
 
   const safeBlogs = Array.isArray(blogs) ? blogs : [];
-  const filteredBlogs = safeBlogs.filter(
-    (blog) =>
-      (blog?.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (blog?.description || '').toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredBlogs = useMemo(() => {
+    return safeBlogs.filter((blog) => {
+      const q = (searchQuery || '').toLowerCase();
+      const title = (blog?.title || '').toLowerCase();
+      const desc = (blog?.description || '').toLowerCase();
+      return title.includes(q) || desc.includes(q);
+    });
+  }, [safeBlogs, searchQuery]);
+
+  const paginatedBlogs = useMemo(() => {
+    const startIndex = page * rowsPerPage;
+    return filteredBlogs.slice(startIndex, startIndex + rowsPerPage);
+  }, [filteredBlogs, page, rowsPerPage]);
+
+  const handleExportToExcel = () => {
+    const exportData = safeBlogs.map((b) => ({
+      ID: b._id,
+      Title: b.title,
+      CanonicalUrl: b.canonicalUrl || '',
+      MetaTitle: b.metaTitle || '',
+      CreatedDate: b.createdAt ? new Date(b.createdAt).toLocaleDateString() : '',
+    }));
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Articles');
+    XLSX.writeFile(wb, `heritage_articles_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
+  };
 
   return (
-    <Box p={3}>
-      <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={3}>
-        <Box>
-          <Typography 
-            variant="h4"
-            sx={{ 
-              fontFamily: '"Playfair Display", Georgia, serif', 
-              fontWeight: 700, 
-              color: '#6D1734', 
-              letterSpacing: '0.5px',
-              mb: 0.5 
-            }}
-          >
-            Editorial & Heritage Journal
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#7D7571' }}>
-            Publish saree weaving chronicles, bridal styling guides, and temple jewellery journals
-          </Typography>
-        </Box>
-        <Button 
-          variant="contained" 
-          startIcon={<Add />} 
-          onClick={() => handleOpen()}
-          sx={{
-            borderRadius: 0,
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
-            fontSize: '0.78rem',
-            backgroundColor: '#6D1734',
-            '&:hover': { backgroundColor: '#4A1025' }
-          }}
-        >
-          New Article
-        </Button>
-      </Box>
-
-      <TextField
-        fullWidth
-        placeholder="Search heritage articles and guides..."
-        variant="outlined"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Search sx={{ color: '#6D1734' }} />
-            </InputAdornment>
-          ),
-        }}
-        sx={{ 
-          mb: 3,
-          backgroundColor: '#FFFFFF',
-          '& .MuiOutlinedInput-root': { borderRadius: 0 }
+    <Box className="admin-page-container">
+      <AdminPageHeader
+        title="Editorial & Heritage Journal"
+        subtitle="Publish saree weaving chronicles, bridal styling guides, and temple jewellery journals"
+        icon={ArticleIcon}
+        badges={[
+          { label: `Total Articles: ${safeBlogs.length}`, color: 'default' },
+        ]}
+        onExport={handleExportToExcel}
+        primaryAction={{
+          label: 'New Article',
+          icon: <Add />,
+          onClick: () => handleOpen(),
         }}
       />
 
-      <TableContainer component={Paper} sx={{ borderRadius: 0, border: '1px solid #EDE2D2', boxShadow: 'none' }}>
-        <Table>
-          <TableHead sx={{ backgroundColor: '#FAF7F2' }}>
-            <TableRow>
-              <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Cover</TableCell>
-              <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Article Title</TableCell>
-              <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Excerpt / Summary</TableCell>
-              <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Canonical URL</TableCell>
-              <TableCell align="right" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
+      <AdminTableToolbar
+        searchPlaceholder="Search heritage articles by title or excerpt..."
+        searchQuery={searchQuery}
+        onSearchChange={(val) => {
+          setSearchQuery(val);
+          setPage(0);
+        }}
+        totalCount={safeBlogs.length}
+        filteredCount={filteredBlogs.length}
+        onResetFilters={() => {
+          setSearchQuery('');
+          setPage(0);
+        }}
+      />
+
+      <Paper className="admin-table-paper">
+        <TableContainer>
+          <Table>
+            <TableHead className="admin-table-head">
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
-                  <CircularProgress />
-                </TableCell>
+                <TableCell className="admin-table-th" width="100px">Cover</TableCell>
+                <TableCell className="admin-table-th">Article Title</TableCell>
+                <TableCell className="admin-table-th">Excerpt / Summary</TableCell>
+                <TableCell className="admin-table-th">Canonical URL</TableCell>
+                <TableCell className="admin-table-th" align="right" width="120px">Actions</TableCell>
               </TableRow>
-            ) : filteredBlogs.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 4, color: '#7D7571' }}>
-                  No editorial articles found
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredBlogs.map((blog) => (
-                <TableRow key={blog._id} hover sx={{ '&:hover': { backgroundColor: '#FAF7F2' } }}>
-                  <TableCell>
-                    {blog.image && (
-                      <img
-                        src={blog.image}
-                        alt={blog.title}
-                        style={{ width: 80, height: 80, borderRadius: 0, objectFit: 'cover', border: '1px solid #EDE2D2' }}
-                      />
-                    )}
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: '#282321' }}>{blog.title}</TableCell>
-                  <TableCell sx={{ maxWidth: 250, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#7D7571' }}>
-                    <div dangerouslySetInnerHTML={{ __html: blog.description }} />
-                  </TableCell>
-                  <TableCell sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: '#6D1734' }}>{blog.canonicalUrl}</TableCell>
-                  <TableCell align="right">
-                    <IconButton onClick={() => handleOpen(blog)} color="primary" size="small">
-                      <Edit fontSize="small" />
-                    </IconButton>
-                    <IconButton onClick={() => handleDeleteClick(blog)} color="error" size="small">
-                      <Delete fontSize="small" />
-                    </IconButton>
+            </TableHead>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                    <CircularProgress sx={{ color: '#6D1734' }} />
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              ) : paginatedBlogs.length === 0 ? (
+                <AdminTableEmptyState
+                  colSpan={5}
+                  title="No editorial articles found"
+                  subtitle="No articles match your search criteria."
+                  onReset={() => {
+                    setSearchQuery('');
+                    setPage(0);
+                  }}
+                />
+              ) : (
+                paginatedBlogs.map((blog) => (
+                  <TableRow key={blog._id} className="admin-table-row" hover>
+                    <TableCell className="admin-table-cell">
+                      {blog.image ? (
+                        <Avatar
+                          src={blog.image}
+                          alt={blog.title}
+                          variant="rounded"
+                          sx={{ width: 60, height: 60, border: '1px solid #EDE2D2', bgcolor: '#FAF7F2' }}
+                        />
+                      ) : (
+                        <Avatar variant="rounded" sx={{ width: 60, height: 60, bgcolor: 'rgba(109,23,52,0.1)', color: '#6D1734' }}>
+                          <ArticleIcon />
+                        </Avatar>
+                      )}
+                    </TableCell>
+                    <TableCell className="admin-table-cell" sx={{ fontWeight: 600, color: '#282321' }}>
+                      {blog.title}
+                    </TableCell>
+                    <TableCell className="admin-table-cell" sx={{ maxWidth: 280, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#7D7571' }}>
+                      <div dangerouslySetInnerHTML={{ __html: blog.description }} />
+                    </TableCell>
+                    <TableCell className="admin-table-cell font-number" sx={{ fontSize: '0.8rem', color: '#6D1734' }}>
+                      {blog.canonicalUrl || '-'}
+                    </TableCell>
+                    <TableCell className="admin-table-cell" align="right">
+                      <Tooltip title="Edit Article">
+                        <IconButton onClick={() => handleOpen(blog)} sx={{ color: '#6D1734' }} size="small">
+                          <Edit fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete Article">
+                        <IconButton onClick={() => handleDeleteClick(blog)} color="error" size="small">
+                          <Delete fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          component="div"
+          count={filteredBlogs.length}
+          page={page}
+          onPageChange={(e, newPage) => setPage(newPage)}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+          rowsPerPageOptions={[10, 25, 50]}
+          className="admin-pagination font-number"
+        />
+      </Paper>
 
       {/* Create/Edit Modal */}
       <Modal open={open} onClose={handleClose}>

@@ -363,7 +363,33 @@ const SdsHomePage = () => {
         setLatest(rawLatList.slice(0, 8));
         setOffers(dealList.slice(0, 8));
 
-        if (Array.isArray(bannersRes) && bannersRes.length > 0) {
+        // Fetch custom hero background image from store settings
+        let heroConfig = null;
+        try {
+          const settingsRes = await axiosInstance.get('/settings/public');
+          if (settingsRes?.data?.data?.storeOperations?.heroSection) {
+            heroConfig = settingsRes.data.data.storeOperations.heroSection;
+          }
+        } catch {
+          // Use default hero banners if public settings unavailable
+        }
+
+        if (heroConfig?.enableCustomBg && heroConfig?.bgImage) {
+          const customHeroSlide = {
+            _id: 'custom-hero-bg',
+            title: heroConfig.title || 'Nice Summer Collection',
+            subtitle: heroConfig.subtitle || 'A Good Looking, Comfortable Traditional Collection',
+            tag: heroConfig.tag || 'Handloom Heritage',
+            imageUrl: heroConfig.bgImage,
+            link: '/category/silk-sarees',
+            ctaText: 'Explore Collection'
+          };
+          if (Array.isArray(bannersRes) && bannersRes.length > 0) {
+            setBanners([customHeroSlide, ...bannersRes.filter(b => b._id !== 'custom-hero-bg')]);
+          } else {
+            setBanners([customHeroSlide, ...DEFAULT_HERO_SLIDES.slice(1)]);
+          }
+        } else if (Array.isArray(bannersRes) && bannersRes.length > 0) {
           setBanners(bannersRes);
         }
       } catch (err) {

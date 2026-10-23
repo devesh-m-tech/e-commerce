@@ -25,6 +25,7 @@ import notificationRoutes from "./routes/notificationRoute.js";
 import otpRoutes from "./routes/otpRoutes.js";
 import exchangeRoutes from "./routes/exchangeRoutes.js";
 import bannerRoutes from "./routes/bannerRoutes.js";
+import settingRoutes from "./routes/settingRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -48,7 +49,7 @@ if (!fs.existsSync(bannerUploadDir)) {
   fs.mkdirSync(bannerUploadDir, { recursive: true });
 }
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -74,6 +75,7 @@ app.get('/placeholder.jpg', (req, res) => {
 // Configure static file serving
 // This will serve files from the 'uploads' directory when requested through /uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API Routes
 app.use("/api", userRoutes);
@@ -94,6 +96,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/exchange", exchangeRoutes);
 app.use("/api/otp", otpRoutes);
 app.use("/api/banners", bannerRoutes);
+app.use("/api/settings", settingRoutes);
 
 app.get('/getlog', (req, res) => {
   const logPath = path.join(__dirname, 'logs', 'app.log');

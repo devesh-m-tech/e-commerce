@@ -172,13 +172,15 @@
 }
 
 .sds-kpi-value {
-  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-family: var(--font-number, 'Plus Jakarta Sans', var(--font-sans, 'Karla', sans-serif));
   font-size: 1.85rem;
   font-weight: 700;
   color: #1A1615;
   letter-spacing: -0.015em;
   line-height: 1.15;
   margin-bottom: 4px;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
 }
 
 .sds-kpi-subtext {
@@ -324,6 +326,8 @@
 .sds-tooltip-row span.val {
   font-weight: 700;
   color: #FFFFFF;
+  font-family: var(--font-number, 'Plus Jakarta Sans', sans-serif);
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
 /* Donut Center Label */
@@ -337,11 +341,13 @@
 }
 
 .sds-donut-center-value {
-  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-family: var(--font-number, 'Plus Jakarta Sans', var(--font-serif, serif));
   font-size: 1.75rem;
   font-weight: 700;
   color: #6D1734;
   line-height: 1;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
 }
 
 .sds-donut-center-label {

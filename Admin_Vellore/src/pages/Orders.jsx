@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Box,
   Typography,
@@ -38,6 +38,7 @@ import {
   useTheme,
   ToggleButton,
   ToggleButtonGroup,
+  TablePagination,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -49,6 +50,11 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PrintIcon from "@mui/icons-material/Print";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import * as XLSX from "xlsx";
+import AdminPageHeader from "../components/common/AdminPageHeader";
+import AdminTableToolbar from "../components/common/AdminTableToolbar";
+import AdminTableEmptyState from "../components/common/AdminTableEmptyState";
 import { fetchOrders, updateOrderStatus, logInvoicePrintApi } from "../api/dashboardApi";
 import { productApi } from "../api/productApi";
 import { variantApi } from "../api/variantApi";
@@ -155,6 +161,13 @@ const StatusOption = ({ status, selected, onClick, disabled }) => {
           color: "#d32f2f", // error color
           description: "Order cancelled by admin",
           subtext: "Admin has cancelled the order",
+        };
+      case "RETURNED":
+        return {
+          icon: <CancelIcon />,
+          color: "#c2185b",
+          description: "Order returned by customer",
+          subtext: "Returned to boutique inventory",
         };
       default:
         return {
@@ -305,6 +318,9 @@ const Orders = () => {
   });
   const [dateFilter, setDateFilter] = useState("all"); // 'all', 'week', 'month', 'year'
   const [statusFilter, setStatusFilter] = useState("all"); // 'all', 'ORDER PLACED', 'DISPATCHED', 'DELIVERED', 'CANCELLED'
+  const [paymentFilter, setPaymentFilter] = useState("all"); // 'all', 'online', 'cod'
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [variantDetails, setVariantDetails] = useState({});
 
   // Define order status options
@@ -313,7 +329,6 @@ const Orders = () => {
     "DISPATCHED",
     "DELIVERED",
     "CANCELLED",
-    "RETURNED",
   ];
 
   useEffect(() => {
@@ -625,56 +640,113 @@ const Orders = () => {
   const handleDateFilterChange = (event, newFilter) => {
     if (newFilter !== null) {
       setDateFilter(newFilter);
+      setPage(0);
     }
   };
 
   const handleStatusFilterChange = (event) => {
     setStatusFilter(event.target.value);
+    setPage(0);
   };
 
-  const filteredOrders = (Array.isArray(orders) ? orders : []).filter((order) => {
-    // Apply status filter
-    if (statusFilter !== "all") {
-      const orderStatus = order.orderStatus?.toUpperCase();
-      const filterStatus = statusFilter.toUpperCase();
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
-      // Special handling for RETURNED status
-      // if (filterStatus === 'RETURNED') {
-      //   return order.returnedItems?.length > 0 || orderStatus === 'RETURNED';
-      // }
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
-      if (orderStatus !== filterStatus) {
+  const filteredOrders = useMemo(() => {
+    return (Array.isArray(orders) ? orders : []).filter((order) => {
+      // Apply status filter
+      if (statusFilter !== "all") {
+        const orderStatus = (order.orderStatus || "").toUpperCase();
+        const filterStatus = statusFilter.toUpperCase();
+
+        if (filterStatus === "ORDER PLACED" && (orderStatus === "ORDER PLACED" || orderStatus === "PENDING")) {
+          // match
+        } else if (orderStatus !== filterStatus) {
+          return false;
+        }
+      }
+
+      // Apply payment filter
+      if (paymentFilter !== "all") {
+        const pm = (order.paymentMethod || "").toLowerCase();
+        if (paymentFilter === "cod" && !pm.includes("cod") && !pm.includes("cash")) {
+          return false;
+        }
+        if (paymentFilter === "online" && (pm.includes("cod") || pm.includes("cash"))) {
+          return false;
+        }
+      }
+
+      // Apply date filter
+      if (!isWithinDateRange(order.createdAt, dateFilter)) {
         return false;
       }
-    }
 
-    // Apply date filter
-    if (!isWithinDateRange(order.createdAt, dateFilter)) {
-      return false;
-    }
+      // Apply search filter
+      if (!searchQuery) return true;
 
-    // Apply search filter
-    if (!searchQuery) return true;
+      const searchFields = [
+        order._id,
+        order.user?.name,
+        order.user?.email,
+        order.shippingAddress?.contact,
+        order.orderStatus,
+        order.paymentMethod,
+        order.paymentStatus,
+        order.finalAmount?.toString(),
+        order.shippingAddress?.address,
+        order.shippingAddress?.city,
+        order.shippingAddress?.state,
+        order.shippingAddress?.pincode,
+      ];
 
-    const searchFields = [
-      order._id,
-      order.user?.name,
-      order.orderStatus,
-      order.paymentMethod,
-      order.paymentStatus,
-      order.finalAmount?.toString(),
-      order.shippingAddress?.address,
-      order.shippingAddress?.city,
-      order.shippingAddress?.state,
-      order.shippingAddress?.pincode,
-    ];
+      const searchTermLower = searchQuery.toLowerCase().trim();
+      return searchFields.some(
+        (field) =>
+          field && field.toString().toLowerCase().includes(searchTermLower)
+      );
+    });
+  }, [orders, statusFilter, paymentFilter, dateFilter, searchQuery]);
 
-    const searchTermLower = searchQuery.toLowerCase();
-    return searchFields.some(
-      (field) =>
-        field && field.toString().toLowerCase().includes(searchTermLower)
-    );
-  });
+  const totalOrdersCount = (orders || []).length;
+  const placedCount = useMemo(() => (orders || []).filter(o => ['ORDER PLACED', 'PENDING'].includes((o.orderStatus || '').toUpperCase())).length, [orders]);
+  const dispatchedCount = useMemo(() => (orders || []).filter(o => (o.orderStatus || '').toUpperCase() === 'DISPATCHED').length, [orders]);
+  const deliveredCount = useMemo(() => (orders || []).filter(o => (o.orderStatus || '').toUpperCase() === 'DELIVERED').length, [orders]);
+  const cancelledCount = useMemo(() => (orders || []).filter(o => ['CANCELLED', 'CANCELED'].includes((o.orderStatus || '').toUpperCase())).length, [orders]);
+
+  const handleExportToExcel = () => {
+    const exportData = (Array.isArray(filteredOrders) ? filteredOrders : []).map(order => ({
+      'Order ID': order._id || '',
+      'Date': order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-GB') : '',
+      'Customer Name': order.shippingAddress?.name || order.user?.name || '',
+      'Customer Email': order.user?.email || '',
+      'Phone': order.shippingAddress?.contact || order.user?.mobile || '',
+      'Items Count': (order.items || []).length,
+      'Final Amount': Number(order.finalAmount || 0),
+      'Kait Coins Used': Number(order.kaitCoinsUsed || 0),
+      'Net Paid': getNetPayableAmount(order),
+      'Payment Method': order.paymentMethod || 'Online',
+      'Payment Status': order.paymentStatus || 'Pending',
+      'Order Status': getDisplayStatus(order.orderStatus),
+      'Shipping Address': [
+        order.shippingAddress?.address,
+        order.shippingAddress?.city,
+        order.shippingAddress?.state,
+        order.shippingAddress?.pincode
+      ].filter(Boolean).join(', ')
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Orders');
+    XLSX.writeFile(wb, `orders_report_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
+  };
 
   // Add responsive styles to print functions
   const getResponsivePrintStyles = () => `
@@ -1662,230 +1734,210 @@ const Orders = () => {
     ) || 0;
 
   return (
-    <Box sx={{ p: { xs: 2, sm: 3 } }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <Typography
-          variant="h4"
-          sx={{
-            fontSize: { xs: "1.5rem", sm: "2.125rem" },
-            fontFamily: "'Playfair Display', Georgia, serif",
-            color: "primary.main",
-            fontWeight: 600,
-            letterSpacing: "0.5px"
-          }}
-        >
-          Orders Management
-        </Typography>
-        {newOrdersCount > 0 && (
-          <Chip
-            icon={<ShoppingCartIcon />}
-            label={`${newOrdersCount} New Order${newOrdersCount > 1 ? 's' : ''}`}
-            color="error"
-            sx={{
-              fontWeight: 600,
-              animation: 'pulse 2s infinite',
-              '@keyframes pulse': {
-                '0%': {
-                  boxShadow: '0 0 0 0 rgba(211, 47, 47, 0.7)',
-                },
-                '70%': {
-                  boxShadow: '0 0 0 10px rgba(211, 47, 47, 0)',
-                },
-                '100%': {
-                  boxShadow: '0 0 0 0 rgba(211, 47, 47, 0)',
-                },
-              },
-            }}
-          />
-        )}
-      </Box>
-      <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 500 }}>
-        Total Orders: {orders.length}
-      </Typography>
+    <Box className="admin-page-container">
+      <AdminPageHeader
+        title="Orders Management"
+        subtitle="Track, manage, and dispatch customer purchases and print invoices"
+        icon={ShoppingCartIcon}
+        badges={[
+          { label: 'Total Orders', count: totalOrdersCount },
+          { label: 'New / Pending', count: placedCount, color: 'warning' },
+          { label: 'Dispatched', count: dispatchedCount, color: 'info' },
+          { label: 'Delivered', count: deliveredCount, color: 'success' },
+          ...(cancelledCount > 0 ? [{ label: 'Cancelled', count: cancelledCount, color: 'error' }] : [])
+        ]}
+        onExport={handleExportToExcel}
+        exportLabel="Export to Excel"
+        onPrimaryAction={handleBulkPrint}
+        primaryActionLabel={`Print ${dateFilter !== 'all' ? dateFilter : ''} Report`}
+        primaryActionIcon={PrintIcon}
+      />
 
-      <Box
-        sx={{
-          mb: 3,
-          display: "flex",
-          flexDirection: { xs: "column", md: "row" },
-          gap: 2,
-          alignItems: { xs: "stretch", md: "center" },
+      <AdminTableToolbar
+        searchPlaceholder="Search by order ID, customer name, email, phone, city, or status..."
+        searchQuery={searchQuery}
+        onSearchChange={(val) => {
+          setSearchQuery(val);
+          setPage(0);
         }}
-      >
-        <TextField
-          sx={{ flex: 1 }}
-          variant="outlined"
-          placeholder="Search orders..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
+        filters={[
+          {
+            id: 'status',
+            label: 'Order Status',
+            value: statusFilter,
+            onChange: (val) => {
+              setStatusFilter(val);
+              setPage(0);
+            },
+            options: [
+              { label: 'All Statuses', value: 'all' },
+              { label: 'Order Placed', value: 'ORDER PLACED' },
+              { label: 'Dispatched', value: 'DISPATCHED' },
+              { label: 'Delivered', value: 'DELIVERED' },
+              { label: 'Cancelled', value: 'CANCELLED' }
+            ]
+          },
+          {
+            id: 'payment',
+            label: 'Payment Method',
+            value: paymentFilter,
+            onChange: (val) => {
+              setPaymentFilter(val);
+              setPage(0);
+            },
+            options: [
+              { label: 'All Methods', value: 'all' },
+              { label: 'Online Payment', value: 'online' },
+              { label: 'Cash on Delivery', value: 'cod' }
+            ]
+          },
+          {
+            id: 'date',
+            label: 'Date Range',
+            value: dateFilter,
+            onChange: (val) => {
+              setDateFilter(val);
+              setPage(0);
+            },
+            options: [
+              { label: 'All Dates', value: 'all' },
+              { label: 'Past Week', value: 'week' },
+              { label: 'Past Month', value: 'month' },
+              { label: 'Past Year', value: 'year' }
+            ]
+          }
+        ]}
+        quickFilters={{
+          selected: statusFilter,
+          onChange: (val) => {
+            setStatusFilter(val);
+            setPage(0);
+          },
+          options: [
+            { label: 'All Orders', value: 'all', count: totalOrdersCount },
+            { label: 'New Orders', value: 'ORDER PLACED', count: placedCount, color: 'warning' },
+            { label: 'Dispatched', value: 'DISPATCHED', count: dispatchedCount, color: 'info' },
+            { label: 'Delivered', value: 'DELIVERED', count: deliveredCount, color: 'success' }
+          ]
+        }}
+        totalCount={totalOrdersCount}
+        filteredCount={filteredOrders.length}
+        onResetFilters={() => {
+          setSearchQuery('');
+          setStatusFilter('all');
+          setPaymentFilter('all');
+          setDateFilter('all');
+          setPage(0);
+        }}
+      />
+
+      <Paper className="admin-table-paper">
+        <TableContainer>
+          {loading ? (
+            <Box sx={{ p: 5, textAlign: 'center' }}>
+              <CircularProgress sx={{ color: '#6D1734' }} />
+            </Box>
+          ) : error ? (
+            <Alert severity="error" sx={{ m: 3 }}>
+              {error}
+            </Alert>
+          ) : (
+            <Table>
+              <TableHead className="admin-table-head">
+                <TableRow>
+                  <TableCell className="admin-table-th">Order ID</TableCell>
+                  <TableCell className="admin-table-th">Date</TableCell>
+                  <TableCell className="admin-table-th">Customer</TableCell>
+                  <TableCell className="admin-table-th">Total Amount</TableCell>
+                  <TableCell className="admin-table-th">Wallet Used</TableCell>
+                  <TableCell className="admin-table-th">Net Paid</TableCell>
+                  <TableCell className="admin-table-th">Status</TableCell>
+                  <TableCell className="admin-table-th" align="right">Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredOrders.length === 0 ? (
+                  <AdminTableEmptyState
+                    colSpan={8}
+                    title="No orders found"
+                    subtitle="No orders match your search or filter criteria."
+                    onReset={() => {
+                      setSearchQuery('');
+                      setStatusFilter('all');
+                      setPaymentFilter('all');
+                      setDateFilter('all');
+                      setPage(0);
+                    }}
+                  />
+                ) : (
+                  filteredOrders
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((order) => (
+                      <TableRow 
+                        key={order._id}
+                        className="admin-table-row"
+                        hover
+                      >
+                        <TableCell className="admin-table-cell font-number" sx={{ fontWeight: 600, color: '#6D1734' }}>
+                          #{order._id.slice(-8).toUpperCase()}
+                        </TableCell>
+                        <TableCell className="admin-table-cell font-number" sx={{ color: '#666' }}>
+                          {new Date(order.createdAt).toLocaleDateString("en-GB")}
+                        </TableCell>
+                        <TableCell className="admin-table-cell">
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#2C1810' }}>
+                            {order.shippingAddress?.name || order.user?.name || "Customer"}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" className="font-number">
+                            {order.shippingAddress?.contact || order.user?.phone || order.user?.email || "—"}
+                          </Typography>
+                        </TableCell>
+                        <TableCell className="admin-table-cell font-number" sx={{ fontWeight: 600 }}>
+                          ₹{Number(order.finalAmount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell className="admin-table-cell font-number" sx={{ color: '#666' }}>
+                          {order.kaitCoinsUsed > 0 
+                            ? `₹${Number(order.kaitCoinsUsed).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` 
+                            : "₹0.00"}
+                        </TableCell>
+                        <TableCell className="admin-table-cell font-number" sx={{ fontWeight: 700, color: '#2C1810' }}>
+                          ₹{getNetPayableAmount(order).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell className="admin-table-cell">
+                          <Chip
+                            icon={getStatusIcon(order.orderStatus)}
+                            label={getDisplayStatus(order.orderStatus) || "N/A"}
+                            color={getStatusColor(order.orderStatus)}
+                            size="small"
+                            sx={{
+                              "& .MuiChip-icon": { color: "inherit" },
+                              fontWeight: 600,
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell className="admin-table-cell" align="right">
+                          <IconButton onClick={(e) => handleMenuClick(e, order)} sx={{ color: '#6D1734' }}>
+                            <MoreVertIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                )}
+              </TableBody>
+            </Table>
+          )}
+        </TableContainer>
+        <TablePagination
+          component="div"
+          className="admin-pagination font-number"
+          count={filteredOrders.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPageOptions={[10, 25, 50]}
         />
-
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            gap: 2,
-            width: { xs: "100%", md: "auto" },
-          }}
-        >
-          <FormControl sx={{ minWidth: 120 }}>
-            <InputLabel>Status</InputLabel>
-            <Select
-              value={statusFilter}
-              onChange={handleStatusFilterChange}
-              label="Status"
-              size="small"
-            >
-              <MenuItem value="all">All Status</MenuItem>
-              {orderStatusOptions.map((status) => (
-                <MenuItem key={status} value={status}>
-                  {status}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <ToggleButtonGroup
-            value={dateFilter}
-            exclusive
-            onChange={handleDateFilterChange}
-            aria-label="date filter"
-            sx={{
-              display: "flex",
-              flexWrap: { xs: "wrap", sm: "nowrap" },
-              "& .MuiToggleButton-root": {
-                flex: { xs: "1 1 calc(50% - 8px)", sm: "none" },
-                whiteSpace: "nowrap",
-              },
-            }}
-          >
-            <ToggleButton value="all" aria-label="all dates">
-              All
-            </ToggleButton>
-            <ToggleButton value="week" aria-label="last week">
-              Week
-            </ToggleButton>
-            <ToggleButton value="month" aria-label="last month">
-              Month
-            </ToggleButton>
-            <ToggleButton value="year" aria-label="last year">
-              Year
-            </ToggleButton>
-          </ToggleButtonGroup>
-
-          <Button
-            variant="contained"
-            startIcon={<PrintIcon />}
-            onClick={handleBulkPrint}
-            disabled={filteredOrders.length === 0}
-            sx={{ width: { xs: "100%", sm: "auto" } }}
-          >
-            Print {dateFilter !== "all" ? dateFilter : ""} Report
-          </Button>
-        </Box>
-      </Box>
-
-      {loading ? (
-        <Box display="flex" justifyContent="center" my={4}>
-          <CircularProgress />
-        </Box>
-      ) : error ? (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {error}
-        </Alert>
-      ) : (
-        <>
-          {/* Desktop view */}
-{/* Desktop view */}
-<Box sx={{ display: { xs: "none", md: "block" } }}>
-  <TableContainer component={Paper}>
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>Date</TableCell>
-          <TableCell>Customer Name</TableCell>
-          <TableCell>Final Amount</TableCell>
-          <TableCell>KaitcoinUsed</TableCell>
-          <TableCell>INR</TableCell>
-          <TableCell>Status</TableCell>
-          <TableCell>Order ID</TableCell>
-          <TableCell align="right">Action</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {filteredOrders.length === 0 ? (
-          <TableRow>
-            <TableCell colSpan={8} align="center">
-              No orders found
-            </TableCell>
-          </TableRow>
-        ) : (
-          filteredOrders.map((order) => (
-            <TableRow key={order._id}>
-              <TableCell>
-                {new Date(order.createdAt).toLocaleDateString("en-GB")}
-              </TableCell>
-              <TableCell>{order.user?.name || "N/A"}</TableCell>
-              <TableCell>₹{order.finalAmount.toFixed(2)}</TableCell>
-              <TableCell>
-                {order.kaitCoinsUsed > 0 
-                  ? `₹${order.kaitCoinsUsed.toFixed(2)}` 
-                  : "₹0.00"}
-              </TableCell>
-              <TableCell>
-                ₹{getNetPayableAmount(order).toFixed(2)}
-              </TableCell>
-              <TableCell>
-                <Chip
-                  icon={getStatusIcon(order.orderStatus)}
-                  label={getDisplayStatus(order.orderStatus) || "N/A"}
-                  color={getStatusColor(order.orderStatus)}
-                  size="small"
-                  sx={{
-                    "& .MuiChip-icon": { color: "inherit" },
-                    fontWeight: 600,
-                  }}
-                />
-              </TableCell>
-              <TableCell>{order._id}</TableCell>
-              <TableCell align="right">
-                <IconButton onClick={(e) => handleMenuClick(e, order)}>
-                  <MoreVertIcon />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          ))
-        )}
-      </TableBody>
-    </Table>
-  </TableContainer>
-</Box>
-
-          {/* Mobile view */}
-          <Box sx={{ display: { xs: "block", md: "none" } }}>
-            {filteredOrders.length === 0 ? (
-              <Paper sx={{ p: 3, textAlign: "center" }}>
-                <Typography color="text.secondary">No orders found</Typography>
-              </Paper>
-            ) : (
-              filteredOrders.map((order) => (
-                <OrderCard
-                  key={order._id}
-                  order={order}
-                  onActionClick={handleMenuClick}
-                />
-              ))
-            )}
-          </Box>
-        </>
-      )}
+      </Paper>
 
       <Menu
         anchorEl={anchorEl}

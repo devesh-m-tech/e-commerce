@@ -234,7 +234,7 @@ const ProductDetail = () => {
     setImagePopup((prev) => ({
       ...prev,
       show: true,
-      image: productImages[safeIndex]?.url || product?.pImage?.[0] || "",
+      image: productImages[safeIndex]?.url || transformImageUrl(product?.pImage?.[0]) || "",
     }));
   };
 
@@ -252,7 +252,7 @@ const ProductDetail = () => {
     setPopupImageIndex(newIndex);
     setImagePopup((prev) => ({
       ...prev,
-      image: productImages[newIndex]?.url || product?.pImage?.[0] || "",
+      image: productImages[newIndex]?.url || transformImageUrl(product?.pImage?.[0]) || "",
     }));
   };
 
@@ -266,7 +266,7 @@ const ProductDetail = () => {
     setPopupImageIndex(newIndex);
     setImagePopup((prev) => ({
       ...prev,
-      image: productImages[newIndex]?.url || product?.pImage?.[0] || "",
+      image: productImages[newIndex]?.url || transformImageUrl(product?.pImage?.[0]) || "",
     }));
   };
 
@@ -1007,20 +1007,7 @@ const ProductDetail = () => {
 
   // Update the image URL construction
   const getImageUrl = (img) => {
-    if (!img) return ""; // Return default image if no image provided
-
-    // If it's a Cloudinary URL, remove any prefixes and return the clean URL
-    if (img.includes("cloudinary.com")) {
-      return img.split("/uploads/").pop();
-    }
-
-    // If it's already a full URL, return as is
-    if (img.startsWith("http")) {
-      return img;
-    }
-
-    // For local files, construct the full URL
-    return `${import.meta.env.VITE_SERVER_URL || ""}/uploads/${img}`;
+    return transformImageUrl(img);
   };
 
   const productImages = (product?.pImage && product.pImage.length > 0)

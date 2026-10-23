@@ -38,6 +38,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import SecurityIcon from '@mui/icons-material/Security';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import * as XLSX from 'xlsx';
 import { PERMISSIONS, ACTIONS } from '../constants/permissions';
 import usePermissions from '../hooks/usePermissions';
@@ -46,6 +47,9 @@ import { useSnackbar } from 'notistack';
 import { getInitials } from '../utils/stringUtils';
 import { getAvatarColor } from '../utils/colorUtils';
 import { UserAvatar } from '../components/UserAvatar';
+import AdminPageHeader from '../components/common/AdminPageHeader';
+import AdminTableToolbar from '../components/common/AdminTableToolbar';
+import AdminTableEmptyState from '../components/common/AdminTableEmptyState';
 
 const AdminUsers = () => {
   const [adminUsers, setAdminUsers] = useState([]);
@@ -54,6 +58,8 @@ const AdminUsers = () => {
   const [open, setOpen] = useState(false);
   const [editUser, setEditUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -112,13 +118,24 @@ const AdminUsers = () => {
   // Memoize filtered users to prevent unnecessary recalculations
   const filteredUsers = useMemo(() => {
     const list = Array.isArray(adminUsers) ? adminUsers : [];
-    const query = (searchQuery || '').toLowerCase();
-    return list.filter(user => 
-      (user?.name || '').toLowerCase().includes(query) ||
-      (user?.email || '').toLowerCase().includes(query) ||
-      (user?.role || '').toLowerCase().includes(query)
-    );
-  }, [adminUsers, searchQuery]);
+    const query = (searchQuery || '').toLowerCase().trim();
+    return list.filter(user => {
+      const matchesSearch = !query ||
+        (user?.name || '').toLowerCase().includes(query) ||
+        (user?.email || '').toLowerCase().includes(query) ||
+        (user?.role || '').toLowerCase().includes(query);
+
+      const matchesRole = roleFilter === 'all' || (user?.role || '').toLowerCase() === roleFilter.toLowerCase();
+      const matchesStatus = statusFilter === 'all' || (user?.status || 'active').toLowerCase() === statusFilter.toLowerCase();
+
+      return matchesSearch && matchesRole && matchesStatus;
+    });
+  }, [adminUsers, searchQuery, roleFilter, statusFilter]);
+
+  const totalAdminCount = (adminUsers || []).length;
+  const activeCount = useMemo(() => (adminUsers || []).filter(u => (u?.status || 'active').toLowerCase() === 'active').length, [adminUsers]);
+  const superAdminCount = useMemo(() => (adminUsers || []).filter(u => u?.role === 'super_admin').length, [adminUsers]);
+  const adminRoleCount = useMemo(() => (adminUsers || []).filter(u => u?.role === 'admin').length, [adminUsers]);
 
   // Memoize handlers to prevent unnecessary re-renders
   const handleChangePage = useCallback((event, newPage) => {
@@ -410,234 +427,239 @@ const AdminUsers = () => {
   }
 
   return (
-    <Box>
-      <Paper 
-        elevation={0} 
-        sx={{ 
-          p: 3, 
-          mb: 3, 
-          bgcolor: 'primary.main', 
-          color: 'primary.contrastText',
-          borderRadius: 2
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-          <SecurityIcon sx={{ fontSize: 40 }} />
-          <Box>
-            <Typography variant="h4" sx={{ fontWeight: 600, fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: '0.5px' }}>
-              Admin Users
-            </Typography>
-            <Typography variant="body1" sx={{ mt: 0.5, opacity: 0.8 }}>
-              Manage administrator accounts and permissions
-            </Typography>
-          </Box>
-        </Box>
-        <Box sx={{ 
-          display: 'flex', 
-          gap: 2,
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <TextField
-            placeholder="Search admin users..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{
-              flex: 1,
-              minWidth: '200px',
-              maxWidth: '400px',
-              '& .MuiOutlinedInput-root': {
-                bgcolor: 'rgba(255, 255, 255, 0.1)',
-                color: 'inherit',
-                '& fieldset': {
-                  borderColor: 'rgba(255, 255, 255, 0.2)',
-                },
-                '&:hover fieldset': {
-                  borderColor: 'rgba(255, 255, 255, 0.3)',
-                },
-              },
-              '& .MuiInputAdornment-root': {
-                color: 'inherit',
-              },
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <Button
-              variant="contained"
-              startIcon={<FileDownloadIcon />}
-              onClick={handleExportToExcel}
-              disabled={!canRead(PERMISSIONS.ADMIN_USERS)}
-              sx={{ 
-                bgcolor: 'white', 
-                color: 'primary.main',
-                '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 0.9)',
-                },
-              }}
-            >
-              Export to Excel
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleAdd}
-              disabled={!canWrite(PERMISSIONS.ADMIN_USERS)}
-              sx={{ 
-                bgcolor: 'white', 
-                color: 'primary.main',
-                '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 0.9)',
-                },
-              }}
-            >
-              Add Admin User
-            </Button>
-          </Box>
-        </Box>
-      </Paper>
+    <Box className="admin-page-container">
+      <AdminPageHeader
+        title="Admin Users & Access"
+        subtitle="Manage administrator accounts, security roles, and granular module permissions"
+        icon={AdminPanelSettingsIcon}
+        badges={[
+          { label: 'Total Admins', count: totalAdminCount },
+          { label: 'Super Admins', count: superAdminCount, color: 'error' },
+          { label: 'Admins', count: adminRoleCount, color: 'primary' },
+          { label: 'Active', count: activeCount, color: 'success' }
+        ]}
+        onExport={canRead(PERMISSIONS.ADMIN_USERS) ? handleExportToExcel : undefined}
+        exportLabel="Export to Excel"
+        onPrimaryAction={canWrite(PERMISSIONS.ADMIN_USERS) ? handleAdd : undefined}
+        primaryActionLabel="Add Admin User"
+        primaryActionIcon={AddIcon}
+      />
 
-      <Paper 
-        elevation={0} 
-        sx={{ 
-          borderRadius: 2,
-          overflow: 'hidden',
-          border: '1px solid',
-          borderColor: 'divider',
+      <AdminTableToolbar
+        searchPlaceholder="Search admin users by name, email, or role..."
+        searchQuery={searchQuery}
+        onSearchChange={(val) => {
+          setSearchQuery(val);
+          setPage(0);
         }}
-      >
+        filters={[
+          {
+            id: 'role',
+            label: 'Role',
+            value: roleFilter,
+            onChange: (val) => {
+              setRoleFilter(val);
+              setPage(0);
+            },
+            options: [
+              { label: 'All Roles', value: 'all' },
+              { label: 'Super Admin', value: 'super_admin' },
+              { label: 'Admin', value: 'admin' },
+              { label: 'Inventory Staff', value: 'inventory_staff' },
+              { label: 'Sales Staff', value: 'sales_staff' },
+              { label: 'Exchange Staff', value: 'exchange_staff' }
+            ]
+          },
+          {
+            id: 'status',
+            label: 'Status',
+            value: statusFilter,
+            onChange: (val) => {
+              setStatusFilter(val);
+              setPage(0);
+            },
+            options: [
+              { label: 'All Statuses', value: 'all' },
+              { label: 'Active', value: 'active' },
+              { label: 'Inactive', value: 'inactive' }
+            ]
+          }
+        ]}
+        quickFilters={{
+          selected: roleFilter,
+          onChange: (val) => {
+            setRoleFilter(val);
+            setPage(0);
+          },
+          options: [
+            { label: 'All', value: 'all', count: totalAdminCount },
+            { label: 'Super Admin', value: 'super_admin', count: superAdminCount, color: 'error' },
+            { label: 'Admin', value: 'admin', count: adminRoleCount, color: 'primary' }
+          ]
+        }}
+        totalCount={totalAdminCount}
+        filteredCount={filteredUsers.length}
+        onResetFilters={() => {
+          setSearchQuery('');
+          setRoleFilter('all');
+          setStatusFilter('all');
+          setPage(0);
+        }}
+      />
+
+      <Paper className="admin-table-paper">
         <TableContainer>
           {loading ? (
-            <Box sx={{ p: 3, textAlign: 'center' }}>
-              <CircularProgress />
+            <Box sx={{ p: 5, textAlign: 'center' }}>
+              <CircularProgress sx={{ color: '#6D1734' }} />
             </Box>
           ) : (
             <Table>
-              <TableHead>
-                <TableRow sx={{ bgcolor: 'background.default' }}>
-                  <TableCell>User</TableCell>
-                  <TableCell>Role</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Created At</TableCell>
-                  <TableCell>Permissions</TableCell>
-                  <TableCell align="right">Actions</TableCell>
+              <TableHead className="admin-table-head">
+                <TableRow>
+                  <TableCell className="admin-table-th">Admin User</TableCell>
+                  <TableCell className="admin-table-th">Role</TableCell>
+                  <TableCell className="admin-table-th">Status</TableCell>
+                  <TableCell className="admin-table-th">Created At</TableCell>
+                  <TableCell className="admin-table-th">Permissions</TableCell>
+                  <TableCell className="admin-table-th" align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredUsers
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((user) => (
-                    <TableRow 
-                      key={user._id}
-                      sx={{ 
-                        '&:hover': { 
-                          bgcolor: 'action.hover',
-                        },
-                      }}
-                    >
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <UserAvatar user={user} />
-                          <Box>
-                            <Typography variant="subtitle2">
-                              {user.name}
-                              {user.role === 'super_admin' && (
-                                <Tooltip title="Super Admin has full access to all features">
-                                  <LockIcon 
-                                    sx={{ 
-                                      ml: 1, 
-                                      fontSize: 16, 
-                                      color: 'error.main',
-                                      verticalAlign: 'middle'
-                                    }} 
-                                  />
-                                </Tooltip>
-                              )}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              {user.email}
-                            </Typography>
+                {filteredUsers.length === 0 ? (
+                  <AdminTableEmptyState
+                    colSpan={6}
+                    title="No admin users found"
+                    subtitle="No admin users match your search or filter criteria."
+                    onReset={() => {
+                      setSearchQuery('');
+                      setRoleFilter('all');
+                      setStatusFilter('all');
+                      setPage(0);
+                    }}
+                  />
+                ) : (
+                  filteredUsers
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((user) => (
+                      <TableRow 
+                        key={user._id}
+                        className="admin-table-row"
+                        hover
+                      >
+                        <TableCell className="admin-table-cell">
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <UserAvatar user={user} />
+                            <Box>
+                              <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#2C1810' }}>
+                                {user.name}
+                                {user.role === 'super_admin' && (
+                                  <Tooltip title="Super Admin has full access to all features">
+                                    <LockIcon 
+                                      sx={{ 
+                                        ml: 1, 
+                                        fontSize: 16, 
+                                        color: '#B23B3B',
+                                        verticalAlign: 'middle'
+                                      }} 
+                                    />
+                                  </Tooltip>
+                                )}
+                              </Typography>
+                              <Typography variant="body2" color="text.secondary">
+                                {user.email}
+                              </Typography>
+                            </Box>
                           </Box>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={(user?.role || 'admin').split('_').map(word => 
-                            word.charAt(0).toUpperCase() + word.slice(1)
-                          ).join(' ')}
-                          color={getRoleColor(user?.role || 'admin')}
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={user.status.charAt(0).toUpperCase() + user.status.slice(1)}
-                          color={user.status === 'active' ? 'success' : 'error'}
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        {new Date(user.createdAt).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => {
-                            setSelectedUser(user);
-                            setPermissionDialogOpen(true);
-                          }}
-                          disabled={!canWrite(PERMISSIONS.ADMIN_USERS)}
-                        >
-                          Manage Permissions
-                        </Button>
-                      </TableCell>
-                      <TableCell align="right">
-                        <IconButton 
-                          onClick={() => handleEdit(user)} 
-                          color="primary" 
-                          size="small"
-                          disabled={!canWrite(PERMISSIONS.ADMIN_USERS)}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton 
-                          onClick={() => handleDelete(user._id)} 
-                          color="error" 
-                          size="small"
-                          disabled={
-                            (user.role === 'super_admin' && 
-                             adminUsers.filter(u => u.role === 'super_admin').length === 1) ||
-                            !canDelete(PERMISSIONS.ADMIN_USERS)
-                          }
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        </TableCell>
+                        <TableCell className="admin-table-cell">
+                          <Chip
+                            label={(user?.role || 'admin').split('_').map(word => 
+                              word.charAt(0).toUpperCase() + word.slice(1)
+                            ).join(' ')}
+                            color={getRoleColor(user?.role || 'admin')}
+                            size="small"
+                            sx={{ fontWeight: 600 }}
+                          />
+                        </TableCell>
+                        <TableCell className="admin-table-cell">
+                          <Chip
+                            label={user.status ? (user.status.charAt(0).toUpperCase() + user.status.slice(1)) : 'Active'}
+                            color={user.status === 'active' ? 'success' : 'error'}
+                            size="small"
+                            sx={{
+                              fontWeight: 600,
+                              ...(user.status === 'active' ? {
+                                backgroundColor: '#e6f4ea',
+                                color: '#1e4620',
+                                border: '1px solid #b7e1cd'
+                              } : {})
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell className="admin-table-cell font-number" sx={{ color: '#666' }}>
+                          {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : '—'}
+                        </TableCell>
+                        <TableCell className="admin-table-cell">
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setPermissionDialogOpen(true);
+                            }}
+                            disabled={!canWrite(PERMISSIONS.ADMIN_USERS)}
+                            sx={{
+                              borderColor: '#EDE2D2',
+                              color: '#6D1734',
+                              '&:hover': {
+                                borderColor: '#6D1734',
+                                bgcolor: 'rgba(109, 23, 52, 0.04)'
+                              }
+                            }}
+                          >
+                            Manage Permissions
+                          </Button>
+                        </TableCell>
+                        <TableCell className="admin-table-cell" align="right">
+                          <IconButton 
+                            onClick={() => handleEdit(user)} 
+                            color="primary" 
+                            size="small"
+                            disabled={!canWrite(PERMISSIONS.ADMIN_USERS)}
+                            sx={{ color: '#6D1734' }}
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton 
+                            onClick={() => handleDelete(user._id)} 
+                            color="error" 
+                            size="small"
+                            disabled={
+                              (user.role === 'super_admin' && 
+                               adminUsers.filter(u => u.role === 'super_admin').length === 1) ||
+                              !canDelete(PERMISSIONS.ADMIN_USERS)
+                            }
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                )}
               </TableBody>
             </Table>
           )}
         </TableContainer>
         <TablePagination
           component="div"
+          className="admin-pagination font-number"
           count={filteredUsers.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{
-            borderTop: '1px solid',
-            borderColor: 'divider',
-          }}
+          rowsPerPageOptions={[10, 25, 50]}
         />
       </Paper>
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Box,
   Button,
@@ -29,6 +29,7 @@ import {
   Autocomplete,
   CircularProgress,
   Tooltip,
+  TablePagination,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -36,8 +37,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import SearchIcon from '@mui/icons-material/Search';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import * as XLSX from 'xlsx';
 import '../styles/ComboOffers.css';
+import AdminPageHeader from '../components/common/AdminPageHeader';
+import AdminTableToolbar from '../components/common/AdminTableToolbar';
+import AdminTableEmptyState from '../components/common/AdminTableEmptyState';
 import { comboApi } from '../api/comboApi';
 import { productApi } from '../api/productApi';
 import { variantApi } from '../api/variantApi';
@@ -98,6 +103,9 @@ const ComboOffers = () => {
 
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [selectedVariants, setSelectedVariants] = useState({});
   const [selectedQuantities, setSelectedQuantities] = useState({});
@@ -588,20 +596,32 @@ const ComboOffers = () => {
     handleOpen(combo);
   };
 
-  const filteredComboOffers = comboOffers
-    .filter(combo => {
-      if (!searchQuery) return true; // Show all combos when no search query
-
-      const searchLower = searchQuery.toLowerCase();
-      return (
+  const filteredComboOffers = useMemo(() => {
+    return (comboOffers || []).filter(combo => {
+      const searchLower = (searchQuery || '').toLowerCase().trim();
+      const matchesSearch = !searchLower ||
         (combo.ccName?.toLowerCase() || '').includes(searchLower) ||
         (combo.ccDescription?.toLowerCase() || '').includes(searchLower) ||
         (combo.ccProducts?.some(product =>
           (product.pName?.toLowerCase() || '').includes(searchLower) ||
           (product.variant?.size?.toLowerCase() || '').includes(searchLower)
-        ))
-      );
+        ));
+
+      const status = (combo.ccStatus || 'active').toLowerCase();
+      const matchesStatus = statusFilter === 'all' || status === statusFilter.toLowerCase();
+
+      return matchesSearch && matchesStatus;
     });
+  }, [comboOffers, searchQuery, statusFilter]);
+
+  const totalCombosCount = (comboOffers || []).length;
+  const activeCombosCount = useMemo(() => (comboOffers || []).filter(c => (c.ccStatus || 'active').toLowerCase() === 'active').length, [comboOffers]);
+  const inactiveCombosCount = useMemo(() => (comboOffers || []).filter(c => (c.ccStatus || '').toLowerCase() === 'inactive').length, [comboOffers]);
+
+  const paginatedComboOffers = useMemo(() => {
+    const start = page * rowsPerPage;
+    return filteredComboOffers.slice(start, start + rowsPerPage);
+  }, [filteredComboOffers, page, rowsPerPage]);
 
   const handleExportToExcel = () => {
     // Prepare the data for export
@@ -740,266 +760,305 @@ const ComboOffers = () => {
   };
 
   return (
-    <Box className="combo-offers-container" sx={{ p: 3, bgcolor: '#FAF7F2', minHeight: '100vh' }}>
-      <Box className="combo-offers-header" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography
-          variant="h4"
-          sx={{
-            fontFamily: "'Playfair Display', Georgia, serif",
-            color: 'primary.main',
-            fontWeight: 600,
-            fontSize: '1.75rem',
-            letterSpacing: '0.5px'
-          }}
-        >
-          Combo Offers & Hampers
-        </Typography>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
-            variant="outlined"
-            onClick={handleExportToExcel}
-            startIcon={<FileDownloadIcon />}
-            sx={{ borderRadius: '2px', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.5px' }}
-          >
-            Export to Excel
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => handleOpen()}
-            sx={{ borderRadius: '2px', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '1px', px: 3 }}
-          >
-            Create Combo Offer
-          </Button>
-        </Box>
-      </Box>
+    <Box className="admin-page-container">
+      <AdminPageHeader
+        title="Combo Offers & Gift Hampers"
+        subtitle="Curate festive saree pairings, matching silk accessories, and special festive value bundles"
+        icon={ShoppingBagIcon}
+        badges={[
+          { label: 'Total Combos', count: totalCombosCount },
+          { label: 'Active', count: activeCombosCount, color: 'success' },
+          { label: 'Inactive', count: inactiveCombosCount, color: 'error' }
+        ]}
+        onExport={handleExportToExcel}
+        exportLabel="Export to Excel"
+        primaryAction={{
+          label: 'Add Combo Offer',
+          icon: <AddIcon />,
+          onClick: () => handleOpen(),
+        }}
+        onPrimaryAction={() => handleOpen()}
+        primaryActionLabel="Add Combo Offer"
+        primaryActionIcon={AddIcon}
+      />
 
-      <Box className="search-container" sx={{ mb: 3 }}>
-        <TextField
-          fullWidth
-          placeholder="Search combo offers and bridal sets..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{
-            bgcolor: '#ffffff',
-            borderRadius: '2px',
-            border: '1px solid #EDE2D2',
-            '& fieldset': { border: 'none' }
-          }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Box>
+      <AdminTableToolbar
+        searchPlaceholder="Search combo offers by name, description, or included products..."
+        searchQuery={searchQuery}
+        onSearchChange={(val) => {
+          setSearchQuery(val);
+          setPage(0);
+        }}
+        filters={[
+          {
+            id: 'status',
+            label: 'Status',
+            value: statusFilter,
+            onChange: (val) => {
+              setStatusFilter(val);
+              setPage(0);
+            },
+            options: [
+              { label: 'All Statuses', value: 'all' },
+              { label: 'Active', value: 'active' },
+              { label: 'Inactive', value: 'inactive' }
+            ]
+          }
+        ]}
+        quickFilters={{
+          selected: statusFilter,
+          onChange: (val) => {
+            setStatusFilter(val);
+            setPage(0);
+          },
+          options: [
+            { label: 'All', value: 'all', count: totalCombosCount },
+            { label: 'Active', value: 'active', count: activeCombosCount, color: 'success' },
+            { label: 'Inactive', value: 'inactive', count: inactiveCombosCount, color: 'error' }
+          ]
+        }}
+        totalCount={totalCombosCount}
+        filteredCount={filteredComboOffers.length}
+        onResetFilters={() => {
+          setSearchQuery('');
+          setStatusFilter('all');
+          setPage(0);
+        }}
+      />
 
-      <TableContainer component={Paper} sx={{ borderRadius: '2px', border: '1px solid #EDE2D2', boxShadow: '0 2px 8px rgba(40,35,33,0.03)' }}>
+      <TableContainer component={Paper} className="admin-table-paper">
         <Table size="small">
-          <TableHead sx={{ bgcolor: '#FAF7F2' }}>
+          <TableHead>
             <TableRow>
-              <TableCell sx={{ color: 'primary.main', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '1px' }}>Image</TableCell>
-              <TableCell sx={{ color: 'primary.main', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '1px' }}>Combo Name</TableCell>
-              <TableCell width="80px">Image</TableCell>
-              <TableCell>Combo Name</TableCell>
-              <TableCell>Products</TableCell>
-              <TableCell width="120px">Price</TableCell>
-              <TableCell width="100px">Status</TableCell>
-              <TableCell width="100px">Actions</TableCell>
+              <TableCell className="admin-table-th" width="80px">Image</TableCell>
+              <TableCell className="admin-table-th">Combo Details</TableCell>
+              <TableCell className="admin-table-th">Included Products</TableCell>
+              <TableCell className="admin-table-th" width="140px">Price & Offer</TableCell>
+              <TableCell className="admin-table-th" width="110px">Status</TableCell>
+              <TableCell className="admin-table-th" width="100px" align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                  <CircularProgress size={24} />
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
+                  <CircularProgress size={32} sx={{ color: '#6D1734' }} />
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5, fontWeight: 500 }}>
                     Loading combo offers...
                   </Typography>
                 </TableCell>
               </TableRow>
-            ) : filteredComboOffers.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    No combo offers found
-                  </Typography>
-                </TableCell>
-              </TableRow>
+            ) : paginatedComboOffers.length === 0 ? (
+              <AdminTableEmptyState
+                colSpan={6}
+                title="No combo offers found"
+                subtitle={comboOffers.length === 0 ? "You haven't created any combo offers yet. Click below to add your first festive gift hamper or combo deal." : "Try adjusting your search query or filter options."}
+                action={{
+                  label: 'Add Combo Offer',
+                  icon: <AddIcon />,
+                  onClick: () => handleOpen(),
+                }}
+                onReset={searchQuery || statusFilter !== 'all' ? () => {
+                  setSearchQuery('');
+                  setStatusFilter('all');
+                  setPage(0);
+                } : undefined}
+              />
             ) : (
-              filteredComboOffers.map((combo) => (
-                <TableRow key={combo._id} hover>
-                  <TableCell>
-                    <Box sx={{
-                      width: 60,
-                      height: 60,
-                      borderRadius: '4px',
-                      overflow: 'hidden',
-                      border: '1px solid #eee'
-                    }}>
-                      <img
-                        src={formatImageUrl(combo.ccImage)}
-                        alt={combo.ccName}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                        }}
-                        onError={handleImageError}
-                        loading="lazy"
-                      />
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 0.5 }}>
-                      {combo.ccName}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                      {combo.ccDescription?.length > 50 ? `${combo.ccDescription.substring(0, 50)}...` : combo.ccDescription}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Box sx={{
-                      maxHeight: '200px',
-                      overflowY: 'auto',
-                      '&::-webkit-scrollbar': {
-                        width: '4px',
-                      },
-                      '&::-webkit-scrollbar-track': {
-                        background: '#f1f1f1',
-                      },
-                      '&::-webkit-scrollbar-thumb': {
-                        background: '#ddd',
-                        borderRadius: '2px',
-                      },
-                    }}>
-                      {combo.ccProducts?.map((product, index) => (
-                        <Box
-                          key={`${product._id}-${index}`}
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 1,
-                            py: 0.5,
-                            borderBottom: index < combo.ccProducts.length - 1 ? '1px solid #f0f0f0' : 'none'
+              paginatedComboOffers.map((combo) => {
+                const discountedPrice = (combo.ccPrice || 0) * (1 - (combo.ccOffer || 0) / 100);
+                return (
+                  <TableRow key={combo._id} className="admin-table-row">
+                    <TableCell className="admin-table-cell">
+                      <Box sx={{
+                        width: 56,
+                        height: 56,
+                        borderRadius: '6px',
+                        overflow: 'hidden',
+                        border: '1px solid #EDE2D2',
+                        bgcolor: '#FAF7F2'
+                      }}>
+                        <img
+                          src={formatImageUrl(combo.ccImage)}
+                          alt={combo.ccName}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
                           }}
-                        >
-                          <Box sx={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: '4px',
-                            overflow: 'hidden',
-                            border: '1px solid #eee',
-                            flexShrink: 0
-                          }}>
-                            <img
-                              src={formatImageUrl(product.pImage)}
-                              alt={product.pName}
-                              style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                              }}
-                              onError={handleImageError}
-                              loading="lazy"
-                            />
-                          </Box>
-                          <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Typography variant="caption" sx={{
-                              display: 'block',
-                              fontWeight: 'medium',
-                              whiteSpace: 'nowrap',
+                          onError={handleImageError}
+                          loading="lazy"
+                        />
+                      </Box>
+                    </TableCell>
+                    <TableCell className="admin-table-cell">
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#282321', mb: 0.5 }}>
+                        {combo.ccName}
+                      </Typography>
+                      {combo.ccDescription && (
+                        <Typography variant="caption" color="text.secondary" sx={{ display: '-webkit-box', WebKitLineClamp: 2, WebKitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                          {combo.ccDescription}
+                        </Typography>
+                      )}
+                    </TableCell>
+                    <TableCell className="admin-table-cell">
+                      <Box sx={{
+                        maxHeight: '160px',
+                        overflowY: 'auto',
+                        pr: 0.5,
+                        '&::-webkit-scrollbar': { width: '4px' },
+                        '&::-webkit-scrollbar-thumb': { bgcolor: '#DDD', borderRadius: '2px' }
+                      }}>
+                        {combo.ccProducts?.map((product, index) => (
+                          <Box
+                            key={`${product._id || index}-${index}`}
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 1,
+                              py: 0.5,
+                              borderBottom: index < (combo.ccProducts?.length || 0) - 1 ? '1px dashed #EDE2D2' : 'none'
+                            }}
+                          >
+                            <Box sx={{
+                              width: 32,
+                              height: 32,
+                              borderRadius: '4px',
                               overflow: 'hidden',
-                              textOverflow: 'ellipsis'
+                              border: '1px solid #EDE2D2',
+                              flexShrink: 0,
+                              bgcolor: '#FFF'
                             }}>
-                              {product.pName}
-                            </Typography>
-                            <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center', flexWrap: 'wrap' }}>
-                              <Typography variant="caption" color="success.main" sx={{ fontWeight: 'medium' }}>
-                                Qty: {product.quantity || 1}
+                              <img
+                                src={formatImageUrl(product.pImage)}
+                                alt={product.pName}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                onError={handleImageError}
+                                loading="lazy"
+                              />
+                            </Box>
+                            <Box sx={{ flex: 1, minWidth: 0 }}>
+                              <Typography variant="caption" sx={{
+                                display: 'block',
+                                fontWeight: 600,
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
+                              }}>
+                                {product.pName}
                               </Typography>
-                              {product.variant && (
-                                <>
-                                  <Typography variant="caption" color="text.secondary" sx={{ mx: 0.5 }}>•</Typography>
-                                  <Typography variant="caption" color="text.secondary">
-                                    {product.variant.size}
-                                  </Typography>
-                                  <Typography variant="caption" color="text.secondary" sx={{ mx: 0.5 }}>•</Typography>
-                                  <Typography variant="caption" color="primary.main" sx={{ fontWeight: 'medium' }}>
-                                    ₹{product.variant.price || 0}
-                                  </Typography>
-                                  <Typography variant="caption" color="text.secondary" sx={{ mx: 0.5 }}>•</Typography>
-                                  <Typography variant="caption" color={parseInt(product.variant.stock) > 0 ? 'success.main' : 'error.main'}>
-                                    Stock: {product.variant.stock || 0}
-                                  </Typography>
-                                </>
-                              )}
+                              <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center', flexWrap: 'wrap' }}>
+                                <Typography variant="caption" color="success.main" className="font-number" sx={{ fontWeight: 600 }}>
+                                  Qty: {product.quantity || 1}
+                                </Typography>
+                                {product.variant && (
+                                  <>
+                                    <Typography variant="caption" color="text.secondary">•</Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                      {product.variant.size}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">•</Typography>
+                                    <Typography variant="caption" color="primary.main" className="font-number" sx={{ fontWeight: 600 }}>
+                                      ₹{Number(product.variant.price || 0).toLocaleString('en-IN')}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">•</Typography>
+                                    <Typography variant="caption" className="font-number" color={parseInt(product.variant.stock) > 0 ? 'success.main' : 'error.main'}>
+                                      Stock: {product.variant.stock || 0}
+                                    </Typography>
+                                  </>
+                                )}
+                              </Box>
                             </Box>
                           </Box>
-                        </Box>
-                      ))}
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                      <Typography variant="caption" color="text.secondary">
-                        ₹{combo.ccPrice?.toFixed(2)}
-                      </Typography>
-                      <Typography variant="caption" color="error.main">
-                        -{combo.ccOffer}%
-                      </Typography>
-                      <Typography variant="subtitle2" color="success.main" sx={{ fontWeight: 'bold' }}>
-                        ₹{((combo.ccPrice || 0) * (1 - (combo.ccOffer || 0) / 100)).toFixed(2)}
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={combo.ccStatus || 'inactive'}
-                      color={combo.ccStatus === 'active' ? 'success' : 'error'}
-                      size="small"
-                      sx={{
-                        height: '24px',
-                        '& .MuiChip-label': {
-                          px: 1,
-                          fontSize: '0.75rem'
-                        }
-                      }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', gap: 0.5 }}>
-                      <Tooltip title="Edit">
-                        <IconButton
-                          onClick={() => handleEditClick(combo)}
+                        ))}
+                      </Box>
+                    </TableCell>
+                    <TableCell className="admin-table-cell">
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.3 }}>
+                        <Typography variant="caption" color="text.secondary" className="font-number" sx={{ textDecoration: 'line-through' }}>
+                          ₹{Number(combo.ccPrice || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </Typography>
+                        <Chip
+                          label={`-${combo.ccOffer || 0}% OFF`}
                           size="small"
-                          color="primary"
-                          disabled={!canWrite(PERMISSIONS.COMBO_OFFERS)}
-                          sx={{ p: 0.5 }}
-                        >
-                          <EditIcon sx={{ fontSize: '1rem' }} />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Delete">
-                        <IconButton
-                          onClick={() => handleDeleteClick(combo)}
-                          size="small"
-                          color="error"
-                          disabled={!canDelete(PERMISSIONS.COMBO_OFFERS)}
-                          sx={{ p: 0.5 }}
-                        >
-                          <DeleteIcon sx={{ fontSize: '1rem' }} />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              ))
+                          className="font-number"
+                          sx={{
+                            height: '18px',
+                            width: 'fit-content',
+                            bgcolor: '#FFF0F0',
+                            color: '#D32F2F',
+                            fontSize: '0.68rem',
+                            fontWeight: 700,
+                            borderRadius: '3px',
+                            border: '1px solid #FFCDD2'
+                          }}
+                        />
+                        <Typography variant="subtitle2" className="font-number" sx={{ fontWeight: 800, color: '#2E7D32', fontSize: '0.92rem' }}>
+                          ₹{discountedPrice.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell className="admin-table-cell">
+                      <Chip
+                        label={combo.ccStatus === 'active' ? 'Active' : 'Inactive'}
+                        size="small"
+                        sx={{
+                          height: '22px',
+                          textTransform: 'capitalize',
+                          fontWeight: 700,
+                          fontSize: '0.72rem',
+                          borderRadius: '3px',
+                          bgcolor: combo.ccStatus === 'active' ? 'rgba(46, 125, 50, 0.08)' : 'rgba(211, 47, 47, 0.08)',
+                          color: combo.ccStatus === 'active' ? '#2E7D32' : '#D32F2F',
+                          border: combo.ccStatus === 'active' ? '1px solid rgba(46, 125, 50, 0.25)' : '1px solid rgba(211, 47, 47, 0.25)'
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell className="admin-table-cell" align="right">
+                      <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
+                        <Tooltip title="Edit Combo">
+                          <IconButton
+                            onClick={() => handleEditClick(combo)}
+                            size="small"
+                            color="primary"
+                            disabled={!canWrite(PERMISSIONS.COMBO_OFFERS)}
+                            sx={{ p: 0.75, border: '1px solid #EDE2D2', borderRadius: '4px' }}
+                          >
+                            <EditIcon sx={{ fontSize: '1rem' }} />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete Combo">
+                          <IconButton
+                            onClick={() => handleDeleteClick(combo)}
+                            size="small"
+                            color="error"
+                            disabled={!canDelete(PERMISSIONS.COMBO_OFFERS)}
+                            sx={{ p: 0.75, border: '1px solid #FFCDD2', borderRadius: '4px' }}
+                          >
+                            <DeleteIcon sx={{ fontSize: '1rem' }} />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>
+        <TablePagination
+          component="div"
+          className="admin-pagination font-number"
+          count={filteredComboOffers.length}
+          page={page}
+          onPageChange={(e, newPage) => setPage(newPage)}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+          rowsPerPageOptions={[5, 10, 25, 50]}
+        />
       </TableContainer>
 
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>

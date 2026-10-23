@@ -74,7 +74,26 @@ export const createCategory = async (req, res) => {
 // Get all category
 export const getAllCategory = async (req, res) => {
   try {
+    const isAdminRequest = 
+      req.originalUrl.includes('/admin/') || 
+      req.query.includeInactive === 'true' || 
+      req.query.all === 'true' || 
+      req.query.admin === 'true';
+
+    const matchStage = isAdminRequest 
+      ? [] 
+      : [{ 
+          $match: { 
+            $or: [
+              { cStatus: { $regex: /^active$/i } },
+              { cStatus: { $exists: false } },
+              { cStatus: null }
+            ] 
+          } 
+        }];
+
     const categories = await categoryModel.aggregate([
+      ...matchStage,
       {
         $lookup: {
           from: 'products',  // The name of your products collection
@@ -117,6 +136,29 @@ export const getAllCategory = async (req, res) => {
       }
     ]);
 
+    // If public request, filter out inactive subcategories and nested subcategories
+    if (!isAdminRequest) {
+      const filteredCategories = categories.map((cat) => {
+        const subCats = Array.isArray(cat.subCategories) ? cat.subCategories : [];
+        const activeSubCats = subCats
+          .filter((sub) => (sub.status || 'active').toLowerCase() === 'active')
+          .map((sub) => {
+            const nested = Array.isArray(sub.subCategories) ? sub.subCategories : [];
+            return {
+              ...sub,
+              subCategories: nested.filter((n) => (n.status || 'active').toLowerCase() === 'active')
+            };
+          });
+
+        return {
+          ...cat,
+          subCategories: activeSubCats
+        };
+      });
+
+      return res.status(200).json(filteredCategories);
+    }
+
     res.status(200).json(categories);
   } catch (error) {
     console.error("Error:", error.message);
@@ -142,6 +184,12 @@ export const getCategoryById = async (req, res) => {
       return res.status(400).json({ success: false, message: "ID is required" });
     }
 
+    const isAdminRequest = 
+      req.originalUrl.includes('/admin/') || 
+      req.query.includeInactive === 'true' || 
+      req.query.all === 'true' || 
+      req.query.admin === 'true';
+
     let category = null;
     if (mongoose.Types.ObjectId.isValid(idParam)) {
       category = await categoryModel.findById(idParam);
@@ -165,6 +213,30 @@ export const getCategoryById = async (req, res) => {
         showPopup: true
       });
     }
+
+    // Inactive category should not be visible to public portal
+    if (!isAdminRequest && category.cStatus && category.cStatus.toLowerCase() === 'inactive') {
+      return res.status(404).json({
+        success: false,
+        message: "Category is not currently active.",
+        showPopup: true
+      });
+    }
+
+    if (!isAdminRequest && Array.isArray(category.subCategories)) {
+      const categoryObj = category.toObject ? category.toObject() : { ...category };
+      categoryObj.subCategories = categoryObj.subCategories
+        .filter((sub) => (sub.status || 'active').toLowerCase() === 'active')
+        .map((sub) => {
+          const nested = Array.isArray(sub.subCategories) ? sub.subCategories : [];
+          return {
+            ...sub,
+            subCategories: nested.filter((n) => (n.status || 'active').toLowerCase() === 'active')
+          };
+        });
+      return res.status(200).json(categoryObj);
+    }
+
     res.status(200).json(category);
   } catch (error) {
     console.error("Error:", error.message);
@@ -365,6 +437,12 @@ export const deleteCategory = async (req, res) => {
 export const getSubCategories = async (req, res) => {
   try {
     const categoryId = req.params.categoryId;
+    const isAdminRequest = 
+      req.originalUrl.includes('/admin/') || 
+      req.query.includeInactive === 'true' || 
+      req.query.all === 'true' || 
+      req.query.admin === 'true';
+
     let category = null;
     if (mongoose.Types.ObjectId.isValid(categoryId)) {
       category = await categoryModel.findById(categoryId);
@@ -388,10 +466,19 @@ export const getSubCategories = async (req, res) => {
       });
     }
 
+    if (!isAdminRequest && category.cStatus && category.cStatus.toLowerCase() === 'inactive') {
+      return res.status(404).json({
+        success: false,
+        message: "Category is inactive",
+        subCategories: []
+      });
+    }
+
     if (category.cName === "All Combo Offers") {
       const allMainCategories = await categoryModel.find({ 
         parentId: null, 
-        cName: { $ne: "All Combo Offers" } 
+        cName: { $ne: "All Combo Offers" },
+        ...(!isAdminRequest && { cStatus: { $ne: 'inactive' } })
       });
       const virtualSubCategories = allMainCategories.map(c => ({
         _id: c._id,
@@ -404,9 +491,14 @@ export const getSubCategories = async (req, res) => {
       });
     }
 
+    const subCats = category.subCategories || [];
+    const filteredSubCats = !isAdminRequest
+      ? subCats.filter(sub => (sub.status || 'active').toLowerCase() === 'active')
+      : subCats;
+
     res.status(200).json({
       success: true,
-      subCategories: category.subCategories || []
+      subCategories: filteredSubCats
     });
   } catch (error) {
     console.error("Error:", error.message);
@@ -701,12 +793,26 @@ export const createNestedSubCategory = async (req, res) => {
 export const getNestedSubCategories = async (req, res) => {
   try {
     const { categoryId, subCategoryId } = req.params;
+    const isAdminRequest = 
+      req.originalUrl.includes('/admin/') || 
+      req.query.includeInactive === 'true' || 
+      req.query.all === 'true' || 
+      req.query.admin === 'true';
+
     const category = await categoryModel.findById(categoryId);
 
     if (!category) {
       return res.status(404).json({
         success: false,
         message: "Category not found",
+        subCategories: []
+      });
+    }
+
+    if (!isAdminRequest && category.cStatus && category.cStatus.toLowerCase() === 'inactive') {
+      return res.status(404).json({
+        success: false,
+        message: "Category is inactive",
         subCategories: []
       });
     }
@@ -720,9 +826,22 @@ export const getNestedSubCategories = async (req, res) => {
       });
     }
 
+    if (!isAdminRequest && subCategory.status && subCategory.status.toLowerCase() === 'inactive') {
+      return res.status(404).json({
+        success: false,
+        message: "Subcategory is inactive",
+        subCategories: []
+      });
+    }
+
+    const nested = subCategory.subCategories || [];
+    const filteredNested = !isAdminRequest
+      ? nested.filter((n) => (n.status || 'active').toLowerCase() === 'active')
+      : nested;
+
     res.status(200).json({
       success: true,
-      subCategories: subCategory.subCategories || []
+      subCategories: filteredNested
     });
   } catch (error) {
     console.error("Error:", error.message);

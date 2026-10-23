@@ -23,6 +23,7 @@ import Shipping from './pages/Shipping';
 import Exchanges from './pages/Exchanges';
 import Reports from './pages/Reports';
 import Banners from './pages/Banners';
+import Settings from './pages/Settings';
 // import Offers from './pages/Offers';
 import { SnackbarProvider } from 'notistack';
 import { OrderNotificationProvider } from './context/OrderNotificationContext';
@@ -72,7 +73,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Karla", system-ui, -apple-system, sans-serif',
+    fontFamily: '"Karla", "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif',
     h1: {
       fontFamily: '"Playfair Display", Georgia, serif',
       fontWeight: 600,
@@ -278,9 +279,11 @@ const App = () => {
                 <Route path="users/:id" element={<UserDetails />} />
                 <Route path="shipping" element={<Shipping />} />
                 <Route path="exchanges" element={<Exchanges />} />
+                <Route path="exchange-manage" element={<Exchanges />} />
                 <Route path="reports" element={<Reports />} />
                 <Route path="brands" element={<Brands />} />
                 <Route path="blog" element={<Blog />} />
+                <Route path="settings" element={<Settings />} />
               </Route>
 
               {/* Vendor Routes */}

@@ -16,7 +16,7 @@ export const categoryApi = {
   getAllCategories: async () => {
     try {
       checkAdminAccess();
-      const response = await axiosInstance.get('/category/all');
+      const response = await axiosInstance.get('/admin/categories');
       return response.data;
     } catch (error) {
       throw error.response?.data || { message: 'Failed to fetch categories' };

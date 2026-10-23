@@ -111,6 +111,12 @@ export const createProductVariants = async (req, res) => {
     }
 
     product.variants.push(...createdVariants.map((v) => v._id));
+    if ((!product.pPrice || product.pPrice === 0) && createdVariants.length > 0) {
+      product.pPrice = createdVariants[0].price;
+      product.pPreviousPrice = createdVariants[0].previousPrice || createdVariants[0].price;
+      product.pOffer = createdVariants[0].offer || 0;
+      product.pStock = createdVariants.reduce((sum, v) => sum + (v.stock || 0), 0);
+    }
     await product.save();
 
     return res.status(201).json({

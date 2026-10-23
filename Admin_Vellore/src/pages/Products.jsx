@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import {
   Box,
   Button,
@@ -55,6 +55,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import * as XLSX from "xlsx";
 import { useSnackbar } from "notistack";
 import "../styles/Products.css";
+import AdminPageHeader from "../components/common/AdminPageHeader";
+import AdminTableToolbar from "../components/common/AdminTableToolbar";
+import AdminTableEmptyState from "../components/common/AdminTableEmptyState";
 import { productApi } from "../api/productApi";
 import { categoryApi } from "../api/categoryApi";
 import { variantApi } from "../api/variantApi";
@@ -73,7 +76,9 @@ const Products = () => {
   const { enqueueSnackbar } = useSnackbar();
   const location = useLocation();
   const selectedCategory = location.state?.selectedCategory;
-  const [categoryFilter, setCategoryFilter] = useState(selectedCategory || "");
+  const [categoryFilter, setCategoryFilter] = useState(selectedCategory || "all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalProducts, setTotalProducts] = useState(0);
@@ -356,7 +361,7 @@ const Products = () => {
 
   useEffect(() => {
     updateDisplayedProducts();
-  }, [page, rowsPerPage, searchQuery, categoryFilter]);
+  }, [page, rowsPerPage, searchQuery, categoryFilter, statusFilter, typeFilter]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -375,39 +380,74 @@ const Products = () => {
   const updateDisplayedProducts = (productsToFilter = allProducts) => {
     const safeList = Array.isArray(productsToFilter) ? productsToFilter : [];
     const filtered = safeList.filter((product) => {
-      const matchesSearch = searchQuery
-        ? (product.pName?.toLowerCase() || "").includes(
-            searchQuery.toLowerCase()
-          ) ||
-          (product.pShortDescription?.toLowerCase() || "").includes(
-            searchQuery.toLowerCase()
-          ) ||
-          (product.pDescription?.toLowerCase() || "").includes(
-            searchQuery.toLowerCase()
-          ) ||
-          (product.pCategory?.toLowerCase() || "").includes(
-            searchQuery.toLowerCase()
-          ) ||
-          (product.pSubCategory?.toLowerCase() || "").includes(
-            searchQuery.toLowerCase()
-          ) ||
-          (product.pNestedSubCategory?.toLowerCase() || "").includes(
-            searchQuery.toLowerCase()
-          ) ||
-          (product.pBrand?.toLowerCase() || "").includes(
-            searchQuery.toLowerCase()
-          )
-        : true;
+      const q = (searchQuery || "").toLowerCase().trim();
+      const matchesSearch = !q ||
+        (product.pName?.toLowerCase() || "").includes(q) ||
+        (product.pShortDescription?.toLowerCase() || "").includes(q) ||
+        (product.pDescription?.toLowerCase() || "").includes(q) ||
+        (product.pSku?.toLowerCase() || "").includes(q) ||
+        (product.pCategory?.toLowerCase() || "").includes(q) ||
+        (product.pSubCategory?.toLowerCase() || "").includes(q) ||
+        (product.pNestedSubCategory?.toLowerCase() || "").includes(q) ||
+        (product.pBrand?.toLowerCase() || "").includes(q);
 
       const matchesCategory =
-        !categoryFilter || product.pCategory === categoryFilter;
-      return matchesSearch && matchesCategory;
+        !categoryFilter || categoryFilter === "all" || product.pCategory === categoryFilter;
+
+      const pStatus = (product.pStatus || "active").toLowerCase();
+      const stock = Number(product.pStock ?? product.pQuantity ?? 0);
+      const lowThresh = Number(product.lowStockThreshold || 10);
+      let matchesStatus = true;
+      if (statusFilter === "active") {
+        matchesStatus = pStatus === "active";
+      } else if (statusFilter === "inactive") {
+        matchesStatus = pStatus === "inactive";
+      } else if (statusFilter === "low_stock") {
+        matchesStatus = stock <= lowThresh && stock > 0;
+      } else if (statusFilter === "out_of_stock") {
+        matchesStatus = stock === 0;
+      }
+
+      let matchesType = true;
+      if (typeFilter !== "all") {
+        const pType = (product.pType || "product").toLowerCase();
+        matchesType = pType === typeFilter.toLowerCase();
+      }
+
+      return matchesSearch && matchesCategory && matchesStatus && matchesType;
     });
 
     setTotalProducts(filtered.length);
     const start = page * rowsPerPage;
     const paginatedProducts = filtered.slice(start, start + rowsPerPage);
     setProducts(paginatedProducts);
+  };
+
+  const totalProductsCount = (allProducts || []).length;
+  const activeCount = useMemo(() => (allProducts || []).filter(p => (p.pStatus || "active").toLowerCase() === "active").length, [allProducts]);
+  const lowStockCount = useMemo(() => (allProducts || []).filter(p => {
+    const s = Number(p.pStock ?? p.pQuantity ?? 0);
+    const th = Number(p.lowStockThreshold || 10);
+    return s <= th && s > 0;
+  }).length, [allProducts]);
+  const outOfStockCount = useMemo(() => (allProducts || []).filter(p => Number(p.pStock ?? p.pQuantity ?? 0) === 0).length, [allProducts]);
+
+  const categoryFilterOptions = useMemo(() => {
+    const opts = [{ label: "All Categories", value: "all" }];
+    (categories || []).forEach(cat => {
+      if (cat.cName) {
+        opts.push({ label: cat.cName, value: cat.cName });
+      }
+    });
+    return opts;
+  }, [categories]);
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setCategoryFilter("all");
+    setStatusFilter("all");
+    setTypeFilter("all");
+    setPage(0);
   };
 
   useEffect(() => {
@@ -728,9 +768,11 @@ const Products = () => {
         pCategory: formData.category,
         pShortDescription: formData.shortDescription,
         pDescription: formData.description,
-        pPrice: Number(0), // Ensure it's a number
-        pPreviousPrice: Number(0), // Ensure it's a number
-        pOffer: Number(0), // Ensure it's a number
+        pPrice: editProduct?.pPrice !== undefined ? Number(editProduct.pPrice) : 0,
+        pPreviousPrice: editProduct?.pPreviousPrice !== undefined ? Number(editProduct.pPreviousPrice) : 0,
+        pOffer: editProduct?.pOffer !== undefined ? Number(editProduct.pOffer) : 0,
+        pStock: editProduct?.pStock !== undefined ? Number(editProduct.pStock) : 0,
+        pQuantity: editProduct?.pQuantity !== undefined ? Number(editProduct.pQuantity) : 0,
         pTax: formData.tax || "5",
         pStatus: formData.status || "active",
         pSubCategory: formData.pSubCategory || "",
@@ -1562,17 +1604,18 @@ const Products = () => {
         return;
       }
 
+      const mrp = Number(variantFormData.previousPrice) || 0;
+      const offerPrice = Number(variantFormData.price) || mrp;
+      const calculatedOffer = mrp > offerPrice ? Number((((mrp - offerPrice) / mrp) * 100).toFixed(2)) : 0;
+      const offerPercent = Number(variantFormData.offer) || calculatedOffer;
+
       const variantData = {
         productId: selectedProductForVariant._id,
         attributes,
         stock: Number(variantFormData.stock),
-        price: !variantFormData.isDefault
-          ? Number(variantFormData.previousPrice)
-          : Number(variantFormData.price),
-        previousPrice: !variantFormData.isDefault
-          ? 0
-          : Number(variantFormData.previousPrice),
-        offer: Number(variantFormData.offer) || 0,
+        price: offerPrice,
+        previousPrice: mrp,
+        offer: offerPercent,
         status: variantFormData.status || "active",
         pvCanonicalUrl: variantFormData.pvCanonicalUrl || "",
         pvSchemaMarkup: variantFormData.pvSchemaMarkup || "",
@@ -1697,7 +1740,7 @@ const Products = () => {
       attributes: attributesArray,
       stock: variant.stock || "",
       price: variant.price || "",
-      previousPrice: variant.previousPrice || "",
+      previousPrice: variant.previousPrice || variant.price || "",
       offer: variant.offer || "",
       status: variant.status || "active",
       isDefault: variant.isDefault || false,
@@ -1741,13 +1784,12 @@ const Products = () => {
       errors.price = "Valid price value is required";
     }
     if (
-      !variantFormData.isDefault &&
-      (!variantFormData.previousPrice ||
-        parseFloat(variantFormData.previousPrice) <=
-          parseFloat(variantFormData.price))
+      variantFormData.previousPrice &&
+      variantFormData.price &&
+      parseFloat(variantFormData.previousPrice) < parseFloat(variantFormData.price)
     ) {
       errors.previousPrice =
-        "Previous price must be greater than current price";
+        "MRP price must be greater than or equal to Offer price";
     }
 
     // If there are validation errors, show them and stop submission
@@ -1773,16 +1815,17 @@ const Products = () => {
         }
       });
 
+      const mrp = Number(variantFormData.previousPrice) || 0;
+      const offerPrice = Number(variantFormData.price) || mrp;
+      const calculatedOffer = mrp > offerPrice ? Number((((mrp - offerPrice) / mrp) * 100).toFixed(2)) : 0;
+      const offerPercent = Number(variantFormData.offer) || calculatedOffer;
+
       const updatedData = {
         attributes,
         stock: Number(variantFormData.stock),
-        price: !variantFormData.isDefault
-          ? Number(variantFormData.previousPrice)
-          : Number(variantFormData.price),
-        previousPrice: !variantFormData.isDefault
-          ? 0
-          : Number(variantFormData.previousPrice),
-        offer: Number(variantFormData.offer) || 0,
+        price: offerPrice,
+        previousPrice: mrp,
+        offer: offerPercent,
         status: variantFormData.status || "active",
         isDefault: variantFormData.isDefault || false,
         pvCanonicalUrl: variantFormData.pvCanonicalUrl || "",  
@@ -1950,99 +1993,122 @@ const Products = () => {
   }, [editVariantData, variantFormData.price, variantFormData.previousPrice]);
 
   return (
-    <Box className="products-container">
-      {/* Add category filter indicator */}
-      {categoryFilter && (
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            mb: 2,
-            p: 2,
-            bgcolor: "primary.light",
-            borderRadius: 1,
-          }}
-        >
-          <Typography>
-            Showing products in category: <strong>{categoryFilter}</strong>
-          </Typography>
-          <Button size="small" variant="contained" onClick={handleClearFilter}>
-            Clear Filter
-          </Button>
-        </Box>
-      )}
+    <Box className="admin-page-container">
+      <AdminPageHeader
+        title="Products Catalog"
+        subtitle="Manage luxury pure silk sarees, bridal collections, SKU codes, and inventory"
+        icon={InventoryIcon}
+        badges={[
+          { label: 'Total Products', count: totalProductsCount },
+          { label: 'Active', count: activeCount, color: 'success' },
+          { label: 'Low Stock', count: lowStockCount, color: 'warning' },
+          { label: 'Out of Stock', count: outOfStockCount, color: 'error' }
+        ]}
+        onExport={handleExportToExcel}
+        exportLabel="Export to Excel"
+        onPrimaryAction={() => handleOpen()}
+        primaryActionLabel="Add Product"
+        primaryActionIcon={AddIcon}
+      />
 
-      <Box className="products-header">
-        <Typography className="products-title" variant="h4">
-          Products
-        </Typography>
-        <Box sx={{ display: "flex", gap: 2 }}>
-          <Button
-            variant="outlined"
-            onClick={handleExportToExcel}
-            startIcon={<FileDownloadIcon />}
-          >
-            Export to Excel
-          </Button>
-          <Button
-            className="add-product-btn"
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => handleOpen()}
-          >
-            Add Product
-          </Button>
-        </Box>
-      </Box>
+      <AdminTableToolbar
+        searchPlaceholder="Search products by title, SKU, category, brand, or description..."
+        searchQuery={searchQuery}
+        onSearchChange={(val) => {
+          setSearchQuery(val);
+          setPage(0);
+        }}
+        filters={[
+          {
+            id: 'status',
+            label: 'Status / Stock',
+            value: statusFilter,
+            onChange: (val) => {
+              setStatusFilter(val);
+              setPage(0);
+            },
+            options: [
+              { label: 'All Statuses', value: 'all' },
+              { label: 'Active', value: 'active' },
+              { label: 'Inactive', value: 'inactive' },
+              { label: 'Low Stock', value: 'low_stock' },
+              { label: 'Out of Stock', value: 'out_of_stock' }
+            ]
+          },
+          {
+            id: 'category',
+            label: 'Category',
+            value: categoryFilter,
+            onChange: (val) => {
+              setCategoryFilter(val);
+              setPage(0);
+            },
+            options: categoryFilterOptions
+          },
+          {
+            id: 'type',
+            label: 'Product Type',
+            value: typeFilter,
+            onChange: (val) => {
+              setTypeFilter(val);
+              setPage(0);
+            },
+            options: [
+              { label: 'All Types', value: 'all' },
+              { label: 'Standard Product', value: 'product' },
+              { label: 'Combo Pack', value: 'combo' }
+            ]
+          }
+        ]}
+        quickFilters={{
+          selected: statusFilter,
+          onChange: (val) => {
+            setStatusFilter(val);
+            setPage(0);
+          },
+          options: [
+            { label: 'All', value: 'all', count: totalProductsCount },
+            { label: 'Active', value: 'active', count: activeCount, color: 'success' },
+            { label: 'Low Stock', value: 'low_stock', count: lowStockCount, color: 'warning' },
+            { label: 'Out of Stock', value: 'out_of_stock', count: outOfStockCount, color: 'error' }
+          ]
+        }}
+        totalCount={totalProductsCount}
+        filteredCount={totalProducts}
+        onResetFilters={handleResetFilters}
+      />
 
-      <Box className="search-container">
-        <TextField
-          className="search-field"
-          fullWidth
-          placeholder="Search products by name, description or category..."
-          value={searchQuery}
-          onChange={handleSearch}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Box>
-
-      <Paper className="table-container">
+      <Paper className="admin-table-paper">
         <TableContainer>
           <Table>
-            <TableHead>
+            <TableHead className="admin-table-head">
               <TableRow>
-                <TableCell width="25%">Product Details</TableCell>
-                <TableCell width="15%">Images</TableCell>
-                <TableCell width="15%">Category Info</TableCell>
-                <TableCell width="15%">type</TableCell>
-                <TableCell width="10%">Status</TableCell>
-                <TableCell width="20%">Actions</TableCell>
+                <TableCell className="admin-table-th" width="25%">Product Details</TableCell>
+                <TableCell className="admin-table-th" width="15%">Images</TableCell>
+                <TableCell className="admin-table-th" width="15%">Category Info</TableCell>
+                <TableCell className="admin-table-th" width="10%">Type</TableCell>
+                <TableCell className="admin-table-th" width="10%">Status</TableCell>
+                <TableCell className="admin-table-th" width="25%" align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
-                    <CircularProgress />
+                  <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
+                    <CircularProgress sx={{ color: '#6D1734' }} />
                   </TableCell>
                 </TableRow>
               ) : products.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} align="center">
-                    No products found
-                  </TableCell>
-                </TableRow>
+                <AdminTableEmptyState
+                  colSpan={6}
+                  title="No products found"
+                  subtitle="No products match your search or filter criteria."
+                  onReset={handleResetFilters}
+                />
               ) : (
                 products.map((product) => (
-                  <TableRow key={product._id} className="product-row">
-                    <TableCell>
+                  <TableRow key={product._id} className="admin-table-row" hover>
+                    <TableCell className="admin-table-cell">
                       <Box
                         sx={{
                           display: "flex",
@@ -2052,16 +2118,16 @@ const Products = () => {
                       >
                         <Typography
                           variant="subtitle1"
-                          sx={{ fontWeight: "bold" }}
+                          sx={{ fontWeight: 600, color: "#2C1810" }}
                         >
                           {product.pName}
                         </Typography>
                         {product.pSku && (
-                          <Typography variant="caption" sx={{ color: "primary.main", fontWeight: 600 }}>
+                          <Typography variant="caption" className="font-number" sx={{ color: "#6D1734", fontWeight: 700 }}>
                             SKU: {product.pSku}
                           </Typography>
                         )}
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" color="text.secondary" className="font-number">
                           Stock: <strong>{product.pStock ?? product.pQuantity ?? 0} pcs</strong>
                         </Typography>
                         {(product.pStock ?? product.pQuantity ?? 0) <= (product.lowStockThreshold || 10) && (
@@ -2069,6 +2135,7 @@ const Products = () => {
                             label={`Low Stock (≤ ${product.lowStockThreshold || 10})`}
                             color="error"
                             size="small"
+                            className="font-number"
                             sx={{ width: "fit-content", fontWeight: 600, fontSize: "0.7rem", height: 20 }}
                           />
                         )}
@@ -2078,7 +2145,7 @@ const Products = () => {
                       </Box>
                     </TableCell>
 
-                    <TableCell>
+                    <TableCell className="admin-table-cell">
                       <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                         {(product.pImage || [])
                           .slice(0, 5)
@@ -2132,7 +2199,7 @@ const Products = () => {
                       </Box>
                     </TableCell>
 
-                    <TableCell>
+                    <TableCell className="admin-table-cell">
                       <Box
                         sx={{
                           display: "flex",
@@ -2144,12 +2211,14 @@ const Products = () => {
                           label={product.pCategory}
                           color="primary"
                           size="small"
+                          sx={{ fontWeight: 600 }}
                         />
                         {product.pSubCategory && (
                           <Chip
                             label={product.pSubCategory}
                             variant="outlined"
                             size="small"
+                            sx={{ borderColor: '#EDE2D2' }}
                           />
                         )}
                         {product.pNestedSubCategory && (
@@ -2163,30 +2232,30 @@ const Products = () => {
                       </Box>
                     </TableCell>
 
-                    <TableCell>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 1,
-                        }}
-                      >
-                        <Typography variant="body2" color="text.secondary">
-                          {product.pType}
-                        </Typography>
-                      </Box>
+                    <TableCell className="admin-table-cell">
+                      <Typography variant="body2" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
+                        {product.pType || "product"}
+                      </Typography>
                     </TableCell>
 
-                    <TableCell>
+                    <TableCell className="admin-table-cell">
                       <Chip
-                        label={product.pStatus}
+                        label={product.pStatus ? (product.pStatus.charAt(0).toUpperCase() + product.pStatus.slice(1)) : 'Active'}
                         color={getStatusColor(product.pStatus)}
                         size="small"
+                        sx={{
+                          fontWeight: 600,
+                          ...(product.pStatus === 'active' ? {
+                            backgroundColor: '#e6f4ea',
+                            color: '#1e4620',
+                            border: '1px solid #b7e1cd'
+                          } : {})
+                        }}
                       />
                     </TableCell>
 
-                    <TableCell>
-                      <Stack direction="row" spacing={1} alignItems="center">
+                    <TableCell className="admin-table-cell" align="right">
+                      <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end">
                         <Tooltip title="Edit Product">
                           <span>
                             <IconButton
@@ -2194,6 +2263,7 @@ const Products = () => {
                               color="primary"
                               size="small"
                               disabled={!canWrite(PERMISSIONS.PRODUCTS)}
+                              sx={{ color: '#6D1734' }}
                             >
                               <EditIcon fontSize="small" />
                             </IconButton>
@@ -2218,6 +2288,7 @@ const Products = () => {
                             onClick={() => handleVariantDialogOpen(product)}
                             color="secondary"
                             size="small"
+                            sx={{ color: '#C5A15A' }}
                           >
                             <AddCircleIcon fontSize="small" />
                           </IconButton>
@@ -2272,6 +2343,7 @@ const Products = () => {
         </TableContainer>
         <TablePagination
           component="div"
+          className="admin-pagination font-number"
           count={totalProducts}
           page={page}
           onPageChange={handleChangePage}
@@ -2820,10 +2892,10 @@ const Products = () => {
               )}
 
               <Box className="form-field">
-                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                {/* <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
                   Voucher Options
-                </Typography>
-                <FormControlLabel
+                </Typography> */}
+                {/* <FormControlLabel
                   control={
                     <Checkbox
                       name="pis_voucher_50"
@@ -2832,8 +2904,8 @@ const Products = () => {
                     />
                   }
                   label="50 Voucher"
-                />
-                <FormControlLabel
+                /> */}
+                {/* <FormControlLabel
                   control={
                     <Checkbox
                         name="pis_voucher_100"
@@ -2842,7 +2914,7 @@ const Products = () => {
                     />
                   }
                   label="100 Voucher"
-                />
+                /> */}
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -3433,7 +3505,7 @@ const Products = () => {
                     <TableCell>Types</TableCell>
                     <TableCell>Stock</TableCell>
                     {/* <TableCell>Total Stock</TableCell> */}
-                    <TableCell>Price</TableCell>
+                    <TableCell>Offer Price</TableCell>
                     <TableCell>MRP Price</TableCell>
                     <TableCell>Offer (%)</TableCell>
                     <TableCell>Status</TableCell>
@@ -3472,11 +3544,15 @@ const Products = () => {
                               variant="outlined"
                             />
                           </TableCell>
-                          <TableCell>{variant.stock || 0}</TableCell>
+                          <TableCell className="font-number">{variant.stock || 0}</TableCell>
                           {/* <TableCell>{variant.totalStock}</TableCell> */}
-                          <TableCell>₹{variant.price || 0}</TableCell>
-                          <TableCell>₹{variant.previousPrice == "0" ? variant.price : variant.previousPrice}</TableCell>
-                          <TableCell>{variant.offer || 0}%</TableCell>
+                          <TableCell className="font-number" sx={{ fontWeight: 600, color: '#2e7d32' }}>
+                            ₹{variant.price || 0}
+                          </TableCell>
+                          <TableCell className="font-number" sx={{ color: '#6b5f5a', textDecoration: (variant.previousPrice && Number(variant.previousPrice) > Number(variant.price)) ? 'line-through' : 'none' }}>
+                            ₹{variant.previousPrice ? variant.previousPrice : (variant.price || 0)}
+                          </TableCell>
+                          <TableCell className="font-number">{variant.offer || 0}%</TableCell>
                           <TableCell>
                             <Chip
                               label={variant.status || "active"}

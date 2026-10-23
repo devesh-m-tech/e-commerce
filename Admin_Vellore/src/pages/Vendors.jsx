@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
 import {
@@ -29,6 +29,7 @@ import {
   useTheme,
   alpha,
   Card,
+  Tooltip,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -42,7 +43,12 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import BlockIcon from '@mui/icons-material/Block';
 import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
+import StorefrontIcon from '@mui/icons-material/Storefront';
+import * as XLSX from 'xlsx';
 import { fetchVendors, updateVendorStatus, deleteVendor } from '../redux/slices/vendorSlice';
+import AdminPageHeader from '../components/common/AdminPageHeader';
+import AdminTableToolbar from '../components/common/AdminTableToolbar';
+import AdminTableEmptyState from '../components/common/AdminTableEmptyState';
 
 const Vendors = () => {
   const dispatch = useDispatch();
@@ -55,6 +61,8 @@ const Vendors = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState('');
+  const [verificationFilter, setVerificationFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [detailsDialog, setDetailsDialog] = useState(false);
   const [documentDialog, setDocumentDialog] = useState(false);
@@ -83,12 +91,53 @@ const Vendors = () => {
   };
 
   const safeVendors = Array.isArray(vendors) ? vendors : [];
-  const filteredVendors = safeVendors.filter(vendor => 
-    vendor?.vendorName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    vendor?.businessInfo?.businessName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    vendor?.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    vendor?.phoneNumber?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredVendors = useMemo(() => {
+    return safeVendors.filter((vendor) => {
+      const q = (searchQuery || '').toLowerCase();
+      const matchesSearch =
+        (vendor?.vendorName || '').toLowerCase().includes(q) ||
+        (vendor?.businessInfo?.businessName || '').toLowerCase().includes(q) ||
+        (vendor?.email || '').toLowerCase().includes(q) ||
+        (vendor?.phoneNumber || '').toLowerCase().includes(q);
+
+      const isVerified = Boolean(vendor?.isVerified);
+      const matchesVerif =
+        verificationFilter === 'all' ||
+        (verificationFilter === 'verified' && isVerified) ||
+        (verificationFilter === 'pending' && !isVerified);
+
+      const status = (vendor?.status || 'active').toLowerCase();
+      const matchesStatus =
+        statusFilter === 'all' || status === statusFilter.toLowerCase();
+
+      return matchesSearch && matchesVerif && matchesStatus;
+    });
+  }, [safeVendors, searchQuery, verificationFilter, statusFilter]);
+
+  const totalVendorsCount = safeVendors.length;
+  const verifiedCount = useMemo(() => safeVendors.filter((v) => v.isVerified).length, [safeVendors]);
+  const pendingCount = totalVendorsCount - verifiedCount;
+  const inactiveCount = useMemo(
+    () => safeVendors.filter((v) => (v.status || '').toLowerCase() === 'inactive').length,
+    [safeVendors]
   );
+
+  const handleExportToExcel = () => {
+    const exportData = safeVendors.map((v) => ({
+      ID: v._id,
+      'Artisan Name': v.vendorName,
+      'Guild / Workshop': v.businessInfo?.businessName || '',
+      Email: v.email,
+      Phone: v.phoneNumber,
+      'Verification Status': v.isVerified ? 'Verified' : 'Pending',
+      'Account Status': v.status || 'Active',
+      Enrolled: v.createdAt ? new Date(v.createdAt).toLocaleDateString() : '',
+    }));
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Artisans');
+    XLSX.writeFile(wb, `artisan_partners_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
+  };
 
   const handleViewDetails = (vendor) => {
     setSelectedVendor(vendor);
@@ -261,121 +310,123 @@ const Vendors = () => {
   };
 
   return (
-    <Box sx={{ 
-      p: { xs: 2, md: 3 },
-      minHeight: '100vh'
-    }}>
-      {/* Header Section */}
-      <Box sx={{ mb: 3 }}>
-        <Grid container spacing={3} alignItems="flex-start">
-          <Grid item xs={12} md={4}>
-            <Typography variant="h4" sx={{ 
-              fontFamily: '"Playfair Display", Georgia, serif',
-              fontWeight: 700,
-              color: '#6D1734',
-              letterSpacing: '0.5px',
-              mb: 0.5
-            }}>
-              Master Weavers & Artisans
-            </Typography>
-            <Typography variant="body2" sx={{ color: '#7D7571' }}>
-              Manage certified handloom weavers, guild partners, and jewellery craftsmen
-            </Typography>
-          </Grid>
-          <Grid item xs={12} md={5}>
-            <TextField
-              fullWidth
-              placeholder="Search weavers by name, loom guild, email or phone..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ color: '#6D1734' }} />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ 
-                '& .MuiOutlinedInput-root': { 
-                  borderRadius: 0,
-                  backgroundColor: 'white',
-                  borderColor: '#EDE2D2',
-                }
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Box sx={{ 
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: { xs: 'flex-start', md: 'flex-end' },
-            }}>
-              <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1.5,
-                p: 2,
-                borderRadius: 0,
-                border: '1px solid #EDE2D2',
-                bgcolor: '#FAF7F2',
-              }}>
-                <BusinessIcon sx={{ color: '#6D1734' }} />
-                <Box>
-                  <Typography variant="h5" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 700, color: '#6D1734', lineHeight: 1 }}>
-                    {filteredVendors.length}
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: '#7D7571', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    Active Partners
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
+    <Box className="admin-page-container">
+      <AdminPageHeader
+        title="Master Weavers & Artisans"
+        subtitle="Manage certified handloom weavers, guild partners, and jewellery craftsmen"
+        icon={StorefrontIcon}
+        badges={[
+          { label: `Total Partners: ${totalVendorsCount}`, color: 'default' },
+          { label: `Verified: ${verifiedCount}`, color: 'success' },
+          ...(pendingCount > 0 ? [{ label: `Pending: ${pendingCount}`, color: 'warning' }] : []),
+          ...(inactiveCount > 0 ? [{ label: `Inactive: ${inactiveCount}`, color: 'error' }] : []),
+        ]}
+        onExport={handleExportToExcel}
+      />
+
+      <AdminTableToolbar
+        searchPlaceholder="Search weavers by name, loom guild, email or phone..."
+        searchQuery={searchQuery}
+        onSearchChange={(val) => {
+          setSearchQuery(val);
+          setPage(0);
+        }}
+        filters={[
+          {
+            id: 'verificationFilter',
+            label: 'Verification',
+            value: verificationFilter,
+            onChange: (val) => {
+              setVerificationFilter(val);
+              setPage(0);
+            },
+            options: [
+              { label: 'All Verification', value: 'all' },
+              { label: 'Verified Partners', value: 'verified' },
+              { label: 'Pending Approval', value: 'pending' },
+            ],
+          },
+          {
+            id: 'statusFilter',
+            label: 'Account Status',
+            value: statusFilter,
+            onChange: (val) => {
+              setStatusFilter(val);
+              setPage(0);
+            },
+            options: [
+              { label: 'All Statuses', value: 'all' },
+              { label: 'Active', value: 'active' },
+              { label: 'Inactive', value: 'inactive' },
+            ],
+          },
+        ]}
+        quickFilters={{
+          selected: verificationFilter !== 'all' ? verificationFilter : statusFilter,
+          onChange: (val) => {
+            if (val === 'verified' || val === 'pending') {
+              setVerificationFilter(val);
+              setStatusFilter('all');
+            } else if (val === 'inactive') {
+              setStatusFilter('inactive');
+              setVerificationFilter('all');
+            } else {
+              setVerificationFilter('all');
+              setStatusFilter('all');
+            }
+            setPage(0);
+          },
+          options: [
+            { label: 'All', value: 'all', count: totalVendorsCount },
+            { label: 'Verified', value: 'verified', count: verifiedCount, color: 'success' },
+            { label: 'Pending', value: 'pending', count: pendingCount, color: 'warning' },
+            { label: 'Inactive', value: 'inactive', count: inactiveCount, color: 'error' },
+          ],
+        }}
+        totalCount={totalVendorsCount}
+        filteredCount={filteredVendors.length}
+        onResetFilters={() => {
+          setSearchQuery('');
+          setVerificationFilter('all');
+          setStatusFilter('all');
+          setPage(0);
+        }}
+      />
 
       {/* Vendors Table Section */}
-      <Paper sx={{ 
-        borderRadius: 0, 
-        border: '1px solid #EDE2D2',
-        overflow: 'hidden',
-        boxShadow: 'none',
-        background: 'white',
-      }}>
+      <Paper className="admin-table-paper">
         <TableContainer>
           <Table>
-            <TableHead>
-              <TableRow sx={{ 
-                backgroundColor: '#FAF7F2'
-              }}>
-                <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', py: 2, borderBottom: '1px solid #EDE2D2' }}>Artisan Name</TableCell>
-                <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', py: 2, borderBottom: '1px solid #EDE2D2' }}>Guild / Workshop</TableCell>
-                <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', py: 2, borderBottom: '1px solid #EDE2D2' }}>Contact</TableCell>
-                <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', py: 2, borderBottom: '1px solid #EDE2D2' }}>Verification</TableCell>
-                <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', py: 2, borderBottom: '1px solid #EDE2D2' }}>Account</TableCell>
-                <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', py: 2, borderBottom: '1px solid #EDE2D2' }}>Enrolled</TableCell>
-                <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', py: 2, borderBottom: '1px solid #EDE2D2' }}>Actions</TableCell>
+            <TableHead className="admin-table-head">
+              <TableRow>
+                <TableCell className="admin-table-th">Artisan Name</TableCell>
+                <TableCell className="admin-table-th">Guild / Workshop</TableCell>
+                <TableCell className="admin-table-th">Contact</TableCell>
+                <TableCell className="admin-table-th">Verification</TableCell>
+                <TableCell className="admin-table-th">Account</TableCell>
+                <TableCell className="admin-table-th">Enrolled</TableCell>
+                <TableCell className="admin-table-th" align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
+                  <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
                     <CircularProgress sx={{ color: '#6D1734' }} size={36} />
                   </TableCell>
                 </TableRow>
               ) : filteredVendors.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
-                    <Box sx={{ textAlign: 'center' }}>
-                      <BusinessIcon sx={{ fontSize: 48, color: '#C5A15A', mb: 2 }} />
-                      <Typography variant="h6" sx={{ fontFamily: '"Playfair Display", Georgia, serif', color: '#282321', mb: 1 }}>No artisans or weavers found</Typography>
-                      <Typography variant="body2" sx={{ color: '#7D7571' }}>
-                        Try adjusting your search criteria to find registered guild members.
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                </TableRow>
+                <AdminTableEmptyState
+                  colSpan={7}
+                  title="No artisans or weavers found"
+                  subtitle="No guild partners match your search or filter criteria."
+                  onReset={() => {
+                    setSearchQuery('');
+                    setVerificationFilter('all');
+                    setStatusFilter('all');
+                    setPage(0);
+                  }}
+                />
               ) : (
                 filteredVendors
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -487,17 +538,14 @@ const Vendors = () => {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[10, 25, 50]}
           component="div"
           count={filteredVendors.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{
-            borderTop: '1px solid #EDE2D2',
-            bgcolor: '#FAF7F2',
-          }}
+          className="admin-pagination font-number"
         />
       </Paper>
 

@@ -86,21 +86,21 @@ export const productApi = {
       
       // Basic product data
       formData.append('pName', productData.pName);
-      formData.append('pShortDescription', productData.pShortDescription);
-      formData.append('pDescription', productData.pDescription);
+      formData.append('pShortDescription', productData.pShortDescription || '');
+      formData.append('pDescription', productData.pDescription || '');
       formData.append('pCategory', productData.pCategory);
-      formData.append('pPrice', String(productData.pPrice));
-      formData.append('pPreviousPrice', String(productData.pPreviousPrice || 0));
-      formData.append('pStock', String(productData.pStock));
-      formData.append('pOffer', productData.pOffer || '0');
-      formData.append('pTax', String(productData.pTax || 0));
+      formData.append('pPrice', String(productData.pPrice ?? 0));
+      formData.append('pPreviousPrice', String(productData.pPreviousPrice ?? 0));
+      formData.append('pStock', String(productData.pStock ?? 0));
+      formData.append('pOffer', String(productData.pOffer ?? 0));
+      formData.append('pTax', String(productData.pTax ?? 0));
       formData.append('pStatus', productData.pStatus || 'active');
       formData.append('pBrand', productData.pBrand || '');
       formData.append('pSubCategory', productData.pSubCategory || ''); // Always send subcategory
       formData.append('pNestedSubCategory', productData.pNestedSubCategory || '');
       formData.append('pType', productData.pType || '');
       formData.append('pOptions', productData.pOptions || '');
-      formData.append('pQuantity', '0');
+      formData.append('pQuantity', String(productData.pQuantity ?? 0));
       formData.append('pReturn', productData.pReturn || 'no');
       formData.append('pReturnDays', String(productData.pReturnDays || 0));
       formData.append('freeshipping', String(productData.freeshipping || false));  
@@ -171,23 +171,33 @@ export const productApi = {
 
       // Basic product data
       formData.append('pName', productData.pName);
-      formData.append('pShortDescription', productData.pShortDescription);
-      formData.append('pDescription', productData.pDescription);
+      formData.append('pShortDescription', productData.pShortDescription || '');
+      formData.append('pDescription', productData.pDescription || '');
       formData.append('pCategory', productData.pCategory);
-      formData.append('pPrice', String(productData.pPrice));
-      formData.append('pPreviousPrice', String(productData.pPreviousPrice || 0));
-      formData.append('pQuantity', productData.pQuantity);
-      formData.append('pStock', String(productData.pStock));
-      formData.append('pOffer', productData.pOffer || '0');
-      formData.append('pTax', String(productData.pTax || 0));
-      formData.append('pStatus', productData.pStatus);
-      formData.append('pBrand', productData.pBrand);
+
+      // Helper to safely append numeric fields without sending 'undefined' or 'NaN'
+      const appendSafeNumber = (key, val) => {
+        if (val !== undefined && val !== null && val !== "" && val !== "undefined" && !isNaN(Number(val))) {
+          formData.append(key, String(Number(val)));
+        }
+      };
+
+      appendSafeNumber('pPrice', productData.pPrice);
+      appendSafeNumber('pPreviousPrice', productData.pPreviousPrice);
+      appendSafeNumber('pQuantity', productData.pQuantity);
+      appendSafeNumber('pStock', productData.pStock);
+      appendSafeNumber('pOffer', productData.pOffer);
+      appendSafeNumber('pTax', productData.pTax);
+      appendSafeNumber('pReturnDays', productData.pReturnDays);
+      appendSafeNumber('lowStockThreshold', productData.lowStockThreshold);
+
+      formData.append('pStatus', productData.pStatus || 'active');
+      formData.append('pBrand', productData.pBrand || '');
       formData.append('pSubCategory', productData.pSubCategory || ''); // Ensure empty string if undefined
       formData.append('pNestedSubCategory', productData.pNestedSubCategory || '');
       formData.append('pType', productData.pType || '');
       formData.append('pOptions', productData.pOptions || '');
       formData.append('pReturn', productData.pReturn || 'no');
-      formData.append('pReturnDays', String(productData.pReturnDays || 0));
       formData.append('freeshipping', String(productData.freeshipping || false));
       formData.append('pis_voucher_50', String(productData.pis_voucher_50 || false));
       formData.append('pis_voucher_100', String(productData.pis_voucher_100 || false));

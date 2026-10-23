@@ -15,6 +15,8 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { useOrderNotifications } from '../context/OrderNotificationContext';
 
 const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
@@ -27,13 +29,15 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     { text: 'Hero Banners', icon: <ViewCarouselIcon />, path: '/banners' },
     { text: 'Products', icon: <InventoryIcon />, path: '/products' },
     { text: 'Categories', icon: <CategoryIcon />, path: '/categories' },
+    { text: 'Combo Offers', icon: <ShoppingBagIcon />, path: '/combo-offers' },
     { text: 'Vendors', icon: <PeopleIcon />, path: '/vendors' },
     { text: 'Orders', icon: <ShoppingCartIcon />, path: '/orders' },
-    { text: 'Exchanges', icon: <SwapHorizIcon />, path: '/exchanges' },
+    { text: 'Exchange Manage', icon: <SwapHorizIcon />, path: '/exchange-manage' },
     { text: 'Reports', icon: <AssessmentIcon />, path: '/reports' },
     { text: 'Deals', icon: <ShoppingBasketIcon />, path: '/deals' },
     { text: 'Shipping', icon: <LocalShippingIcon />, path: '/shipping' },
     { text: 'Admin Users', icon: <AdminPanelSettingsIcon />, path: '/admin-users' },
+    { text: 'Store Settings', icon: <SettingsIcon />, path: '/settings' },
   ];
 
   return (
@@ -77,7 +81,10 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
             key={item.text}
             component={Link}
             to={item.path}
-            selected={location.pathname === item.path}
+            selected={
+              location.pathname === item.path ||
+              (item.path === '/exchange-manage' && location.pathname === '/exchanges')
+            }
             sx={{
               minHeight: 48,
               justifyContent: isSidebarOpen ? 'initial' : 'center',

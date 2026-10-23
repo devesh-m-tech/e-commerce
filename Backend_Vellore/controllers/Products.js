@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { deleteFiles, getFullPath } from "../utils/fileUtils.js";
 import fs from "fs";
 import ProductVariant from "../models/ProductVariant.js";
+import { categoryModel } from "../models/Category.js";
 import { Order } from "../models/order.js";
 import { deleteImageFromS3 } from "../middelware/multer.js";
 import {
@@ -274,6 +275,12 @@ export const getAllProducts = async (req, res) => {
     } else {
       // Public users should only see active/out-of-stock products
       query.pStatus = { $regex: new RegExp("^(active|Out of Stock)$", "i") };
+      // Filter out products belonging to inactive categories
+      const inactiveCategories = await categoryModel.find({ cStatus: "inactive" }).select("cName");
+      if (inactiveCategories.length > 0) {
+        const inactiveNames = inactiveCategories.map((c) => c.cName);
+        query.pCategory = { $nin: inactiveNames };
+      }
     }
 
     // Get total count for pagination
@@ -683,8 +690,33 @@ export const updateProduct = async (req, res) => {
       schemaMarkup,
     } = req.body;
 
+    // Helper to safely parse numeric values avoiding NaN cast errors
+    const parseSafeNumber = (val) => {
+      if (
+        val === undefined ||
+        val === null ||
+        val === "" ||
+        val === "undefined" ||
+        val === "null" ||
+        val === "NaN"
+      ) {
+        return undefined;
+      }
+      const num = Number(val);
+      return isNaN(num) ? undefined : num;
+    };
+
+    const safePrice = parseSafeNumber(pPrice);
+    const safePreviousPrice = parseSafeNumber(pPreviousPrice);
+    const safeOffer = parseSafeNumber(pOffer);
+    const safeStock = parseSafeNumber(pStock);
+    const safeQuantity = parseSafeNumber(pQuantity);
+    const safeTax = parseSafeNumber(pTax);
+    const safeLowStock = parseSafeNumber(lowStockThreshold);
+    const safeReturnDays = parseSafeNumber(pReturnDays);
+
     // RBAC: Restrict price changes to admin/owner/super_admin
-    if (typeof pPrice !== "undefined" && Number(pPrice) !== existingProduct.pPrice) {
+    if (safePrice !== undefined && safePrice !== existingProduct.pPrice) {
       if (req.user && req.user.role === "inventory_staff") {
         return res.status(403).json({
           success: false,
@@ -701,19 +733,19 @@ export const updateProduct = async (req, res) => {
       ...(pCategory && { pCategory }),
       ...(pSubCategory && { pSubCategory }),
       ...(typeof pNestedSubCategory !== "undefined" && { pNestedSubCategory }),
-      ...(typeof pTax !== "undefined" && { pTax: Number(pTax) }),
+      ...(safeTax !== undefined && { pTax: safeTax }),
       ...(pStatus && { pStatus }),
       ...(pBrand && { pBrand }),
-      ...(typeof pPrice !== "undefined" && { pPrice: Number(pPrice) }),
-      ...(typeof pPreviousPrice !== "undefined" && { pPreviousPrice: Number(pPreviousPrice) }),
-      ...(typeof pOffer !== "undefined" && { pOffer: Number(pOffer) }),
-      ...(typeof pStock !== "undefined" && { pStock: Number(pStock) }),
-      ...(typeof pQuantity !== "undefined" && { pQuantity: Number(pQuantity) }),
-      ...(typeof lowStockThreshold !== "undefined" && { lowStockThreshold: Number(lowStockThreshold) }),
+      ...(safePrice !== undefined && { pPrice: safePrice }),
+      ...(safePreviousPrice !== undefined && { pPreviousPrice: safePreviousPrice }),
+      ...(safeOffer !== undefined && { pOffer: safeOffer }),
+      ...(safeStock !== undefined && { pStock: safeStock }),
+      ...(safeQuantity !== undefined && { pQuantity: safeQuantity }),
+      ...(safeLowStock !== undefined && { lowStockThreshold: safeLowStock }),
       ...(typeof pSku !== "undefined" && { pSku }),
       ...(typeof pVideo !== "undefined" && { pVideo }),
       ...(pReturn && { pReturn }),
-      ...(pReturnDays && { pReturnDays: Number(pReturnDays) }),
+      ...(safeReturnDays !== undefined && { pReturnDays: safeReturnDays }),
       vendorId: req.user.role === "vendor" ? req.user._id : req.user._id,
       editedBy: req.user.name || "Not edited",
       pType,
@@ -1970,9 +2002,17 @@ export const quickUpdateStock = async (req, res) => {
     const { id } = req.params;
     const { pStock, lowStockThreshold, pSku } = req.body;
 
+    const parseSafeNumber = (val) => {
+      if (val === undefined || val === null || val === "" || val === "undefined" || val === "null" || val === "NaN") return undefined;
+      const num = Number(val);
+      return isNaN(num) ? undefined : num;
+    };
+
     const updateFields = {};
-    if (typeof pStock !== "undefined") updateFields.pStock = Number(pStock);
-    if (typeof lowStockThreshold !== "undefined") updateFields.lowStockThreshold = Number(lowStockThreshold);
+    const safeStock = parseSafeNumber(pStock);
+    const safeLow = parseSafeNumber(lowStockThreshold);
+    if (safeStock !== undefined) updateFields.pStock = safeStock;
+    if (safeLow !== undefined) updateFields.lowStockThreshold = safeLow;
     if (typeof pSku !== "undefined") updateFields.pSku = pSku;
 
     const product = await productModel.findByIdAndUpdate(id, updateFields, { new: true });

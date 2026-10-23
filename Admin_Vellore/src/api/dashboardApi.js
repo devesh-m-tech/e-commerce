@@ -258,6 +258,17 @@ export const fetchReports = async (params = {}) => {
   }
 };
 
+// Fetch Sales Trend (Day, Week, Month)
+export const fetchSalesTrend = async (period = 'month') => {
+  try {
+    const res = await axiosInstance.get('/dashboard/sales-trend', { params: { period } });
+    return res.data;
+  } catch (error) {
+    console.error('Error fetching sales trend:', error);
+    return { success: false, data: [] };
+  }
+};
+
 // Log Invoice Print & prevent duplicates (Requirement 2.D)
 export const logInvoicePrintApi = async (orderId) => {
   try {

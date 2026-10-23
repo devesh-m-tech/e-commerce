@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { shippingApi } from '../api/shippApi';
 import {
   Box,
@@ -24,7 +24,9 @@ import {
   Snackbar,
   Chip,
   Tooltip,
-  Fab
+  Fab,
+  TablePagination,
+  CircularProgress,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -33,8 +35,12 @@ import {
   Cancel as CancelIcon,
   LocalShipping as ShippingIcon
 } from '@mui/icons-material';
+import * as XLSX from 'xlsx';
 import usePermissions from '../hooks/usePermissions';
 import { PERMISSIONS, ACTIONS } from '../constants/permissions';
+import AdminPageHeader from '../components/common/AdminPageHeader';
+import AdminTableToolbar from '../components/common/AdminTableToolbar';
+import AdminTableEmptyState from '../components/common/AdminTableEmptyState';
 
 const Shipping = () => {
   const [deliveryData, setDeliveryData] = useState([]);
@@ -42,6 +48,10 @@ const Shipping = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [editingState, setEditingState] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [feeFilter, setFeeFilter] = useState('all');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   
   // Form state for new/edit delivery info
   const [formData, setFormData] = useState({
@@ -161,128 +171,199 @@ const Shipping = () => {
   };
 
   const formatCurrency = (amount) => {
-    return `₹${parseFloat(amount).toFixed(2)}`;
+    return `₹${parseFloat(amount || 0).toFixed(2)}`;
+  };
+
+  const filteredDeliveryData = useMemo(() => {
+    const list = Array.isArray(deliveryData) ? deliveryData : [];
+    return list.filter((item) => {
+      const q = (searchQuery || '').toLowerCase();
+      const matchesSearch = (item?.state || '').toLowerCase().includes(q);
+      const isFree = Number(item?.productdeliveryfee || 0) === 0;
+      const matchesFee =
+        feeFilter === 'all' ||
+        (feeFilter === 'free' && isFree) ||
+        (feeFilter === 'paid' && !isFree);
+      return matchesSearch && matchesFee;
+    });
+  }, [deliveryData, searchQuery, feeFilter]);
+
+  const paginatedDeliveryData = useMemo(() => {
+    const startIndex = page * rowsPerPage;
+    return filteredDeliveryData.slice(startIndex, startIndex + rowsPerPage);
+  }, [filteredDeliveryData, page, rowsPerPage]);
+
+  const totalTariffsCount = (deliveryData || []).length;
+  const freeTariffsCount = useMemo(
+    () => (deliveryData || []).filter((d) => Number(d.productdeliveryfee || 0) === 0).length,
+    [deliveryData]
+  );
+  const paidTariffsCount = totalTariffsCount - freeTariffsCount;
+
+  const handleExportToExcel = () => {
+    const exportData = (deliveryData || []).map((row) => ({
+      State: row.state,
+      'Product Delivery Fee': row.productdeliveryfee,
+      'Combo Delivery Fee': row.combodeliveryfee,
+      'Above 500 Delivery Fee': row.above500_deliveryfee || 0,
+    }));
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'ShippingTariffs');
+    XLSX.writeFile(wb, `shipping_tariffs_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
-        <Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
-            <ShippingIcon sx={{ fontSize: 28, color: '#6D1734' }} />
-            <Typography 
-              variant="h4" 
-              component="h1"
-              sx={{ 
-                fontFamily: '"Playfair Display", Georgia, serif', 
-                fontWeight: 700, 
-                color: '#6D1734', 
-                letterSpacing: '0.5px' 
-              }}
-            >
-              Shipping & Delivery Tariffs
-            </Typography>
-          </Box>
-          <Typography variant="body2" sx={{ color: '#7D7571' }}>
-            Configure regional state-wise logistics tariffs, insured delivery fees, and combo rates
-          </Typography>
-        </Box>
+    <Box className="admin-page-container">
+      <AdminPageHeader
+        title="Shipping & Delivery Tariffs"
+        subtitle="Configure regional state-wise logistics tariffs, insured delivery fees, and combo rates"
+        icon={ShippingIcon}
+        badges={[
+          { label: `Total States: ${totalTariffsCount}`, color: 'default' },
+          { label: `Free Delivery: ${freeTariffsCount}`, color: 'success' },
+          { label: `Standard Rates: ${paidTariffsCount}`, color: 'default' },
+        ]}
+        onExport={handleExportToExcel}
+        primaryAction={{
+          label: 'Add State Tariff',
+          icon: <AddIcon />,
+          onClick: () => handleOpenDialog(),
+        }}
+      />
 
-        {/* Add New Button */}
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => handleOpenDialog()}
-          sx={{
-            borderRadius: 0,
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
-            fontSize: '0.78rem',
-            backgroundColor: '#6D1734',
-            '&:hover': { backgroundColor: '#4A1025' }
-          }}
-        >
-          Add New State Tariff
-        </Button>
-      </Box>
+      <AdminTableToolbar
+        searchPlaceholder="Search states or territories by name..."
+        searchQuery={searchQuery}
+        onSearchChange={(val) => {
+          setSearchQuery(val);
+          setPage(0);
+        }}
+        filters={[
+          {
+            id: 'feeFilter',
+            label: 'Tariff Type',
+            value: feeFilter,
+            onChange: (val) => {
+              setFeeFilter(val);
+              setPage(0);
+            },
+            options: [
+              { label: 'All Tariffs', value: 'all' },
+              { label: 'Free Delivery (₹0)', value: 'free' },
+              { label: 'Standard Paid Rates', value: 'paid' },
+            ],
+          },
+        ]}
+        quickFilters={{
+          selected: feeFilter,
+          onChange: (val) => {
+            setFeeFilter(val);
+            setPage(0);
+          },
+          options: [
+            { label: 'All', value: 'all', count: totalTariffsCount },
+            { label: 'Free Delivery', value: 'free', count: freeTariffsCount, color: 'success' },
+            { label: 'Paid Rates', value: 'paid', count: paidTariffsCount },
+          ],
+        }}
+        totalCount={totalTariffsCount}
+        filteredCount={filteredDeliveryData.length}
+        onResetFilters={() => {
+          setSearchQuery('');
+          setFeeFilter('all');
+          setPage(0);
+        }}
+      />
 
-      {/* Delivery Data Table */}
-      <Card sx={{ borderRadius: 0, border: '1px solid #EDE2D2', boxShadow: 'none' }}>
-        <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
-          <Box sx={{ p: 2.5, backgroundColor: '#FAF7F2', borderBottom: '1px solid #EDE2D2' }}>
-            <Typography variant="h6" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 600, color: '#6D1734' }}>
-              State-Wise Logistics Rates
-            </Typography>
-          </Box>
-          
-          {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-              <Typography>Loading tariffs...</Typography>
-            </Box>
-          ) : (!Array.isArray(deliveryData) || deliveryData.length === 0) ? (
-            <Box sx={{ textAlign: 'center', p: 4 }}>
-              <Typography color="textSecondary">
-                No delivery information found. Add a new state tariff to begin.
-              </Typography>
-            </Box>
-          ) : (
-            <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 0 }}>
-              <Table>
-                <TableHead sx={{ backgroundColor: '#FAF7F2' }}>
-                  <TableRow>
-                    <TableCell sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>State / Region</TableCell>
-                    <TableCell align="right" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Product Delivery Fee</TableCell>
-                    <TableCell align="right" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Combo Delivery Fee</TableCell>
-                    <TableCell align="center" sx={{ fontFamily: '"Karla", sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.75rem', color: '#4A1025', borderBottom: '1px solid #EDE2D2' }}>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {(Array.isArray(deliveryData) ? deliveryData : []).map((row) => (
-                    <TableRow key={row.state} hover sx={{ '&:hover': { backgroundColor: '#FAF7F2' } }}>
-                      <TableCell>
-                        <Chip 
-                          label={row.state} 
-                          variant="outlined"
+      <Paper className="admin-table-paper">
+        <TableContainer>
+          <Table>
+            <TableHead className="admin-table-head">
+              <TableRow>
+                <TableCell className="admin-table-th">State / Region</TableCell>
+                <TableCell className="admin-table-th" align="right">Standard Delivery Fee</TableCell>
+                <TableCell className="admin-table-th" align="right">Combo Delivery Fee</TableCell>
+                <TableCell className="admin-table-th" align="right">Above ₹500 Delivery Fee</TableCell>
+                <TableCell className="admin-table-th" align="center" width="100px">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                    <CircularProgress sx={{ color: '#6D1734' }} />
+                  </TableCell>
+                </TableRow>
+              ) : paginatedDeliveryData.length === 0 ? (
+                <AdminTableEmptyState
+                  colSpan={5}
+                  title="No shipping tariffs found"
+                  subtitle="No state logistics tariffs match your search criteria."
+                  onReset={() => {
+                    setSearchQuery('');
+                    setFeeFilter('all');
+                    setPage(0);
+                  }}
+                />
+              ) : (
+                paginatedDeliveryData.map((row) => (
+                  <TableRow key={row.state} className="admin-table-row" hover>
+                    <TableCell className="admin-table-cell">
+                      <Chip
+                        label={row.state}
+                        variant="outlined"
+                        size="small"
+                        sx={{
+                          borderRadius: '2px',
+                          borderColor: '#C5A15A',
+                          color: '#6D1734',
+                          fontWeight: 700,
+                          fontSize: '0.78rem',
+                          backgroundColor: '#FAF7F2',
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell className="admin-table-cell font-number" align="right" sx={{ fontWeight: 600, color: Number(row.productdeliveryfee) === 0 ? '#2e7d32' : '#282321' }}>
+                      {Number(row.productdeliveryfee) === 0 ? 'FREE' : formatCurrency(row.productdeliveryfee)}
+                    </TableCell>
+                    <TableCell className="admin-table-cell font-number" align="right" sx={{ fontWeight: 600, color: '#282321' }}>
+                      {formatCurrency(row.combodeliveryfee)}
+                    </TableCell>
+                    <TableCell className="admin-table-cell font-number" align="right" sx={{ color: '#6b5f5a' }}>
+                      {formatCurrency(row.above500_deliveryfee || 0)}
+                    </TableCell>
+                    <TableCell className="admin-table-cell" align="center">
+                      <Tooltip title="Edit State Tariff">
+                        <IconButton
                           size="small"
-                          sx={{ 
-                            borderRadius: 0, 
-                            borderColor: '#C5A15A', 
-                            color: '#6D1734', 
-                            fontWeight: 600, 
-                            fontSize: '0.75rem' 
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell align="right">
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#282321' }}>
-                          {formatCurrency(row.productdeliveryfee)}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="right">
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#282321' }}>
-                          {formatCurrency(row.combodeliveryfee)}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Tooltip title="Edit Tariff">
-                          <IconButton
-                            size="small"
-                            onClick={() => handleOpenDialog(row)}
-                            color="primary"
-                          >
-                            <EditIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </CardContent>
-      </Card>
+                          onClick={() => handleOpenDialog(row)}
+                          sx={{ color: '#6D1734' }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          component="div"
+          count={filteredDeliveryData.length}
+          page={page}
+          onPageChange={(e, newPage) => setPage(newPage)}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+          rowsPerPageOptions={[10, 25, 50]}
+          className="admin-pagination font-number"
+        />
+      </Paper>
 
       {/* Add/Edit Dialog */}
       <Dialog 

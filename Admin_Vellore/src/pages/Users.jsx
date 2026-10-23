@@ -34,6 +34,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import PersonIcon from '@mui/icons-material/Person';
+import PeopleIcon from '@mui/icons-material/People';
 // removed eye icon in favor of text button
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
@@ -43,6 +44,9 @@ import { userApi } from '../api/userApi';
 import { fetchOrders } from '../api/dashboardApi';
 import { useSnackbar } from 'notistack';
 import { UserAvatar } from '../components/UserAvatar';
+import AdminPageHeader from '../components/common/AdminPageHeader';
+import AdminTableToolbar from '../components/common/AdminTableToolbar';
+import AdminTableEmptyState from '../components/common/AdminTableEmptyState';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -51,6 +55,9 @@ const Users = () => {
   const [open, setOpen] = useState(false);
   const [editUser, setEditUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [orderFilter, setOrderFilter] = useState('all');
+  const [walletFilter, setWalletFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
@@ -140,11 +147,38 @@ const Users = () => {
     setPage(0);
   };
 
-  const filteredUsers = (Array.isArray(users) ? users : []).filter(user => 
-    (user?.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()) ||
-    (user?.email || '').toLowerCase().includes((searchQuery || '').toLowerCase()) ||
-    (user?.phone || '').toLowerCase().includes((searchQuery || '').toLowerCase())
-  );
+  const filteredUsers = useMemo(() => {
+    const list = Array.isArray(users) ? users : [];
+    return list.filter(user => {
+      const q = (searchQuery || '').toLowerCase().trim();
+      const matchesSearch = !q ||
+        (user?.name || '').toLowerCase().includes(q) ||
+        (user?.email || '').toLowerCase().includes(q) ||
+        (user?.phone || user?.contact || '').toLowerCase().includes(q);
+
+      const status = (user?.status || 'active').toLowerCase();
+      const matchesStatus = statusFilter === 'all' || status === statusFilter.toLowerCase();
+
+      const ordersCount = Number(user?.orderCount || 0);
+      const matchesOrders =
+        orderFilter === 'all' ||
+        (orderFilter === 'hasOrders' && ordersCount > 0) ||
+        (orderFilter === 'noOrders' && ordersCount === 0);
+
+      const wallet = Number(user?.walletBalance || 0);
+      const matchesWallet =
+        walletFilter === 'all' ||
+        (walletFilter === 'hasWallet' && wallet > 0) ||
+        (walletFilter === 'zeroWallet' && wallet <= 0);
+
+      return matchesSearch && matchesStatus && matchesOrders && matchesWallet;
+    });
+  }, [users, searchQuery, statusFilter, orderFilter, walletFilter]);
+
+  const totalUsersCount = (users || []).length;
+  const withOrdersCount = useMemo(() => (users || []).filter(u => (u?.orderCount || 0) > 0).length, [users]);
+  const noOrdersCount = useMemo(() => (users || []).filter(u => !(u?.orderCount > 0)).length, [users]);
+  const activeCount = useMemo(() => (users || []).filter(u => (u?.status || 'active').toLowerCase() === 'active').length, [users]);
 
   const handleEdit = (user) => {
     setEditUser(user);
@@ -296,217 +330,242 @@ const Users = () => {
   };
 
   return (
-    <Box>
+    <Box className="admin-page-container">
       {(canRead(PERMISSIONS.USERS) || isSuperAdmin) ? (
         <>
-          <Paper 
-            elevation={0} 
-            sx={{ 
-              p: 3, 
-              mb: 3, 
-              bgcolor: 'primary.main', 
-              color: 'primary.contrastText',
-              borderRadius: 2
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-              <PersonIcon sx={{ fontSize: 40 }} />
-              <Box>
-                <Typography variant="h4" sx={{ fontWeight: 600, fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: '0.5px' }}>
-                  Users
-                </Typography>
-                <Typography variant="body1" sx={{ mt: 0.5, opacity: 0.8 }}>
-                  Manage customer accounts and view their activity
-                </Typography>
-                <Typography variant="subtitle1" sx={{ mt: 1, fontWeight: 500 }}>
-                  Total Users: {users.length}
-                </Typography>
-              </Box>
-            </Box>
-            <Box sx={{ 
-              display: 'flex', 
-              gap: 2,
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
-              <TextField
-                placeholder="Search users..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                sx={{
-                  flex: 1,
-                  minWidth: '200px',
-                  maxWidth: '400px',
-                  '& .MuiOutlinedInput-root': {
-                    bgcolor: 'rgba(255, 255, 255, 0.1)',
-                    color: 'inherit',
-                    '& fieldset': {
-                      borderColor: 'rgba(255, 255, 255, 0.2)',
-                    },
-                    '&:hover fieldset': {
-                      borderColor: 'rgba(255, 255, 255, 0.3)',
-                    },
-                  },
-                  '& .MuiInputAdornment-root': {
-                    color: 'inherit',
-                  },
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <Button
-                variant="contained"
-                startIcon={<FileDownloadIcon />}
-                onClick={handleExportToExcel}
-                disabled={!canRead(PERMISSIONS.USERS)}
-                sx={{ 
-                  bgcolor: 'white', 
-                  color: 'primary.main',
-                  '&:hover': {
-                    bgcolor: 'rgba(255, 255, 255, 0.9)',
-                  },
-                }}
-              >
-                Export to Excel
-              </Button>
-            </Box>
-          </Paper>
+          <AdminPageHeader
+            title="Customer Accounts"
+            subtitle="Manage customer profiles, order histories, and digital wallet balances"
+            icon={PeopleIcon}
+            badges={[
+              { label: 'Total Customers', count: totalUsersCount },
+              { label: 'With Orders', count: withOrdersCount, color: 'success' },
+              { label: 'Active', count: activeCount, color: 'primary' }
+            ]}
+            onExport={canRead(PERMISSIONS.USERS) ? handleExportToExcel : undefined}
+            exportLabel="Export to Excel"
+          />
 
-          <Paper 
-            elevation={0} 
-            sx={{ 
-              borderRadius: 2,
-              overflow: 'hidden',
-              border: '1px solid',
-              borderColor: 'divider',
+          <AdminTableToolbar
+            searchPlaceholder="Search customers by name, email, or phone number..."
+            searchQuery={searchQuery}
+            onSearchChange={(val) => {
+              setSearchQuery(val);
+              setPage(0);
             }}
-          >
+            filters={[
+              {
+                id: 'orders',
+                label: 'Order Activity',
+                value: orderFilter,
+                onChange: (val) => {
+                  setOrderFilter(val);
+                  setPage(0);
+                },
+                options: [
+                  { label: 'All Customers', value: 'all' },
+                  { label: 'With Orders', value: 'hasOrders' },
+                  { label: 'No Orders Yet', value: 'noOrders' }
+                ]
+              },
+              {
+                id: 'status',
+                label: 'Account Status',
+                value: statusFilter,
+                onChange: (val) => {
+                  setStatusFilter(val);
+                  setPage(0);
+                },
+                options: [
+                  { label: 'All Statuses', value: 'all' },
+                  { label: 'Active', value: 'active' },
+                  { label: 'Inactive', value: 'inactive' }
+                ]
+              },
+              {
+                id: 'wallet',
+                label: 'Wallet Balance',
+                value: walletFilter,
+                onChange: (val) => {
+                  setWalletFilter(val);
+                  setPage(0);
+                },
+                options: [
+                  { label: 'All Wallets', value: 'all' },
+                  { label: 'Has Balance (> ₹0)', value: 'hasWallet' },
+                  { label: 'Zero Balance', value: 'zeroWallet' }
+                ]
+              }
+            ]}
+            quickFilters={{
+              selected: orderFilter,
+              onChange: (val) => {
+                setOrderFilter(val);
+                setPage(0);
+              },
+              options: [
+                { label: 'All Customers', value: 'all', count: totalUsersCount },
+                { label: 'With Orders', value: 'hasOrders', count: withOrdersCount, color: 'success' },
+                { label: 'No Orders', value: 'noOrders', count: noOrdersCount }
+              ]
+            }}
+            totalCount={totalUsersCount}
+            filteredCount={filteredUsers.length}
+            onResetFilters={() => {
+              setSearchQuery('');
+              setOrderFilter('all');
+              setStatusFilter('all');
+              setWalletFilter('all');
+              setPage(0);
+            }}
+          />
+
+          <Paper className="admin-table-paper">
             <TableContainer>
               {loading ? (
-                <Box sx={{ p: 3, textAlign: 'center' }}>
-                  <CircularProgress />
+                <Box sx={{ p: 5, textAlign: 'center' }}>
+                  <CircularProgress sx={{ color: '#6D1734' }} />
                 </Box>
               ) : (
                 <Table>
-                  <TableHead>
-                    <TableRow sx={{ bgcolor: 'background.default' }}>
-                      <TableCell>User</TableCell>
-                      <TableCell>Phone</TableCell>
-                      <TableCell>Orders</TableCell>
-                      <TableCell>Wallet Balance</TableCell>
-                      <TableCell>Joined On</TableCell>
-                      <TableCell align="right">Actions</TableCell>
+                  <TableHead className="admin-table-head">
+                    <TableRow>
+                      <TableCell className="admin-table-th">Customer</TableCell>
+                      <TableCell className="admin-table-th">Contact</TableCell>
+                      <TableCell className="admin-table-th">Orders Placed</TableCell>
+                      <TableCell className="admin-table-th">Wallet Balance</TableCell>
+                      <TableCell className="admin-table-th">Registered Date</TableCell>
+                      <TableCell className="admin-table-th" align="right">Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {filteredUsers
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((user) => (
-                        <TableRow 
-                          key={user._id}
-                          sx={{ 
-                            '&:hover': { 
-                              bgcolor: 'action.hover',
-                            },
-                          }}
-                        >
-                          <TableCell>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                              <UserAvatar user={user} />
-                              <Box>
-                                <Typography 
-                                  variant="subtitle2" 
-                                  sx={{ 
-                                    cursor: 'pointer',
-                                    '&:hover': {
-                                      color: 'primary.main',
-                                      textDecoration: 'underline'
-                                    }
-                                  }}
-                                  onClick={() => handleViewUserOrders(user)}
-                                >
-                                  {user.name}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                  {user.email}
-                                </Typography>
+                    {filteredUsers.length === 0 ? (
+                      <AdminTableEmptyState
+                        colSpan={6}
+                        title="No customers found"
+                        subtitle="No customers match your search or filter criteria."
+                        onReset={() => {
+                          setSearchQuery('');
+                          setOrderFilter('all');
+                          setStatusFilter('all');
+                          setWalletFilter('all');
+                          setPage(0);
+                        }}
+                      />
+                    ) : (
+                      filteredUsers
+                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        .map((user) => (
+                          <TableRow 
+                            key={user._id}
+                            className="admin-table-row"
+                            hover
+                          >
+                            <TableCell className="admin-table-cell">
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <UserAvatar user={user} />
+                                <Box>
+                                  <Typography 
+                                    variant="subtitle2" 
+                                    sx={{ 
+                                      cursor: 'pointer',
+                                      fontWeight: 600,
+                                      color: '#2C1810',
+                                      '&:hover': {
+                                        color: '#6D1734',
+                                        textDecoration: 'underline'
+                                      }
+                                    }}
+                                    onClick={() => handleViewUserOrders(user)}
+                                  >
+                                    {user.name}
+                                  </Typography>
+                                  <Typography variant="body2" color="text.secondary">
+                                    {user.email}
+                                  </Typography>
+                                </Box>
                               </Box>
-                            </Box>
-                          </TableCell>
-                          <TableCell>{user.contact || '-'}</TableCell>
-                          <TableCell>
-                            <Chip
-                              label={`${user.orderCount || 0} Order`}
-                              color={user.orderCount > 0 ? 'success' : 'default'}
-                              size="small"
-                              sx={{
-                                fontWeight: 500,
-                                '&.MuiChip-colorSuccess': {
-                                  backgroundColor: '#e6f4ea',
-                                  color: '#1e4620',
-                                }
-                              }}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            ₹{new Intl.NumberFormat('en-IN', {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2
-                            }).format(user.walletBalance || 0)}
-                          </TableCell>
-                          <TableCell>
-                            {new Date(user.createdAt).toLocaleDateString('en-GB')}
-                          </TableCell>
-                          <TableCell align="right">
-                            <Button
-                              onClick={() => handleViewUserOrders(user)}
-                              variant="outlined"
-                              size="small"
-                              disabled={!canRead(PERMISSIONS.USERS)}
-                              sx={{ mr: 1 }}
-                            >
-                              View details
-                            </Button>
-                            <IconButton 
-                              onClick={() => handleEdit(user)} 
-                              color="primary" 
-                              size="small"
-                              disabled={!canWrite(PERMISSIONS.USERS)}
-                            >
-                              <EditIcon />
-                            </IconButton>
-                            <IconButton 
-                              onClick={() => handleDelete(user._id)} 
-                              color="error" 
-                              size="small"
-                              disabled={!canDelete(PERMISSIONS.USERS)}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                            </TableCell>
+                            <TableCell className="admin-table-cell font-number">
+                              {user.contact || user.phone || '—'}
+                            </TableCell>
+                            <TableCell className="admin-table-cell">
+                              <Chip
+                                label={`${user.orderCount || 0} Orders`}
+                                color={user.orderCount > 0 ? 'success' : 'default'}
+                                size="small"
+                                className="font-number"
+                                sx={{
+                                  fontWeight: 600,
+                                  ...(user.orderCount > 0 ? {
+                                    backgroundColor: '#e6f4ea',
+                                    color: '#1e4620',
+                                    border: '1px solid #b7e1cd'
+                                  } : {})
+                                }}
+                              />
+                            </TableCell>
+                            <TableCell className="admin-table-cell font-number" sx={{ fontWeight: 600, color: '#2C1810' }}>
+                              ₹{new Intl.NumberFormat('en-IN', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                              }).format(user.walletBalance || 0)}
+                            </TableCell>
+                            <TableCell className="admin-table-cell font-number" sx={{ color: '#666' }}>
+                              {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : '—'}
+                            </TableCell>
+                            <TableCell className="admin-table-cell" align="right">
+                              <Button
+                                onClick={() => handleViewUserOrders(user)}
+                                variant="outlined"
+                                size="small"
+                                disabled={!canRead(PERMISSIONS.USERS)}
+                                sx={{ 
+                                  mr: 1,
+                                  borderColor: '#EDE2D2',
+                                  color: '#6D1734',
+                                  '&:hover': {
+                                    borderColor: '#6D1734',
+                                    bgcolor: 'rgba(109, 23, 52, 0.04)'
+                                  }
+                                }}
+                              >
+                                View Details
+                              </Button>
+                              <IconButton 
+                                onClick={() => handleEdit(user)} 
+                                color="primary" 
+                                size="small"
+                                disabled={!canWrite(PERMISSIONS.USERS)}
+                                sx={{ color: '#6D1734' }}
+                              >
+                                <EditIcon fontSize="small" />
+                              </IconButton>
+                              <IconButton 
+                                onClick={() => handleDelete(user._id)} 
+                                color="error" 
+                                size="small"
+                                disabled={!canDelete(PERMISSIONS.USERS)}
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                    )}
                   </TableBody>
                 </Table>
               )}
             </TableContainer>
             <TablePagination
               component="div"
+              className="admin-pagination font-number"
               count={filteredUsers.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
-              sx={{
-                borderTop: '1px solid',
-                borderColor: 'divider',
-              }}
+              rowsPerPageOptions={[10, 25, 50]}
             />
           </Paper>
 

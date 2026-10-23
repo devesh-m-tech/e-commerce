@@ -38,6 +38,11 @@ export const isTokenExpired = (token) => {
 export const transformImageUrl = (imagePath) => {
   if (!imagePath) return '';
 
+  if (typeof imagePath === 'object') {
+    imagePath = imagePath.url || imagePath.path || imagePath.src || '';
+  }
+  if (typeof imagePath !== 'string' || !imagePath.trim()) return '';
+
   // If it's a Cloudinary URL or Unsplash or any external URL, return directly
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://') || imagePath.startsWith('data:image')) {
     return imagePath;
@@ -45,8 +50,13 @@ export const transformImageUrl = (imagePath) => {
 
   const baseUrl = import.meta.env?.VITE_API_BASE_URL
     ? import.meta.env.VITE_API_BASE_URL.replace(/\/api\/?$/, '')
-    : 'http://localhost:5000';
+    : (import.meta.env?.VITE_SERVER_URL || 'http://localhost:5000');
 
-  const cleanPath = imagePath.replace(/\\/g, '/');
-  return cleanPath.startsWith('/') ? `${baseUrl}${cleanPath}` : `${baseUrl}/${cleanPath}`;
+  // Normalize all backslashes to forward slashes
+  let cleanPath = imagePath.replace(/\\/g, '/').trim();
+  // Strip any redundant leading /uploads/ or uploads/
+  cleanPath = cleanPath.replace(/^(\/?uploads\/)+/i, '');
+  cleanPath = cleanPath.replace(/^\/+/, '');
+
+  return `${baseUrl}/uploads/${cleanPath}`;
 };

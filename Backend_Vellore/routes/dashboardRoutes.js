@@ -3,6 +3,7 @@ import {
   getIncomeStats,
   getAdminDashboardSummary,
   getComprehensiveReports,
+  getSalesTrend,
 } from "../controllers/dashboard.js";
 import { isAdminAuth, isAdmin } from "../middelware/isAdminAuth.js";
 
@@ -10,6 +11,9 @@ const router = express.Router();
 
 // Income statistics route - protected for admin only
 router.get("/income-stats", isAdminAuth, isAdmin, getIncomeStats);
+
+// Sales trend route (day, week, month)
+router.get("/sales-trend", isAdminAuth, isAdmin, getSalesTrend);
 
 // Admin dashboard summary (total orders, today's sales, pending exchanges, low stock alerts)
 router.get("/summary", isAdminAuth, isAdmin, getAdminDashboardSummary);

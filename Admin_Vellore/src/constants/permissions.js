@@ -13,6 +13,8 @@ export const PERMISSIONS = {
   USERS: 'users',
   SHIPPING: 'shipping',
   ADMIN_USERS: 'admin-users',
+  COMBO_OFFERS: 'combo-offers',
+  SETTINGS: 'settings',
 };
 
 export const ACTIONS = {

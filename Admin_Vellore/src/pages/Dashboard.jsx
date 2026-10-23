@@ -301,33 +301,13 @@ const Dashboard = () => {
 
     orders.forEach((o) => {
       const d = new Date(o.createdAt || Date.now());
-      if (d.getFullYear() === currentYear) {
-        const mIdx = d.getMonth();
-        const amt = Number(o.finalAmount) || 0;
+      const mIdx = d.getMonth();
+      const amt = Number(o.finalAmount) || 0;
+      if (mIdx >= 0 && mIdx < 12) {
         months[mIdx].revenue += amt;
         months[mIdx].orders += 1;
       }
     });
-
-    // If database orders are brand new, inject realistic baseline data so charts showcase beautifully
-    const totalRev = months.reduce((s, m) => s + m.revenue, 0);
-    if (totalRev === 0) {
-      const baseline = [
-        { month: 'Jan', revenue: 185000, orders: 24, aov: 7708 },
-        { month: 'Feb', revenue: 242000, orders: 31, aov: 7806 },
-        { month: 'Mar', revenue: 310000, orders: 42, aov: 7380 },
-        { month: 'Apr', revenue: 280000, orders: 36, aov: 7777 },
-        { month: 'May', revenue: 395000, orders: 50, aov: 7900 },
-        { month: 'Jun', revenue: 420000, orders: 54, aov: 7777 },
-        { month: 'Jul', revenue: 360000, orders: 46, aov: 7826 },
-        { month: 'Aug', revenue: 490000, orders: 62, aov: 7903 },
-        { month: 'Sep', revenue: 580000, orders: 74, aov: 7837 },
-        { month: 'Oct', revenue: 710000, orders: 89, aov: 7977 },
-        { month: 'Nov', revenue: 640000, orders: 81, aov: 7901 },
-        { month: 'Dec', revenue: 780000, orders: 98, aov: 7959 },
-      ];
-      return baseline;
-    }
 
     // Calculate AOV
     months.forEach((m) => {
@@ -358,7 +338,8 @@ const Dashboard = () => {
       }
     });
 
-    const avgRevenue = Math.round(totalRev / (monthlySalesData.length || 1));
+    const activeMonths = monthlySalesData.filter((m) => m.revenue > 0).length || 1;
+    const avgRevenue = Math.round(totalRev / activeMonths);
     return {
       peakMonth: peakMonth.month,
       peakValue: peakMonth.revenue,
@@ -390,14 +371,13 @@ const Dashboard = () => {
 
     const totalOrders = Object.values(rawCounts).reduce((a, b) => a + b, 0);
 
-    // If zero orders in DB, provide realistic bridal/silk distribution
     if (totalOrders === 0) {
       return [
-        { name: 'Delivered', value: 58, color: COLORS.emerald, percent: '48%' },
-        { name: 'Dispatched', value: 26, color: COLORS.maroon, percent: '22%' },
-        { name: 'Confirmed', value: 20, color: COLORS.blue, percent: '17%' },
-        { name: 'Order Placed', value: 12, color: COLORS.gold, percent: '10%' },
-        { name: 'Cancelled', value: 4, color: COLORS.crimson, percent: '3%' },
+        { name: 'Delivered', value: 0, color: COLORS.emerald, percent: '0%' },
+        { name: 'Dispatched', value: 0, color: COLORS.maroon, percent: '0%' },
+        { name: 'Confirmed', value: 0, color: COLORS.blue, percent: '0%' },
+        { name: 'Order Placed', value: 0, color: COLORS.gold, percent: '0%' },
+        { name: 'Cancelled', value: 0, color: COLORS.crimson, percent: '0%' },
       ];
     }
 
@@ -439,7 +419,7 @@ const Dashboard = () => {
   const fulfillmentRate = useMemo(() => {
     const delivered = orderStatusDistribution.find((d) => d.name === 'Delivered')?.value || 0;
     const total = orderStatusDistribution.reduce((s, i) => s + i.value, 0);
-    return total > 0 ? Math.round((delivered / total) * 100) : 96;
+    return total > 0 ? Math.round((delivered / total) * 100) : 0;
   }, [orderStatusDistribution]);
 
   // ── 3. Revenue by Silk Category / Weave ──
@@ -454,30 +434,21 @@ const Dashboard = () => {
 
     const orders = ordersRes?.orders || [];
     orders.forEach((o) => {
-      (o.orderItems || []).forEach((item) => {
-        const cat = item.pCategory || item.category || 'Silk Sarees';
+      (o.items || o.orderItems || []).forEach((item) => {
+        const cat = item.pCategory?.cName || item.pCategory || item.category || '';
+        const name = (item.pName || '').toLowerCase();
         let key = 'Silk Sarees';
-        if (cat.toLowerCase().includes('jewel')) key = 'Temple Jewellery';
-        else if (cat.toLowerCase().includes('bridal')) key = 'Bridal Collection';
-        else if (cat.toLowerCase().includes('women')) key = "Women's Wear";
-        else if (cat.toLowerCase().includes('cotton')) key = 'Cotton Sarees';
+        if (cat.toLowerCase().includes('jewel') || name.includes('jewel') || name.includes('necklace') || name.includes('bangle') || name.includes('earring')) key = 'Temple Jewellery';
+        else if (cat.toLowerCase().includes('bridal') || name.includes('bridal') || name.includes('wedding')) key = 'Bridal Collection';
+        else if (cat.toLowerCase().includes('women') || name.includes('kurti') || name.includes('salwar')) key = "Women's Wear";
+        else if (cat.toLowerCase().includes('cotton') || name.includes('cotton')) key = 'Cotton Sarees';
+        else if (name.includes('kanchipuram') || name.includes('banarasi') || name.includes('silk') || name.includes('tussar')) key = 'Silk Sarees';
 
-        const itemTotal = (Number(item.price) || 0) * (Number(item.quantity) || 1);
+        const itemTotal = (Number(item.price) || 0) * (Number(item.quantity) || 1) || (Number(o.finalAmount) || 0);
         catMap[key].sales += itemTotal;
         catMap[key].units += Number(item.quantity) || 1;
       });
     });
-
-    const hasData = Object.values(catMap).some((c) => c.sales > 0);
-    if (!hasData) {
-      return [
-        { category: 'Silk Sarees', sales: 485000, units: 68, color: COLORS.maroon },
-        { category: 'Bridal Collection', sales: 340000, units: 32, color: COLORS.burgundy },
-        { category: 'Temple Jewellery', sales: 220000, units: 45, color: COLORS.gold },
-        { category: "Women's Wear", sales: 165000, units: 58, color: COLORS.blue },
-        { category: 'Cotton Sarees', sales: 95000, units: 42, color: COLORS.amber },
-      ];
-    }
 
     return Object.entries(catMap).map(([name, data], idx) => ({
       category: name,
@@ -499,13 +470,6 @@ const Dashboard = () => {
       else onlineCount++;
     });
 
-    if (onlineCount === 0 && codCount === 0) {
-      return [
-        { name: 'Online Prepaid (UPI / Cards)', value: 78, color: COLORS.maroon },
-        { name: 'Cash on Delivery (COD)', value: 22, color: COLORS.gold },
-      ];
-    }
-
     return [
       { name: 'Online Prepaid (UPI / Cards)', value: onlineCount, color: COLORS.maroon },
       { name: 'Cash on Delivery (COD)', value: codCount, color: COLORS.gold },
@@ -514,21 +478,41 @@ const Dashboard = () => {
 
   // ── 5. Customer Connoisseurs Growth Trend ──
   const customerGrowthData = useMemo(() => {
-    return [
-      { month: 'Jan', patrons: 24, total: 24 },
-      { month: 'Feb', patrons: 38, total: 62 },
-      { month: 'Mar', patrons: 45, total: 107 },
-      { month: 'Apr', patrons: 52, total: 159 },
-      { month: 'May', patrons: 68, total: 227 },
-      { month: 'Jun', patrons: 84, total: 311 },
-      { month: 'Jul', patrons: 72, total: 383 },
-      { month: 'Aug', patrons: 95, total: 478 },
-      { month: 'Sep', patrons: 110, total: 588 },
-      { month: 'Oct', patrons: 145, total: 733 },
-      { month: 'Nov', patrons: 130, total: 863 },
-      { month: 'Dec', patrons: 160, total: 1023 },
-    ];
-  }, []);
+    const months = MONTH_NAMES.map((m) => ({
+      month: m,
+      patrons: 0,
+      total: 0,
+    }));
+
+    const users = Array.isArray(usersList) ? usersList : [];
+    users.forEach((u) => {
+      const d = new Date(u.createdAt || Date.now());
+      const mIdx = d.getMonth();
+      if (mIdx >= 0 && mIdx < 12) {
+        months[mIdx].patrons += 1;
+      }
+    });
+
+    let runningTotal = 0;
+    months.forEach((m) => {
+      runningTotal += m.patrons;
+      m.total = runningTotal;
+    });
+
+    const totalFound = months.reduce((s, m) => s + m.patrons, 0);
+    const summaryTotal = dashboardSummary?.totalCustomers ?? dashboardSummary?.totalUsers ?? users.length ?? 0;
+    if (totalFound === 0 && summaryTotal > 0) {
+      const currentMonthIdx = new Date().getMonth();
+      months[currentMonthIdx].patrons = summaryTotal;
+      let acc = 0;
+      months.forEach((m) => {
+        acc += m.patrons;
+        m.total = acc;
+      });
+    }
+
+    return months;
+  }, [usersList, dashboardSummary]);
 
   // ── Handlers ──
   const handleOpenRestock = (product) => {
@@ -704,14 +688,14 @@ const Dashboard = () => {
                     <CurrencyRupeeIcon sx={{ fontSize: 22 }} />
                   </div>
                 </div>
-                <div className="sds-kpi-value">
-                  {formatINR(incomeStats.dayTotal || dashboardSummary?.todaySales || 0)}
+                <div className="sds-kpi-value font-number">
+                  {formatINR(dashboardSummary?.todaySales ?? incomeStats.dayTotal ?? incomeStats.day ?? 0)}
                 </div>
                 <div className="sds-kpi-subtext">
-                  <span className="sds-kpi-pill neutral">
+                  <span className="sds-kpi-pill neutral font-number">
                     {dashboardSummary?.todayOrders || 0} Orders Today
                   </span>
-                  <span>(Shipping: {formatINR(incomeStats.dayShipping || 0)})</span>
+                  <span className="font-number">(Shipping: {formatINR(incomeStats.dayShipping || 0)})</span>
                 </div>
               </div>
             </Grid>
@@ -725,12 +709,12 @@ const Dashboard = () => {
                     <TrendingUpIcon sx={{ fontSize: 22 }} />
                   </div>
                 </div>
-                <div className="sds-kpi-value">
-                  {formatINR(incomeStats.weekTotal || (salesSummaryMetrics.avgRevenue * 0.25))}
+                <div className="sds-kpi-value font-number">
+                  {formatINR(Number(incomeStats.weekTotal || incomeStats.week || 0))}
                 </div>
                 <div className="sds-kpi-subtext">
                   <span className="sds-kpi-pill positive">Gross Revenue</span>
-                  <span>Order Vol: {formatINR(incomeStats.week || 0)}</span>
+                  <span className="font-number">Order Vol: {formatINR(incomeStats.week || 0)}</span>
                 </div>
               </div>
             </Grid>
@@ -744,12 +728,12 @@ const Dashboard = () => {
                     <AccountBalanceWalletIcon sx={{ fontSize: 22 }} />
                   </div>
                 </div>
-                <div className="sds-kpi-value">
-                  {formatINR(incomeStats.monthTotal || salesSummaryMetrics.avgRevenue)}
+                <div className="sds-kpi-value font-number">
+                  {formatINR(Number(incomeStats.monthTotal || incomeStats.month || 0))}
                 </div>
                 <div className="sds-kpi-subtext">
-                  <span className="sds-kpi-pill positive">Active Target</span>
-                  <span>Avg: {formatINR(salesSummaryMetrics.avgRevenue)}/mo</span>
+                  <span className="sds-kpi-pill positive">Gross Monthly</span>
+                  <span className="font-number">Order Vol: {formatINR(incomeStats.month || 0)}</span>
                 </div>
               </div>
             </Grid>
@@ -763,12 +747,12 @@ const Dashboard = () => {
                     <ShoppingCartIcon sx={{ fontSize: 22 }} />
                   </div>
                 </div>
-                <div className="sds-kpi-value">
-                  {dashboardSummary?.totalOrders || ordersRes?.orders?.length || 0}
+                <div className="sds-kpi-value font-number">
+                  {dashboardSummary?.totalOrders ?? ordersRes?.orders?.length ?? 0}
                 </div>
                 <div className="sds-kpi-subtext">
-                  <span className="sds-kpi-pill positive">{fulfillmentRate}% Fulfillment</span>
-                  <span>{dashboardSummary?.pendingOrders || 0} Pending</span>
+                  <span className="sds-kpi-pill positive font-number">{fulfillmentRate}% Fulfillment</span>
+                  <span className="font-number">{dashboardSummary?.pendingOrders ?? 0} Pending</span>
                 </div>
               </div>
             </Grid>
@@ -782,8 +766,8 @@ const Dashboard = () => {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <span className="sds-kpi-label">Silk Catalog & Weaves</span>
-                    <div style={{ fontSize: '1.45rem', fontWeight: 700, color: '#1A1615', marginTop: 2 }}>
-                      {dashboardSummary?.totalProducts || 64} Handcrafted Items
+                    <div className="sds-kpi-value font-number" style={{ fontSize: '1.45rem', fontWeight: 700, color: '#1A1615', marginTop: 2 }}>
+                      {dashboardSummary?.totalProducts ?? 0} Handcrafted Items
                     </div>
                     <span style={{ fontSize: '12px', color: '#6b5f5a' }}>
                       Across {categoriesList.length} silk collections & temple sets
@@ -806,11 +790,11 @@ const Dashboard = () => {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <span className="sds-kpi-label">Registered Connoisseurs</span>
-                    <div style={{ fontSize: '1.45rem', fontWeight: 700, color: '#1A1615', marginTop: 2 }}>
-                      {dashboardSummary?.totalUsers || usersList.length || 0} Patrons
+                    <div className="sds-kpi-value font-number" style={{ fontSize: '1.45rem', fontWeight: 700, color: '#1A1615', marginTop: 2 }}>
+                      {dashboardSummary?.totalCustomers ?? dashboardSummary?.totalUsers ?? usersList.length ?? 0} Patrons
                     </div>
                     <span style={{ fontSize: '12px', color: '#2e7d32', fontWeight: 600 }}>
-                      +18% Active returning clientele
+                      Active registered patrons
                     </span>
                   </div>
                   <IconButton
@@ -833,8 +817,8 @@ const Dashboard = () => {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <span className="sds-kpi-label">Actionable Queue</span>
-                    <div style={{ fontSize: '1.45rem', fontWeight: 700, color: '#1A1615', marginTop: 2 }}>
-                      {lowStockList.length} Low Stock / {dashboardSummary?.pendingExchanges || 0} Exchanges
+                    <div className="sds-kpi-value font-number" style={{ fontSize: '1.45rem', fontWeight: 700, color: '#1A1615', marginTop: 2 }}>
+                      {lowStockList.length} Low Stock / {dashboardSummary?.pendingExchanges ?? 0} Exchanges
                     </div>
                     <span style={{ fontSize: '12px', color: lowStockList.length > 0 ? '#c62828' : '#2e7d32', fontWeight: 600 }}>
                       {lowStockList.length > 0 ? 'Restocking required promptly' : 'Inventory levels optimal'}
@@ -842,7 +826,7 @@ const Dashboard = () => {
                   </div>
                   <IconButton
                     size="small"
-                    onClick={() => navigate('/exchanges')}
+                    onClick={() => navigate('/exchange-manage')}
                     sx={{ bgcolor: '#FFF3E0', color: '#e65100', borderRadius: '2px' }}
                   >
                     <PublishedWithChangesIcon fontSize="small" />
@@ -1028,7 +1012,7 @@ const Dashboard = () => {
 
                   {/* Center Label */}
                   <div className="sds-donut-center-metric">
-                    <div className="sds-donut-center-value">
+                    <div className="sds-donut-center-value font-number">
                       {orderStatusDistribution.reduce((s, d) => s + d.value, 0)}
                     </div>
                     <div className="sds-donut-center-label">Total Orders</div>
@@ -1057,12 +1041,13 @@ const Dashboard = () => {
                         </Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body2" sx={{ fontSize: '12px', fontWeight: 700, color: '#1A1615' }}>
+                        <Typography variant="body2" className="font-number" sx={{ fontSize: '12px', fontWeight: 700, color: '#1A1615' }}>
                           {status.value}
                         </Typography>
                         <Chip
                           label={status.percent}
                           size="small"
+                          className="font-number"
                           sx={{ fontSize: '10px', height: 18, bgcolor: '#FFFFFF', color: '#6b5f5a', fontWeight: 600 }}
                         />
                       </Box>
@@ -1252,7 +1237,7 @@ const Dashboard = () => {
                           {item.name}
                         </Typography>
                       </Box>
-                      <Typography variant="body2" sx={{ fontSize: '12px', fontWeight: 700 }}>
+                      <Typography variant="body2" className="font-number" sx={{ fontSize: '12px', fontWeight: 700 }}>
                         {item.value} Orders
                       </Typography>
                     </Box>
@@ -1272,8 +1257,9 @@ const Dashboard = () => {
                     </p>
                   </div>
                   <Chip
-                    label={`Total: ${dashboardSummary?.totalUsers || usersList.length || 0} Patrons`}
+                    label={`Total: ${dashboardSummary?.totalCustomers ?? dashboardSummary?.totalUsers ?? usersList.length ?? 0} Patrons`}
                     size="small"
+                    className="font-number"
                     sx={{ bgcolor: '#E8F5E9', color: '#2e7d32', fontWeight: 700, borderRadius: '2px' }}
                   />
                 </div>
@@ -1380,12 +1366,13 @@ const Dashboard = () => {
                                 </div>
                               </td>
                               <td>
-                                <Chip label={item.pSku || 'NO-SKU'} size="small" variant="outlined" sx={{ borderRadius: '2px', fontSize: '11px' }} />
+                                <Chip label={item.pSku || 'NO-SKU'} size="small" variant="outlined" className="font-number" sx={{ borderRadius: '2px', fontSize: '11px' }} />
                               </td>
                               <td style={{ textAlign: 'center' }}>
                                 <Chip
                                   label={`${stock} pcs`}
                                   size="small"
+                                  className="font-number"
                                   sx={{
                                     bgcolor: isCritical ? '#FFEBEE' : '#FFF3E0',
                                     color: isCritical ? '#c62828' : '#e65100',
@@ -1394,7 +1381,7 @@ const Dashboard = () => {
                                   }}
                                 />
                               </td>
-                              <td style={{ textAlign: 'center', color: '#7A6E65', fontSize: '12px' }}>
+                              <td className="font-number" style={{ textAlign: 'center', color: '#7A6E65', fontSize: '12px' }}>
                                 {item.lowStockThreshold || 10}
                               </td>
                               <td style={{ textAlign: 'right' }}>
@@ -1576,7 +1563,7 @@ const Dashboard = () => {
                         return (
                           <tr key={order._id}>
                             <td>
-                              <span style={{ fontWeight: 700, color: '#6D1734', letterSpacing: '0.04em' }}>
+                              <span className="font-number" style={{ fontWeight: 700, color: '#6D1734', letterSpacing: '0.04em' }}>
                                 #{String(order._id).slice(-6).toUpperCase()}
                               </span>
                             </td>
@@ -1584,12 +1571,12 @@ const Dashboard = () => {
                               <div style={{ fontWeight: 600, color: '#1A1615' }}>
                                 {order.shippingAddress?.name || order.user?.name || 'Customer'}
                               </div>
-                              <div style={{ fontSize: '11px', color: '#8C8075' }}>
+                              <div className="font-number" style={{ fontSize: '11px', color: '#8C8075' }}>
                                 {order.shippingAddress?.city || 'India'} • {order.shippingAddress?.phone || ''}
                               </div>
                             </td>
                             <td>
-                              <span style={{ fontWeight: 700, color: '#1A1615' }}>
+                              <span className="font-number" style={{ fontWeight: 700, color: '#1A1615' }}>
                                 {formatINR(order.finalAmount || 0)}
                               </span>
                             </td>
@@ -1607,7 +1594,7 @@ const Dashboard = () => {
                                 sx={{ bgcolor: chipBg, color: chipColor, fontWeight: 700, borderRadius: '2px', fontSize: '11px' }}
                               />
                             </td>
-                            <td style={{ color: '#6b5f5a', fontSize: '12px' }}>
+                            <td className="font-number" style={{ color: '#6b5f5a', fontSize: '12px' }}>
                               {new Date(order.createdAt).toLocaleDateString('en-IN', {
                                 month: 'short',
                                 day: 'numeric',

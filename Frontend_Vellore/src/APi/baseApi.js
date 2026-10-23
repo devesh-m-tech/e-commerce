@@ -92,8 +92,12 @@ export const orderService = {
 
 // Category APIs
 export const categoryService = {
-  getAllCategories: () => axiosInstance.get('/category/all').then(res => res.data),
-  getCategoryById: (id) => axiosInstance.get(`/category/${id}`).then(res => res.data)
+  getAllCategories: () =>
+    axiosInstance.get('/category/all').then((res) => {
+      const list = Array.isArray(res.data) ? res.data : (res.data?.categories || []);
+      return list.filter((c) => (c.cStatus || 'active').toLowerCase() === 'active');
+    }),
+  getCategoryById: (id) => axiosInstance.get(`/category/${id}`).then((res) => res.data)
 };
 
 // User APIs

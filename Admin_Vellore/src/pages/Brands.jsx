@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box,
   Button,
@@ -18,13 +18,23 @@ import {
   DialogContent,
   DialogActions,
   Input,
+  TablePagination,
+  CircularProgress,
+  Avatar,
+  Tooltip,
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import * as XLSX from 'xlsx';
 import { toast } from 'react-toastify';
 import { createBrand, getAllBrands, updateBrand, deleteBrand } from '../api/brandApi';
+import AdminPageHeader from '../components/common/AdminPageHeader';
+import AdminTableToolbar from '../components/common/AdminTableToolbar';
+import AdminTableEmptyState from '../components/common/AdminTableEmptyState';
 
 const Brands = () => {
   const [brands, setBrands] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
@@ -34,6 +44,9 @@ const Brands = () => {
   });
   const [previewUrl, setPreviewUrl] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // Fetch brands on component mount
   useEffect(() => {
@@ -43,6 +56,7 @@ const Brands = () => {
   // Fetch all brands
   const fetchBrands = async () => {
     try {
+      setLoading(true);
       const data = await getAllBrands();
       const brandList = Array.isArray(data)
         ? data
@@ -53,7 +67,34 @@ const Brands = () => {
     } catch (error) {
       setBrands([]);
       toast.error(error.message || 'Error fetching brands');
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const filteredBrands = useMemo(() => {
+    const list = Array.isArray(brands) ? brands : [];
+    return list.filter((brand) => {
+      const q = (searchQuery || '').toLowerCase();
+      return (brand?.name || '').toLowerCase().includes(q);
+    });
+  }, [brands, searchQuery]);
+
+  const paginatedBrands = useMemo(() => {
+    const startIndex = page * rowsPerPage;
+    return filteredBrands.slice(startIndex, startIndex + rowsPerPage);
+  }, [filteredBrands, page, rowsPerPage]);
+
+  const handleExportToExcel = () => {
+    const exportData = (brands || []).map((b) => ({
+      ID: b._id,
+      'Brand Name': b.name,
+      'Created At': b.createdAt ? new Date(b.createdAt).toLocaleDateString() : '',
+    }));
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Brands');
+    XLSX.writeFile(wb, `brands_list_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
   };
 
   // Handle form input changes
@@ -148,72 +189,116 @@ const Brands = () => {
   };
 
   return (
-    <Box p={3} sx={{ bgcolor: '#FAF7F2', minHeight: '100vh' }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography
-          variant="h5"
-          component="h1"
-          sx={{
-            fontFamily: "'Playfair Display', Georgia, serif",
-            color: "primary.main",
-            fontWeight: 600,
-            fontSize: "1.75rem",
-            letterSpacing: "0.5px"
-          }}
-        >
-          Brand Management
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={() => handleOpen()}
-          sx={{
-            borderRadius: "2px",
-            textTransform: "uppercase",
-            fontWeight: 600,
-            letterSpacing: "1px",
-            px: 3,
-            py: 1
-          }}
-        >
-          Add Brand
-        </Button>
-      </Box>
+    <Box className="admin-page-container">
+      <AdminPageHeader
+        title="Brand Management"
+        subtitle="Manage heritage silk loom guilds, artisanal partners, and hallmark labels"
+        icon={LocalOfferIcon}
+        badges={[
+          { label: `Total Brands: ${(brands || []).length}`, color: 'default' },
+        ]}
+        onExport={handleExportToExcel}
+        primaryAction={{
+          label: 'Add Brand',
+          icon: <AddIcon />,
+          onClick: () => handleOpen(),
+        }}
+      />
 
-      <TableContainer component={Paper} sx={{ borderRadius: "2px", border: "1px solid #EDE2D2", boxShadow: "0 2px 8px rgba(40,35,33,0.03)" }}>
-        <Table>
-          <TableHead sx={{ bgcolor: "#FAF7F2" }}>
-            <TableRow>
-              <TableCell sx={{ color: "primary.main", fontWeight: 700, textTransform: "uppercase", fontSize: "0.75rem", letterSpacing: "1px" }}>Logo</TableCell>
-              <TableCell sx={{ color: "primary.main", fontWeight: 700, textTransform: "uppercase", fontSize: "0.75rem", letterSpacing: "1px" }}>Name</TableCell>
-              <TableCell align="right" sx={{ color: "primary.main", fontWeight: 700, textTransform: "uppercase", fontSize: "0.75rem", letterSpacing: "1px" }}>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {Array.isArray(brands) && brands.map((brand) => (
-              <TableRow key={brand._id}>
-                <TableCell>
-                  <img
-                    src={brand.logo}
-                    alt={brand.name}
-                    style={{ width: '50px', height: '50px', objectFit: 'contain' }}
-                  />
-                </TableCell>
-                <TableCell>{brand.name}</TableCell>
-                <TableCell align="right">
-                  <IconButton onClick={() => handleOpen(brand)} color="primary">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleDeleteClick(brand)} color="error">
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
+      <AdminTableToolbar
+        searchPlaceholder="Search brands by name..."
+        searchQuery={searchQuery}
+        onSearchChange={(val) => {
+          setSearchQuery(val);
+          setPage(0);
+        }}
+        totalCount={(brands || []).length}
+        filteredCount={filteredBrands.length}
+        onResetFilters={() => {
+          setSearchQuery('');
+          setPage(0);
+        }}
+      />
+
+      <Paper className="admin-table-paper">
+        <TableContainer>
+          <Table>
+            <TableHead className="admin-table-head">
+              <TableRow>
+                <TableCell className="admin-table-th" width="100px">Logo</TableCell>
+                <TableCell className="admin-table-th">Brand Name</TableCell>
+                <TableCell className="admin-table-th" align="right" width="140px">Actions</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={3} align="center" sx={{ py: 6 }}>
+                    <CircularProgress sx={{ color: '#6D1734' }} />
+                  </TableCell>
+                </TableRow>
+              ) : paginatedBrands.length === 0 ? (
+                <AdminTableEmptyState
+                  colSpan={3}
+                  title="No brands found"
+                  subtitle="No brands match your search query."
+                  onReset={() => {
+                    setSearchQuery('');
+                    setPage(0);
+                  }}
+                />
+              ) : (
+                paginatedBrands.map((brand) => (
+                  <TableRow key={brand._id} className="admin-table-row" hover>
+                    <TableCell className="admin-table-cell">
+                      {brand.logo ? (
+                        <Avatar
+                          src={brand.logo}
+                          alt={brand.name}
+                          variant="rounded"
+                          sx={{ width: 44, height: 44, border: '1px solid #EDE2D2', bgcolor: '#FAF7F2' }}
+                        />
+                      ) : (
+                        <Avatar variant="rounded" sx={{ width: 44, height: 44, bgcolor: 'rgba(109,23,52,0.1)', color: '#6D1734', fontWeight: 700 }}>
+                          {brand.name?.charAt(0) || 'B'}
+                        </Avatar>
+                      )}
+                    </TableCell>
+                    <TableCell className="admin-table-cell" sx={{ fontWeight: 600, color: '#282321' }}>
+                      {brand.name}
+                    </TableCell>
+                    <TableCell className="admin-table-cell" align="right">
+                      <Tooltip title="Edit Brand">
+                        <IconButton onClick={() => handleOpen(brand)} sx={{ color: '#6D1734' }} size="small">
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete Brand">
+                        <IconButton onClick={() => handleDeleteClick(brand)} color="error" size="small">
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          component="div"
+          count={filteredBrands.length}
+          page={page}
+          onPageChange={(e, newPage) => setPage(newPage)}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+          rowsPerPageOptions={[10, 25, 50]}
+          className="admin-pagination font-number"
+        />
+      </Paper>
 
       {/* Create/Edit Modal */}
       <Modal
