@@ -62,6 +62,8 @@ import { comboApi } from "../api/comboApi";
 import { userApi } from "../api/userApi";
 import { useOrderNotifications } from "../context/OrderNotificationContext";
 import { useSnackbar } from "notistack";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import { resendOrderInvoice } from "../api/whatsappApi";
 
 const getStatusIcon = (status) => {
   if (!status) return <ShoppingCartIcon fontSize="small" />;
@@ -1146,6 +1148,26 @@ const Orders = () => {
     }, 250);
   };
 
+  const [waSending, setWaSending] = useState(false);
+
+  const handleResendWhatsApp = async (order) => {
+    if (!order) return;
+    const targetPhone = order.shippingAddress?.contact || order.shippingAddress?.mobile;
+    setWaSending(true);
+    try {
+      const res = await resendOrderInvoice(order._id);
+      if (res.success) {
+        enqueueSnackbar(`WhatsApp invoice queued for delivery to ${targetPhone || 'customer'}!`, { variant: "success" });
+      } else {
+        enqueueSnackbar(res.message || "Failed to send WhatsApp invoice", { variant: "error" });
+      }
+    } catch (err) {
+      enqueueSnackbar(err.message || "Error dispatching WhatsApp invoice", { variant: "error" });
+    } finally {
+      setWaSending(false);
+    }
+  };
+
   // Modify handlePrint to include responsive styles and duplicate prevention
   const handlePrint = () => {
     if (!selectedOrder) return;
@@ -1445,6 +1467,7 @@ const Orders = () => {
                 <table>
                   <thead>
                     <tr>
+                      <th style="width: 60px; text-align: center;">Image</th>
                       <th>Product</th>
                       <th>Quantity</th>
                       <th>Price</th>
@@ -1457,6 +1480,8 @@ const Orders = () => {
                       const product = productDetails[item.product];
                       const isCombo = item.product?.startsWith("combo-");
                       const variant = variantDetails[item.variant];
+                      const rawImg = product?.pImage?.[0] || product?.image || "";
+                      const img = typeof rawImg === "string" ? rawImg : rawImg?.url || "";
                       
                       // Build variant display text
                       let variantText = "";
@@ -1475,6 +1500,13 @@ const Orders = () => {
 
                       return `
                       <tr>
+                        <td style="text-align: center; vertical-align: middle;">
+                          ${
+                            img
+                              ? `<img src="${img}" alt="" style="width: 44px; height: 44px; object-fit: cover; border-radius: 4px; border: 1px solid #e2e8f0; display: block; margin: 0 auto;" onerror="this.style.display='none';" />`
+                              : `<div style="width: 44px; height: 44px; background: #f1f5f9; border-radius: 4px; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #94a3b8;">No img</div>`
+                          }
+                        </td>
                         <td>
                           ${
                             isCombo
@@ -1996,6 +2028,17 @@ const Orders = () => {
               <EditIcon sx={{ mr: 1 }} /> Cancel Order
             </MenuItem>
           )}
+        {selectedOrderForMenu && (
+          <MenuItem
+            onClick={() => {
+              const ord = selectedOrderForMenu;
+              handleMenuClose();
+              handleResendWhatsApp(ord);
+            }}
+          >
+            <WhatsAppIcon sx={{ mr: 1, color: "#25D366" }} /> Send WhatsApp Invoice
+          </MenuItem>
+        )}
       </Menu>
 
       {/* Order Details Dialog */}
@@ -2705,6 +2748,23 @@ const Orders = () => {
             sx={{ mr: 1, borderRadius: 2, textTransform: "none" }}
           >
             Invoice (A4)
+          </Button>
+          <Button
+            onClick={() => handleResendWhatsApp(selectedOrder)}
+            disabled={waSending}
+            variant="outlined"
+            startIcon={<WhatsAppIcon sx={{ color: "#25D366" }} />}
+            sx={{
+              mr: 1,
+              borderRadius: 2,
+              textTransform: "none",
+              borderColor: "#25D366",
+              color: "#128C7E",
+              fontWeight: 600,
+              "&:hover": { borderColor: "#128C7E", bgcolor: "rgba(37, 211, 102, 0.08)" },
+            }}
+          >
+            {waSending ? "Sending..." : "WhatsApp Invoice"}
           </Button>
           <Button
             onClick={handleCloseDialog}

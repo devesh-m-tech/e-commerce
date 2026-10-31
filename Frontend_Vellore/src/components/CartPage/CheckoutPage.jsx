@@ -264,7 +264,7 @@ const SummaryStep = ({
   );
 };
 
-const PaymentStep = ({ selectedPayment, setSelectedPayment, isProcessing, handlePlaceOrder, cartSummary, formatINR }) => (
+const PaymentStep = ({ selectedPayment, setSelectedPayment, isProcessing, handlePlaceOrder, cartSummary, formatINR, whatsappConsent, setWhatsappConsent }) => (
   <div className="checkout-card">
     <div className="checkout-card-header">
       <h3>Payment Options</h3>
@@ -292,6 +292,35 @@ const PaymentStep = ({ selectedPayment, setSelectedPayment, isProcessing, handle
         </div>
       </div>
 
+      {/* WhatsApp Updates Opt-in */}
+      <div
+        style={{
+          marginTop: '16px',
+          padding: '14px 16px',
+          background: '#f0fdf4',
+          border: '1px solid #bbf7d0',
+          borderRadius: '6px',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '12px',
+          cursor: 'pointer'
+        }}
+        onClick={() => setWhatsappConsent(!whatsappConsent)}
+      >
+        <input
+          type="checkbox"
+          id="whatsapp-optin"
+          checked={whatsappConsent}
+          onChange={(e) => setWhatsappConsent(e.target.checked)}
+          style={{ marginTop: '3px', cursor: 'pointer', accentColor: '#25D366', width: '16px', height: '16px' }}
+        />
+        <label htmlFor="whatsapp-optin" style={{ cursor: 'pointer', fontSize: '13px', color: '#166534', lineHeight: 1.4 }}>
+          <strong style={{ display: 'block', color: '#14532d', marginBottom: '2px' }}>
+            💬 Receive Order Updates & Tax Invoice on WhatsApp
+          </strong>
+          Get immediate booking confirmation, downloadable GST PDF invoice, and live courier tracking alerts via WhatsApp.
+        </label>
+      </div>
     </div>
   </div>
 );
@@ -551,6 +580,7 @@ const CheckoutPage = () => {
 
   // Payment
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [whatsappConsent, setWhatsappConsent] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Delivery data
@@ -1242,7 +1272,8 @@ const CheckoutPage = () => {
         shippingfee: cartSummary.shippingfee,
         platformFee: cartSummary.platformFee,
         items: cartItems, // Send the current items (supports selective Buy Now)
-        checkoutType: location.state?.isFromCart === false ? "BUY_NOW" : "CART"
+        checkoutType: location.state?.isFromCart === false ? "BUY_NOW" : "CART",
+        whatsappOptIn: whatsappConsent
       };
 
       const orderresult = await cartApi.PlaceOrder(orderData);
@@ -1392,6 +1423,8 @@ const CheckoutPage = () => {
                 handlePlaceOrder={handlePlaceOrder}
                 cartSummary={cartSummary}
                 formatINR={formatINR}
+                whatsappConsent={whatsappConsent}
+                setWhatsappConsent={setWhatsappConsent}
               />
             )}
           </div>

@@ -24,6 +24,7 @@ import Exchanges from './pages/Exchanges';
 import Reports from './pages/Reports';
 import Banners from './pages/Banners';
 import Settings from './pages/Settings';
+import WhatsAppLogs from './pages/WhatsAppLogs';
 // import Offers from './pages/Offers';
 import { SnackbarProvider } from 'notistack';
 import { OrderNotificationProvider } from './context/OrderNotificationContext';
@@ -284,6 +285,7 @@ const App = () => {
                 <Route path="brands" element={<Brands />} />
                 <Route path="blog" element={<Blog />} />
                 <Route path="settings" element={<Settings />} />
+                <Route path="whatsapp-logs" element={<WhatsAppLogs />} />
               </Route>
 
               {/* Vendor Routes */}

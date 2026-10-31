@@ -47,7 +47,7 @@ const NAV_LINKS = [
   { label: 'Bridal Collection', path: '/category/cat_bridal_wear' },
   { label: "Women's Wear", path: '/category/cat_womens_wear' },
   { label: 'Jewellery', path: '/category/cat_jewellery' },
-  { label: 'Offers', path: '/deals' },
+  { label: 'Offers', path: '/deals', isOffer: true },
   { label: 'About Us', path: '/about-us' },
 ];
 
@@ -88,16 +88,37 @@ const MobileDrawer = ({ isOpen, onClose, isLoggedIn, onOpenLogout }) => {
           {/* Nav links */}
           <nav className="sds-drawer-nav-list" aria-label="Mobile navigation">
             <div className="sds-drawer-section-title">Collections</div>
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className="sds-drawer-nav-link"
-                onClick={onClose}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {NAV_LINKS.map((link) => {
+              if (link.isOffer) {
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className="sds-drawer-nav-link sds-drawer-nav-link-offer"
+                    onClick={onClose}
+                  >
+                    <span className="sds-drawer-offer-content">
+                      <Sparkles size={16} className="sds-offer-icon" />
+                      <span className="sds-offer-text">{link.label}</span>
+                    </span>
+                    <span className="sds-offer-badge">
+                      HOT
+                      <span className="sds-offer-ping" />
+                    </span>
+                  </Link>
+                );
+              }
+              return (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className="sds-drawer-nav-link"
+                  onClick={onClose}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
 
             <div className="sds-drawer-section-title" style={{ marginTop: '12px' }}>Customer Care</div>
             {DRAWER_HELP_LINKS.map((link) => (
@@ -507,15 +528,36 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
 
             {/* Center nav links (desktop) */}
             <nav className="sds-nav-links" aria-label="Site navigation">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`sds-nav-link${isActive(link.path) ? ' active' : ''}`}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {NAV_LINKS.map((link) => {
+                const active = isActive(link.path);
+                if (link.isOffer) {
+                  return (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      className={`sds-nav-link sds-nav-link-offer${active ? ' active' : ''}`}
+                    >
+                      <span className="sds-offer-content">
+                        <Sparkles size={13} className="sds-offer-icon" />
+                        <span className="sds-offer-text">{link.label}</span>
+                        <span className="sds-offer-badge">
+                          HOT
+                          <span className="sds-offer-ping" />
+                        </span>
+                      </span>
+                    </Link>
+                  );
+                }
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`sds-nav-link${active ? ' active' : ''}`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </nav>
 
             {/* Right utilities */}

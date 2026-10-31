@@ -17,6 +17,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import SettingsIcon from '@mui/icons-material/Settings';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { useOrderNotifications } from '../context/OrderNotificationContext';
 
 const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
@@ -37,6 +38,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     { text: 'Deals', icon: <ShoppingBasketIcon />, path: '/deals' },
     { text: 'Shipping', icon: <LocalShippingIcon />, path: '/shipping' },
     { text: 'Admin Users', icon: <AdminPanelSettingsIcon />, path: '/admin-users' },
+    { text: 'WhatsApp Logs', icon: <WhatsAppIcon />, path: '/whatsapp-logs' },
     { text: 'Store Settings', icon: <SettingsIcon />, path: '/settings' },
   ];
 

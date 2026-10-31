@@ -35,6 +35,26 @@ const schema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    whatsappOptIn: {
+      type: Boolean,
+      default: false,
+    },
+    whatsappOptInAt: {
+      type: Date,
+      default: null,
+    },
+    whatsappOptInSource: {
+      type: String,
+      default: 'checkout',
+    },
+    whatsappOptOutAt: {
+      type: Date,
+      default: null,
+    },
+    whatsappMarketingOptIn: {
+      type: Boolean,
+      default: false,
+    },
     resetPasswordToken: {
       type: String,
       default: null,

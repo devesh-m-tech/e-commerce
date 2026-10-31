@@ -7,7 +7,8 @@ const instance = new Razorpay({
 });
 
 import crypto from 'crypto';
-
+import { Order } from "../models/order.js";
+import { notifyRefundProcessed } from "../services/whatsapp/whatsappNotifier.js";
 import razorpayModel from "../models/razorPay.js";
 export const checkout = async (req, res) => {
   try {
@@ -75,17 +76,22 @@ export const refund = async (req, res) => {
   const { amount } = req.body;
 
   try {
-    const order = await order.findById(orderId);
-    if (!order) {
+    const orderDoc = await Order.findById(orderId);
+    if (!orderDoc) {
       return res.status(404).json({ message: "Order not found" });
     } 
 
     const refund = await instance.payments.refund({
-      payment_id: order.paymentId,
+      payment_id: orderDoc.PaymentId || orderDoc.paymentId,
       amount: amount,
       speed: "normal",
     }); 
     console.log(`refund----107-----,paymentCtrl------>`, refund);
+
+    // Notify customer via WhatsApp
+    const refundRupees = amount ? (amount > 1000 && amount % 100 === 0 ? amount / 100 : amount) : (refund.amount ? refund.amount / 100 : 0);
+    notifyRefundProcessed(orderDoc, refundRupees).catch(err => console.error("WhatsApp refund notify error:", err));
+
     res.status(200).json({
       success: true,
       refund

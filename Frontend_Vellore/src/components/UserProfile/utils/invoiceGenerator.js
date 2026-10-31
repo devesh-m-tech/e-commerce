@@ -1,3 +1,45 @@
+import { transformImageUrl } from "../../../APi/utils";
+
+export const FALLBACK_PRODUCT_IMAGE =
+  "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%238C6D3E%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22background%3A%23faf8f5%22%3E%3Crect%20width%3D%2218%22%20height%3D%2218%22%20x%3D%223%22%20y%3D%223%22%20rx%3D%222%22%20ry%3D%222%22%2F%3E%3Ccircle%20cx%3D%228.5%22%20cy%3D%228.5%22%20r%3D%221.5%22%2F%3E%3Cpath%20d%3D%22m21%2015-5-5L5%2021%22%2F%3E%3C%2Fsvg%3E";
+
+export const getItemImageUrl = (item) => {
+  if (!item) return "";
+
+  let raw = "";
+
+  if (item.comboImage) {
+    raw = item.comboImage;
+  } else if (item.image) {
+    raw = item.image;
+  } else if (item.variantId?.image) {
+    raw = item.variantId.image;
+  } else if (item.product) {
+    const p = item.product;
+    if (Array.isArray(p.pImage) && p.pImage.length > 0) {
+      raw = p.pImage[0];
+    } else if (typeof p.pImage === "string" && p.pImage.trim()) {
+      raw = p.pImage.split(",")[0].trim();
+    } else if (p.pImage && typeof p.pImage === "object") {
+      raw = p.pImage.url || p.pImage.path || p.pImage.src || "";
+    } else if (Array.isArray(p.images) && p.images.length > 0) {
+      raw = p.images[0];
+    } else if (p.image) {
+      raw = p.image;
+    }
+  }
+
+  if (typeof raw === "object" && raw !== null) {
+    raw = raw.url || raw.path || raw.src || "";
+  }
+
+  if (typeof raw === "string" && raw.includes(",") && !raw.startsWith("http") && !raw.startsWith("data:")) {
+    raw = raw.split(",")[0].trim();
+  }
+
+  return raw ? transformImageUrl(raw) : "";
+};
+
 export const formatProfessionalDate = (dateString) => {
   if (!dateString) return "N/A";
   const date = new Date(dateString);
@@ -168,15 +210,62 @@ export const generateAndPrintInvoice = (order) => {
         letter-spacing: 0.5px;
       }
       .items-table td {
-        padding: 12px 14px;
+        padding: 10px 14px;
         font-size: 12px;
         border-bottom: 1px solid #e5e7eb;
-        vertical-align: top;
+        vertical-align: middle;
       }
       .items-table tr:nth-child(even) td {
         background: #fdfcfb;
       }
       .text-right { text-align: right !important; }
+      .text-center { text-align: center !important; }
+      .item-img-cell {
+        width: 64px;
+        text-align: center;
+        padding: 8px !important;
+      }
+      .item-thumb-box {
+        width: 50px;
+        height: 50px;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        background: #faf8f5;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        vertical-align: middle;
+      }
+      .item-thumb-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .item-desc-cell {
+        vertical-align: middle;
+      }
+      .item-title {
+        font-weight: 600;
+        color: #111827;
+        font-size: 13px;
+        line-height: 1.4;
+      }
+      .item-brand {
+        font-size: 11px;
+        color: #8C6D3E;
+        font-weight: 600;
+        margin-top: 2px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .item-variant {
+        font-size: 11px;
+        color: #6b7280;
+        margin-top: 2px;
+      }
       .summary-wrapper {
         display: flex;
         justify-content: flex-end;
@@ -210,8 +299,21 @@ export const generateAndPrintInvoice = (order) => {
         color: #6b7280;
       }
       @media print {
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          color-adjust: exact !important;
+        }
         body { padding: 0; background: #fff; }
         .invoice-card { border: none; padding: 10px; max-width: 100%; }
+        .item-thumb-box {
+          border: 1px solid #d1d5db !important;
+          background: #faf8f5 !important;
+        }
+        .item-thumb-img {
+          print-color-adjust: exact !important;
+          -webkit-print-color-adjust: exact !important;
+        }
       }
     </style>
   </head>
@@ -254,29 +356,46 @@ export const generateAndPrintInvoice = (order) => {
       <table class="items-table">
         <thead>
           <tr>
-            <th width="8%">#</th>
+            <th width="5%" class="text-center">#</th>
+            <th width="12%" class="text-center">Image</th>
             <th>Item Description</th>
             <th class="text-right" width="16%">Price</th>
             <th class="text-right" width="10%">Qty</th>
-            <th class="text-right" width="20%">Total</th>
+            <th class="text-right" width="18%">Total</th>
           </tr>
         </thead>
         <tbody>
           ${order.items
-            ?.map(
-              (item, idx) => `
+            ?.map((item, idx) => {
+              const imgUrl = getItemImageUrl(item) || FALLBACK_PRODUCT_IMAGE;
+              const productName = item.product?.pName || item.comboName || "Product";
+              const brand = item.product?.pBrand;
+              const safeAlt = (productName || "").replace(/"/g, "&quot;");
+              return `
             <tr>
-              <td>${idx + 1}</td>
-              <td>
-                <div style="font-weight: 600; color: #111827;">${item.product?.pName || "Product"}</div>
-                ${item.variantValue ? `<div style="font-size: 11px; color: #6b7280; margin-top: 2px;">Variant: ${item.variantValue}</div>` : ""}
+              <td class="text-center">${idx + 1}</td>
+              <td class="item-img-cell">
+                <div class="item-thumb-box">
+                  <img
+                    src="${imgUrl}"
+                    alt="${safeAlt}"
+                    class="item-thumb-img"
+                    loading="eager"
+                    onerror="this.onerror=null; this.src='${FALLBACK_PRODUCT_IMAGE}';"
+                  />
+                </div>
+              </td>
+              <td class="item-desc-cell">
+                <div class="item-title">${productName}</div>
+                ${brand ? `<div class="item-brand">${brand}</div>` : ""}
+                ${item.variantValue ? `<div class="item-variant">Variant: ${item.variantValue}</div>` : ""}
               </td>
               <td class="text-right">${numberFormat(item.price)}</td>
               <td class="text-right">${item.quantity || 1}</td>
-              <td class="text-right">${numberFormat((item.price || 0) * (item.quantity || 1))}</td>
+              <td class="text-right" style="font-weight: 600;">${numberFormat((item.price || 0) * (item.quantity || 1))}</td>
             </tr>
-          `
-            )
+          `;
+            })
             .join("")}
         </tbody>
       </table>
@@ -325,6 +444,50 @@ export const generateAndPrintInvoice = (order) => {
         <p style="margin-top: 4px; font-weight: 600; color: #6D1734;">Thank you for shopping with Shri Deepaalaya Silks!</p>
       </div>
     </div>
+    <script>
+      (function() {
+        var printed = false;
+        function doPrint() {
+          if (printed) return;
+          printed = true;
+          window.__invoicePrinted = true;
+          setTimeout(function() {
+            window.print();
+          }, 250);
+        }
+
+        function checkImages() {
+          var images = Array.prototype.slice.call(document.images);
+          if (images.length === 0) {
+            doPrint();
+            return;
+          }
+          var pending = images.length;
+          function onComplete() {
+            pending--;
+            if (pending <= 0) {
+              doPrint();
+            }
+          }
+          images.forEach(function(img) {
+            if (img.complete) {
+              onComplete();
+            } else {
+              img.addEventListener('load', onComplete);
+              img.addEventListener('error', onComplete);
+            }
+          });
+          // Safety timeout in case images take long or hang
+          setTimeout(doPrint, 1500);
+        }
+
+        if (document.readyState === 'complete') {
+          checkImages();
+        } else {
+          window.addEventListener('load', checkImages);
+        }
+      })();
+    </script>
   </body>
 </html>`;
 
@@ -333,8 +496,15 @@ export const generateAndPrintInvoice = (order) => {
     invoiceWindow.document.write(invoiceHtml);
     invoiceWindow.document.close();
     invoiceWindow.focus();
+    // Safety fallback in case child script is delayed or blocked
     setTimeout(() => {
-      invoiceWindow.print();
-    }, 300);
+      try {
+        if (!invoiceWindow.__invoicePrinted) {
+          invoiceWindow.print();
+        }
+      } catch (e) {
+        // Ignore cross-window errors
+      }
+    }, 1800);
   }
 };

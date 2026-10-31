@@ -50,6 +50,7 @@ import ExchangeRequestPage from "./components/Exchange/ExchangeRequestPage";
 import OrderTrackingPage from "./components/OrderTracking/OrderTrackingPage";
 import ContactUs from "./components/StaticPages/ContactUs";
 import AboutUs from "./components/StaticPages/AboutUs";
+import SdsWhatsAppButton from "./components/common/SdsWhatsAppButton";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -244,6 +245,7 @@ const App = () => {
           pauseOnHover
           theme="light"
         />
+        <SdsWhatsAppButton />
       </div>
     </SnackbarProvider>
   );

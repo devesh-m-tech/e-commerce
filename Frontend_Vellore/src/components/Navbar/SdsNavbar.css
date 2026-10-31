@@ -124,6 +124,167 @@
   width: 100%;
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   EXCLUSIVE "OFFERS" NAV ANIMATION (Eye-catching, luxury, interactive)
+   ══════════════════════════════════════════════════════════════════════ */
+.sds-nav-link.sds-nav-link-offer {
+  position: relative;
+  overflow: visible;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 241, 242, 0.95) 0%, rgba(254, 243, 199, 0.6) 100%);
+  border: 1px solid rgba(225, 29, 72, 0.28);
+  box-shadow: 0 1px 4px rgba(225, 29, 72, 0.08);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: sdsOfferGlow 2.8s ease-in-out infinite;
+}
+
+.sds-nav-link.sds-nav-link-offer:hover,
+.sds-nav-link.sds-nav-link-offer.active {
+  color: #be123c !important;
+  transform: translateY(-1px) scale(1.04);
+  background: linear-gradient(135deg, rgba(254, 226, 226, 0.98) 0%, rgba(254, 240, 138, 0.5) 100%);
+  border-color: rgba(225, 29, 72, 0.55);
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.22);
+}
+
+.sds-nav-link.sds-nav-link-offer::after {
+  display: none !important;
+}
+
+.sds-offer-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+}
+
+.sds-offer-icon {
+  color: #e11d48;
+  filter: drop-shadow(0 0 3px rgba(245, 158, 11, 0.7));
+  animation: sdsOfferSparkle 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.sds-offer-text {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: linear-gradient(90deg, #9f1239 0%, #e11d48 25%, #d97706 50%, #e11d48 70%, #9f1239 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #e11d48;
+  animation: sdsOfferShimmer 3s linear infinite;
+  display: inline-block;
+}
+
+.sds-offer-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 6px;
+  font-size: 8.5px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+  border-radius: 999px;
+  box-shadow: 0 2px 5px rgba(225, 29, 72, 0.35);
+  animation: sdsOfferBadgePulse 2s ease-in-out infinite;
+  margin-left: 1px;
+}
+
+.sds-offer-ping {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background-color: #e11d48;
+  animation: sdsOfferPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes sdsOfferShimmer {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes sdsOfferGlow {
+  0%, 100% {
+    box-shadow: 0 1px 4px rgba(225, 29, 72, 0.1), 0 0 0 0 rgba(225, 29, 72, 0);
+    border-color: rgba(225, 29, 72, 0.28);
+  }
+  50% {
+    box-shadow: 0 3px 12px rgba(225, 29, 72, 0.22), 0 0 10px 1px rgba(245, 158, 11, 0.25);
+    border-color: rgba(225, 29, 72, 0.55);
+  }
+}
+
+@keyframes sdsOfferSparkle {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.9;
+  }
+  25% {
+    transform: scale(1.25) rotate(-14deg);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(1.15) rotate(14deg);
+    opacity: 1;
+  }
+}
+
+@keyframes sdsOfferBadgePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes sdsOfferPing {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  70%, 100% {
+    transform: scale(1.8, 2.2);
+    opacity: 0;
+  }
+}
+
+/* ── Mobile Drawer Offers Link ── */
+.sds-drawer-nav-link.sds-drawer-nav-link-offer {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(255, 241, 242, 0.75) 0%, rgba(254, 243, 199, 0.45) 100%);
+  border-left: 3px solid #e11d48;
+  margin: 6px 16px;
+  border-radius: 8px;
+  padding: 12px 18px;
+  animation: sdsOfferGlow 2.8s ease-in-out infinite;
+}
+
+.sds-drawer-offer-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
 /* ── Right utilities ── */
 .sds-nav-utils {
   display: flex;

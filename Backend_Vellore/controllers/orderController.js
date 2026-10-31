@@ -14,6 +14,13 @@ import { User } from "../models/User.js";
 import { WalletTransaction } from "../models/wallet.js";
 import { shipfeeModelSchema } from "../models/shipfee.js";
 import { sendOrderAlert } from "../utils/smsNotification.js";
+import {
+  notifyOrderConfirmedWithInvoice,
+  notifyOwnerNewOrder,
+  notifyOrderShipped,
+  notifyOrderDelivered,
+  notifyOrderCancelled
+} from "../services/whatsapp/whatsappNotifier.js";
 import crypto from "crypto";
 
 const instance = new Razorpay({
@@ -221,6 +228,10 @@ export const createDirectOrder = async (req, res) => {
         image: product.pImage && product.pImage.length > 0 ? product.pImage[0] : null
       }
     });
+
+    // Send WhatsApp order confirmation + invoice & notify owner
+    notifyOrderConfirmedWithInvoice(order, req.user).catch(err => console.error("WhatsApp direct order notification error:", err));
+    notifyOwnerNewOrder(order).catch(err => console.error("WhatsApp owner notification error:", err));
 
     res.status(201).json({
       success: true,
@@ -456,6 +467,10 @@ export const createCartOrder = async (req, res) => {
       console.error("System: Failed to save order notification:", notifError);
     }
 
+    // Send WhatsApp order confirmation + invoice & notify owner
+    notifyOrderConfirmedWithInvoice(newOrder, req.user).catch(err => console.error("WhatsApp cart order notification error:", err));
+    notifyOwnerNewOrder(newOrder).catch(err => console.error("WhatsApp owner notification error:", err));
+
     res.status(201).json({
       success: true,
       message: "Order placed successfully",
@@ -671,6 +686,21 @@ export const updateOrderStatus = async (req, res) => {
         ? `Your order #${order._id} has been DELIVERED! Thank you for shopping with Shri Deepaalaya Silks.`
         : `Your order #${order._id} status is now ${orderStatus}.`;
       sendOrderAlert(customerPhone, msg);
+    }
+
+    // Trigger WhatsApp Cloud API notifications (Order confirmed / dispatched / delivered / cancelled)
+    try {
+      if (orderStatus === "CONFIRMED") {
+        notifyOrderConfirmedWithInvoice(order, order.user).catch(e => console.error("WhatsApp status CONFIRMED error:", e));
+      } else if (orderStatus === "DISPATCHED") {
+        notifyOrderShipped(order, trackingNumber || order.trackingInfo?.trackingNumber, order.trackingInfo?.courierName || "Standard Courier").catch(e => console.error("WhatsApp status DISPATCHED error:", e));
+      } else if (orderStatus === "DELIVERED") {
+        notifyOrderDelivered(order).catch(e => console.error("WhatsApp status DELIVERED error:", e));
+      } else if (orderStatus === "CANCELLED") {
+        notifyOrderCancelled(order, "Order cancelled by store administrator").catch(e => console.error("WhatsApp status CANCELLED error:", e));
+      }
+    } catch (waErr) {
+      console.error("WhatsApp notification trigger error:", waErr);
     }
 
     // Notification

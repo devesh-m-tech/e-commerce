@@ -26,6 +26,8 @@ import otpRoutes from "./routes/otpRoutes.js";
 import exchangeRoutes from "./routes/exchangeRoutes.js";
 import bannerRoutes from "./routes/bannerRoutes.js";
 import settingRoutes from "./routes/settingRoutes.js";
+import whatsappRoutes from "./routes/whatsappRoute.js";
+import { startWhatsAppWorker } from "./services/whatsapp/whatsappQueue.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -97,6 +99,7 @@ app.use("/api/exchange", exchangeRoutes);
 app.use("/api/otp", otpRoutes);
 app.use("/api/banners", bannerRoutes);
 app.use("/api/settings", settingRoutes);
+app.use("/api", whatsappRoutes);
 
 app.get('/getlog', (req, res) => {
   const logPath = path.join(__dirname, 'logs', 'app.log');
@@ -119,6 +122,8 @@ app.listen(port, async () => {
   try {
     await connectdb();
     console.log(`Server running  on port ${port}`);
+    // Start background WhatsApp message queue processor
+    startWhatsAppWorker();
   } catch (error) {
     console.error("Database connection error:", error);
   }

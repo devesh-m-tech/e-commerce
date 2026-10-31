@@ -69,6 +69,45 @@ const settingSchema = new mongoose.Schema(
       dispatchNotificationSms: { type: Boolean, default: true },
       deliveryConfirmationSms: { type: Boolean, default: true }
     },
+    whatsappSettings: {
+      enabled: { type: Boolean, default: true },
+      provider: { type: String, default: "cloud_api" },
+      businessPhoneNumber: { type: String, default: "+91 94432 18920" },
+      ownerPhoneNumbers: { type: [String], default: ["+91 94432 18920"] },
+      marketingEnabled: { type: Boolean, default: false },
+      events: {
+        orderConfirmationInvoice: {
+          enabled: { type: Boolean, default: true },
+          templateName: { type: String, default: "order_confirmation_invoice" },
+          status: { type: String, default: "approved" },
+        },
+        orderShipped: {
+          enabled: { type: Boolean, default: true },
+          templateName: { type: String, default: "order_shipped" },
+          status: { type: String, default: "approved" },
+        },
+        orderDelivered: {
+          enabled: { type: Boolean, default: true },
+          templateName: { type: String, default: "order_delivered" },
+          status: { type: String, default: "approved" },
+        },
+        orderCancelled: {
+          enabled: { type: Boolean, default: true },
+          templateName: { type: String, default: "order_cancelled" },
+          status: { type: String, default: "approved" },
+        },
+        refundProcessed: {
+          enabled: { type: Boolean, default: true },
+          templateName: { type: String, default: "refund_processed" },
+          status: { type: String, default: "approved" },
+        },
+        ownerNewOrderAlert: {
+          enabled: { type: Boolean, default: true },
+          templateName: { type: String, default: "owner_new_order_alert" },
+          status: { type: String, default: "approved" },
+        },
+      },
+    },
     storeOperations: {
       maintenanceMode: { type: Boolean, default: false },
       maintenanceNotice: {
@@ -101,3 +140,4 @@ const settingSchema = new mongoose.Schema(
 );
 
 export const Setting = mongoose.model("Setting", settingSchema);
+export default Setting;

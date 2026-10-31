@@ -33,9 +33,12 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import WallpaperIcon from '@mui/icons-material/Wallpaper';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import { Link } from 'react-router-dom';
 
 import AdminPageHeader from '../components/common/AdminPageHeader';
 import { getSettings, updateSettings, resetSettings, uploadHeroImage } from '../api/settingApi';
+import { sendTestWhatsAppMessage, getWhatsAppStatus } from '../api/whatsappApi';
 
 const defaultFormState = {
   storeDetails: {
@@ -111,6 +114,20 @@ const defaultFormState = {
       subtitle: 'A Good Looking, Comfortable Traditional Collection',
       tag: 'Handloom Heritage'
     }
+  },
+  whatsappSettings: {
+    enabled: true,
+    provider: 'cloud_api',
+    businessPhoneNumber: '+91 94432 18920',
+    ownerPhoneNumbers: ['+91 94432 18920'],
+    events: {
+      orderConfirmationInvoice: { enabled: true, templateName: 'order_confirmation_invoice' },
+      orderShipped: { enabled: true, templateName: 'order_shipped' },
+      orderDelivered: { enabled: true, templateName: 'order_delivered' },
+      orderCancelled: { enabled: true, templateName: 'order_cancelled' },
+      refundProcessed: { enabled: true, templateName: 'refund_processed' },
+      ownerNewOrderAlert: { enabled: true, templateName: 'owner_new_order_alert' },
+    }
   }
 };
 
@@ -123,7 +140,21 @@ const Settings = () => {
   const [form, setForm] = useState(defaultFormState);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [waStatus, setWaStatus] = useState(null);
+  const [testPhone, setTestPhone] = useState('+91 94432 18920');
+  const [sendingTest, setSendingTest] = useState(false);
   const fileInputRef = React.useRef(null);
+
+  const fetchWaStatus = async () => {
+    try {
+      const res = await getWhatsAppStatus();
+      if (res?.success) {
+        setWaStatus(res.status);
+      }
+    } catch (e) {
+      console.warn("Could not fetch WA status", e);
+    }
+  };
 
   const fetchSettingsData = async () => {
     try {
@@ -139,6 +170,14 @@ const Settings = () => {
           loyaltyWallet: { ...prev.loyaltyWallet, ...res.data.loyaltyWallet },
           inventoryAlerts: { ...prev.inventoryAlerts, ...res.data.inventoryAlerts },
           invoicingAndNotifications: { ...prev.invoicingAndNotifications, ...res.data.invoicingAndNotifications },
+          whatsappSettings: {
+            ...prev.whatsappSettings,
+            ...(res.data.whatsappSettings || {}),
+            events: {
+              ...prev.whatsappSettings?.events,
+              ...(res.data.whatsappSettings?.events || {})
+            }
+          },
           storeOperations: {
             ...prev.storeOperations,
             ...res.data.storeOperations,
@@ -162,7 +201,57 @@ const Settings = () => {
 
   useEffect(() => {
     fetchSettingsData();
+    fetchWaStatus();
   }, []);
+
+  const handleWhatsAppChange = (field, value) => {
+    setForm((prev) => ({
+      ...prev,
+      whatsappSettings: {
+        ...prev.whatsappSettings,
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleWhatsAppEventToggle = (eventName, enabled) => {
+    setForm((prev) => ({
+      ...prev,
+      whatsappSettings: {
+        ...prev.whatsappSettings,
+        events: {
+          ...prev.whatsappSettings?.events,
+          [eventName]: {
+            ...prev.whatsappSettings?.events?.[eventName],
+            enabled,
+          },
+        },
+      },
+    }));
+  };
+
+  const handleSendTestWhatsApp = async () => {
+    if (!testPhone.trim()) {
+      enqueueSnackbar("Please enter a valid phone number with country code", { variant: "warning" });
+      return;
+    }
+    setSendingTest(true);
+    try {
+      const res = await sendTestWhatsAppMessage({
+        recipientPhone: testPhone.trim(),
+        templateName: "order_confirmation_invoice",
+      });
+      if (res.success) {
+        enqueueSnackbar("Test template queued & dispatched successfully!", { variant: "success" });
+      } else {
+        enqueueSnackbar(res.message || "Test dispatch failed", { variant: "error" });
+      }
+    } catch (err) {
+      enqueueSnackbar(err.message || "Failed to trigger test template", { variant: "error" });
+    } finally {
+      setSendingTest(false);
+    }
+  };
 
   const handleNestedChange = (section, field, value) => {
     setForm((prev) => ({
@@ -369,6 +458,7 @@ const Settings = () => {
           <Tab icon={<Inventory2Icon sx={{ fontSize: 18 }} />} iconPosition="start" label="Inventory & Alerts" />
           <Tab icon={<NotificationsActiveIcon sx={{ fontSize: 18 }} />} iconPosition="start" label="Invoicing & SMS" />
           <Tab icon={<TuneIcon sx={{ fontSize: 18 }} />} iconPosition="start" label="Storefront & Operations" />
+          <Tab icon={<WhatsAppIcon sx={{ fontSize: 18 }} />} iconPosition="start" label="WhatsApp Business" />
         </Tabs>
 
         <Box sx={{ p: { xs: 2, md: 3 } }}>
@@ -1167,6 +1257,318 @@ const Settings = () => {
                     onChange={(e) => handleHeroChange('subtitle', e.target.value)}
                     helperText="Descriptive slogan below title"
                   />
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+
+          {/* TAB 5: WHATSAPP BUSINESS API */}
+          {activeTab === 5 && (
+            <Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2, mb: 2 }}>
+                <Box>
+                  <Typography variant="h6" sx={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 600, color: '#282321', mb: 0.5 }}>
+                    Meta WhatsApp Business Cloud API & Automations
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#6b5f5a' }}>
+                    Configure automated transactional notifications, branded PDF invoices, and owner alert dispatches.
+                  </Typography>
+                </Box>
+                <Button
+                  component={Link}
+                  to="/whatsapp-logs"
+                  variant="outlined"
+                  startIcon={<WhatsAppIcon sx={{ color: '#25D366' }} />}
+                  sx={{
+                    borderColor: '#25D366',
+                    color: '#128C7E',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    borderRadius: 2,
+                    '&:hover': { borderColor: '#128C7E', bgcolor: 'rgba(37, 211, 102, 0.08)' }
+                  }}
+                >
+                  View WhatsApp Message Logs →
+                </Button>
+              </Box>
+
+              {/* Service Health Card */}
+              <Paper sx={{ p: 2.5, mb: 3, bgcolor: '#FAF7F2', borderRadius: 2, border: '1px solid #EDE2D2' }}>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item xs={12} sm={8}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+                      <WhatsAppIcon sx={{ color: '#25D366', fontSize: 28 }} />
+                      <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#282321' }}>
+                        API Engine Status: {waStatus?.sandboxMode ? 'Sandbox Simulator Mode (Mock Provider)' : 'Official Meta Cloud API v21.0'}
+                      </Typography>
+                    </Box>
+                    <Typography variant="body2" sx={{ color: '#6b5f5a', mb: 1 }}>
+                      {waStatus?.sandboxMode
+                        ? 'Simulating WhatsApp message sends in development. Payloads are verified, invoices generated, and logs recorded in DB. Real Meta credentials can be added to .env at any time.'
+                        : 'Connected directly to Meta Graph API v21.0 for live verified template dispatches.'}
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                      <Chip
+                        label={waStatus?.sandboxMode ? 'Environment: Sandbox Mock' : 'Environment: Production Live'}
+                        size="small"
+                        sx={{ bgcolor: waStatus?.sandboxMode ? '#FEF3C7' : '#D1FAE5', color: waStatus?.sandboxMode ? '#92400E' : '#065F46', fontWeight: 600 }}
+                      />
+                      <Chip
+                        label="Template Language: en_US / ta"
+                        size="small"
+                        sx={{ bgcolor: '#F3E8FF', color: '#6B21A8', fontWeight: 600 }}
+                      />
+                      <Chip
+                        label="Invoice Engine: PDFKit Branded"
+                        size="small"
+                        sx={{ bgcolor: '#E0E7FF', color: '#3730A3', fontWeight: 600 }}
+                      />
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sm={4} sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={form.whatsappSettings?.enabled !== false}
+                          onChange={(e) => handleWhatsAppChange('enabled', e.target.checked)}
+                          color="success"
+                        />
+                      }
+                      label={
+                        <Typography sx={{ fontWeight: 700, color: form.whatsappSettings?.enabled !== false ? '#059669' : '#DC2626' }}>
+                          {form.whatsappSettings?.enabled !== false ? 'WhatsApp Active' : 'WhatsApp Paused'}
+                        </Typography>
+                      }
+                    />
+                  </Grid>
+                </Grid>
+              </Paper>
+
+              {/* Sender & Owner Configuration */}
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#282321', mb: 1 }}>
+                Store Sender & Alert Numbers
+              </Typography>
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Official WhatsApp Business Phone Number"
+                    value={form.whatsappSettings?.businessPhoneNumber || ''}
+                    onChange={(e) => handleWhatsAppChange('businessPhoneNumber', e.target.value)}
+                    helperText="International format e.g. +91 94432 18920 (Shri Deepaalaya Silks)"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Owner / Staff Order Alert Phone Numbers"
+                    value={Array.isArray(form.whatsappSettings?.ownerPhoneNumbers) ? form.whatsappSettings.ownerPhoneNumbers.join(', ') : (form.whatsappSettings?.ownerPhoneNumbers || '')}
+                    onChange={(e) => {
+                      const nums = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
+                      handleWhatsAppChange('ownerPhoneNumbers', nums);
+                    }}
+                    helperText="Comma-separated mobile numbers to receive immediate new order alerts"
+                  />
+                </Grid>
+              </Grid>
+
+              <Divider sx={{ my: 3 }} />
+
+              {/* Per-Event Toggles */}
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#282321', mb: 1 }}>
+                Automated Transactional Triggers
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#6b5f5a', mb: 2 }}>
+                Toggle which lifecycle stages send customer and internal WhatsApp notifications:
+              </Typography>
+
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                <Grid item xs={12} sm={6}>
+                  <Paper sx={{ p: 2, border: '1px solid #EDE2D2', borderRadius: 2 }}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={form.whatsappSettings?.events?.orderConfirmationInvoice?.enabled !== false}
+                          onChange={(e) => handleWhatsAppEventToggle('orderConfirmationInvoice', e.target.checked)}
+                          color="primary"
+                        />
+                      }
+                      label={
+                        <Box>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                            Order Confirmation + PDF Invoice
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: '#6b5f5a' }}>
+                            Triggers when order is placed. Attaches branded PDF tax invoice signed link.
+                          </Typography>
+                        </Box>
+                      }
+                    />
+                  </Paper>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Paper sx={{ p: 2, border: '1px solid #EDE2D2', borderRadius: 2 }}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={form.whatsappSettings?.events?.ownerNewOrderAlert?.enabled !== false}
+                          onChange={(e) => handleWhatsAppEventToggle('ownerNewOrderAlert', e.target.checked)}
+                          color="primary"
+                        />
+                      }
+                      label={
+                        <Box>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                            Owner / Boutique New Order Alert
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: '#6b5f5a' }}>
+                            Alerts owner mobile with customer name, items, and total amount for swift packaging.
+                          </Typography>
+                        </Box>
+                      }
+                    />
+                  </Paper>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Paper sx={{ p: 2, border: '1px solid #EDE2D2', borderRadius: 2 }}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={form.whatsappSettings?.events?.orderShipped?.enabled !== false}
+                          onChange={(e) => handleWhatsAppEventToggle('orderShipped', e.target.checked)}
+                          color="primary"
+                        />
+                      }
+                      label={
+                        <Box>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                            Order Dispatched / Shipped
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: '#6b5f5a' }}>
+                            Sends courier partner name, AWB tracking number, and tracking button.
+                          </Typography>
+                        </Box>
+                      }
+                    />
+                  </Paper>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Paper sx={{ p: 2, border: '1px solid #EDE2D2', borderRadius: 2 }}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={form.whatsappSettings?.events?.orderDelivered?.enabled !== false}
+                          onChange={(e) => handleWhatsAppEventToggle('orderDelivered', e.target.checked)}
+                          color="primary"
+                        />
+                      }
+                      label={
+                        <Box>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                            Order Delivered Confirmation
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: '#6b5f5a' }}>
+                            Confirms delivery and invites customer to review silk handloom quality.
+                          </Typography>
+                        </Box>
+                      }
+                    />
+                  </Paper>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Paper sx={{ p: 2, border: '1px solid #EDE2D2', borderRadius: 2 }}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={form.whatsappSettings?.events?.orderCancelled?.enabled !== false}
+                          onChange={(e) => handleWhatsAppEventToggle('orderCancelled', e.target.checked)}
+                          color="primary"
+                        />
+                      }
+                      label={
+                        <Box>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                            Order Cancellation Notice
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: '#6b5f5a' }}>
+                            Notifies customer of cancellation with reason and support helpline.
+                          </Typography>
+                        </Box>
+                      }
+                    />
+                  </Paper>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Paper sx={{ p: 2, border: '1px solid #EDE2D2', borderRadius: 2 }}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={form.whatsappSettings?.events?.refundProcessed?.enabled !== false}
+                          onChange={(e) => handleWhatsAppEventToggle('refundProcessed', e.target.checked)}
+                          color="primary"
+                        />
+                      }
+                      label={
+                        <Box>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                            Refund Processed Alert
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: '#6b5f5a' }}>
+                            Confirms refund amount and credit timeframe (5-7 business days).
+                          </Typography>
+                        </Box>
+                      }
+                    />
+                  </Paper>
+                </Grid>
+              </Grid>
+
+              <Divider sx={{ my: 3 }} />
+
+              {/* Instant Test Dispatcher */}
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#282321', mb: 1 }}>
+                Test Template Dispatch
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#6b5f5a', mb: 2 }}>
+                Send a sample order confirmation template to verify number delivery and formatting:
+              </Typography>
+
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={12} sm={6} md={4}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Test Recipient Mobile Number"
+                    value={testPhone}
+                    onChange={(e) => setTestPhone(e.target.value)}
+                    placeholder="+91 94432 18920"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Button
+                    variant="contained"
+                    disabled={sendingTest}
+                    onClick={handleSendTestWhatsApp}
+                    startIcon={sendingTest ? <CircularProgress size={16} color="inherit" /> : <WhatsAppIcon />}
+                    sx={{
+                      bgcolor: '#25D366',
+                      color: '#FFFFFF',
+                      fontWeight: 700,
+                      textTransform: 'none',
+                      borderRadius: 2,
+                      px: 2.5,
+                      '&:hover': { bgcolor: '#128C7E' },
+                    }}
+                  >
+                    Send Test Template
+                  </Button>
                 </Grid>
               </Grid>
             </Box>
