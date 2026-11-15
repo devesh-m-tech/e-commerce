@@ -244,7 +244,7 @@ const App = () => {
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
           <OrderNotificationProvider>
-            <Router>
+            <Router basename="/admin">
             <Routes>
               {/* Auth Routes */}
               <Route

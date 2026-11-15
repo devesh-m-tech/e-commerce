@@ -52,10 +52,18 @@ import ContactUs from "./components/StaticPages/ContactUs";
 import AboutUs from "./components/StaticPages/AboutUs";
 import SdsWhatsAppButton from "./components/common/SdsWhatsAppButton";
 
+const AdminRedirect = () => {
+  useEffect(() => {
+    window.location.reload();
+  }, []);
+  return null;
+};
+
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
   // currentPage state removed — SdsHomePage is self-contained
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
@@ -112,9 +120,10 @@ const App = () => {
     window.dispatchEvent(new Event("loginStateChanged"));
   };
 
-  // Hide the main nav on vendor/seller-only pages
+  // Hide the main nav on admin and vendor/seller-only pages
   const shouldHideNavbar = () => {
     return (
+      isAdminRoute ||
       location.pathname === "/SellerPage" ||
       location.pathname === "/SellerLogin" ||
       location.pathname.startsWith("/vendor")
@@ -130,6 +139,7 @@ const App = () => {
   // Function to check if footer should be hidden
   const shouldHideFooter = () => {
     return (
+      isAdminRoute ||
       location.pathname === "/SellerPage" ||
       location.pathname === "/SellerLogin" ||
       location.pathname.startsWith("/vendor")
@@ -157,13 +167,17 @@ const App = () => {
             <div className="sds-header-spacer" aria-hidden="true" />
           </>
         )}
-        <LoginModal
-          open={isLoginModalOpen}
-          onClose={() => setIsLoginModalOpen(false)}
-          onLoginSuccess={(status) => handleLogin(status)}
-        />
+        {!isAdminRoute && (
+          <LoginModal
+            open={isLoginModalOpen}
+            onClose={() => setIsLoginModalOpen(false)}
+            onLoginSuccess={(status) => handleLogin(status)}
+          />
+        )}
         <div className="main-content">
           <Routes>
+            <Route path="/admin/*" element={<AdminRedirect />} />
+            <Route path="/admin" element={<AdminRedirect />} />
             <Route path="/" element={<SdsHomePage />} />
             <Route path="/products" element={<ProductPage />} />
             <Route path="/combo" element={<NewCombo />} />
@@ -245,7 +259,7 @@ const App = () => {
           pauseOnHover
           theme="light"
         />
-        <SdsWhatsAppButton />
+        {!isAdminRoute && <SdsWhatsAppButton />}
       </div>
     </SnackbarProvider>
   );

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Check, Sparkles, Inbox } from 'lucide-react';
+import { Bell, Check, Inbox } from 'lucide-react';
 import { useNotifications } from '../../context/NotificationContext';
 import { formatDistanceToNow } from 'date-fns';
 import { transformImageUrl } from '../../APi/utils';
@@ -111,7 +111,7 @@ const NotificationBell = () => {
                       />
                     ) : (
                       <div className="sds-notif-icon-circle">
-                        <Sparkles size={14} color="#C5A15A" />
+                        <Bell size={14} color="#C5A15A" />
                       </div>
                     )}
                     {!notif.isRead && <span className="sds-unread-dot" aria-hidden="true" />}

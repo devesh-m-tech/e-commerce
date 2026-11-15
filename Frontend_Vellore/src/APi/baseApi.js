@@ -6,7 +6,8 @@ export const transformImageUrl = (imagePath) => {
     return imagePath;
   }
   const filename = imagePath.split('\\').pop().split('/').pop();
-  return `http://localhost:5000/uploads/${filename}`;
+  const serverUrl = (import.meta.env?.VITE_SERVER_URL || (import.meta.env?.VITE_API_BASE_URL || '').replace(/\/api\/?$/, '') || 'https://api.shreedeepalayasilks.com').replace(/\/+$/, '');
+  return `${serverUrl}/uploads/${filename}`;
 };
 
 // Product APIs

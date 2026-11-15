@@ -198,30 +198,6 @@ const Login = () => {
           Sign in to manage handpicked silk sarees, inventory, and orders.
         </Typography>
 
-        <Alert
-          severity="info"
-          sx={{
-            mb: 3,
-            textAlign: 'left',
-            borderRadius: '2px',
-            bgcolor: 'rgba(109, 23, 52, 0.04)',
-            color: '#282321',
-            border: '1px solid #EDE2D2',
-            '& .MuiAlert-icon': { color: '#6D1734' }
-          }}
-        >
-          <strong>Demo Admin:</strong> admin@shrideepaalayasilks.com / Admin@1234
-          <Box sx={{ mt: 0.5 }}>
-            <Button
-              size="small"
-              onClick={() => setFormData({ email: 'admin@shrideepaalayasilks.com', password: 'Admin@1234' })}
-              sx={{ textTransform: 'none', p: 0, minWidth: 'auto', color: '#6D1734', textDecoration: 'underline' }}
-            >
-              Autofill credentials
-            </Button>
-          </Box>
-        </Alert>
-
         {error && (
           <Alert severity="error" sx={{ mb: 2, borderRadius: '2px' }}>
             {error}

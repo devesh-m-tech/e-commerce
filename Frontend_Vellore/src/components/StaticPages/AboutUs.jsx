@@ -276,7 +276,6 @@ const AboutUs = () => {
                     <span className="sds-about-chip-stage">{step.stage}</span>
                     <span className="sds-about-chip-title">{step.title}</span>
                   </div>
-                  <span className="sds-about-chip-divider">✦</span>
                 </div>
               ))}
             </InfiniteMarquee>

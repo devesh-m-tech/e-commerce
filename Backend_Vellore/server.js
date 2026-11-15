@@ -59,12 +59,41 @@ const port = process.env.PORT || 5000;
 app.use(morgan("dev"));
 
 // Enable CORS with proper configuration
-// app.use(cors({
-//   origin: ["https://test.picknow.in", "https://mern.picknow.in/"], // Shop and admin ports
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-//   // allowedHeaders: ['Content-Type', 'Authorization']
-// }));
-app.use(cors())
+const rawOrigins = (process.env.ALLOWED_ORIGINS || '').split(',').map(o => o.trim().replace(/\/+$/, '')).filter(Boolean);
+
+const defaultOrigins = [
+  'https://shrideepalayasilks.com',
+  'https://www.shrideepalayasilks.com',
+  'https://shreedeepalayasilks.com',
+  'https://www.shreedeepalayasilks.com',
+  'https://api.shreedeepalayasilks.com',
+  'http://localhost:3000',
+  'https://api.shreedeepalayasilks.com',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:5000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174'
+];
+
+const allowedOrigins = Array.from(new Set([...defaultOrigins, ...rawOrigins]));
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    const cleanOrigin = origin.replace(/\/+$/, '');
+    if (allowedOrigins.includes(cleanOrigin) || process.env.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
+};
+
+app.use(cors(corsOptions));
 
 // Middleware to parse JSON requests
 app.use(express.json());

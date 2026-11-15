@@ -47,7 +47,7 @@ import {
   toggleBannerStatus,
 } from '../api/bannerApi';
 
-const BACKEND_BASE = (import.meta.env?.VITE_API_URL || 'http://localhost:5000/api').replace(/\/api\/?$/, '');
+const BACKEND_BASE = (import.meta.env?.VITE_API_URL || 'https://api.shreedeepalayasilks.com/api').replace(/\/api\/?$/, '');
 
 const resolveImageUrl = (img) => {
   if (!img) return '';

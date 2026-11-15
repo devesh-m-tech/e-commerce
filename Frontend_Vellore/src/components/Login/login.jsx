@@ -3,14 +3,9 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import axiosinstance from "../../APi/axiosInstance";
 import { userApi } from "../../APi/userApi";
 import { useSnackbar } from 'notistack';
-import { User, Mail, Lock, Phone, KeyRound, Sparkles, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { User, Mail, Lock, Phone, KeyRound, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import SdsLogo from "../common/SdsLogo";
 import "./login.css";
-
-const DEMO_CREDENTIALS = {
-  email: "priya.sharma@example.com",
-  password: "Demo@1234"
-};
 
 const Login = ({ onLogin, initialForm = "login" }) => {
   const navigate = useNavigate();
@@ -231,23 +226,6 @@ const Login = ({ onLogin, initialForm = "login" }) => {
           {/* ── 1. Sign In ── */}
           {activeForm === "login" && (
             <form onSubmit={handleLoginSubmit}>
-              {/* Fast Demo Credentials */}
-              <div
-                className="sds-demo-credentials-banner"
-                onClick={() => setFormData(prev => ({
-                  ...prev,
-                  email: DEMO_CREDENTIALS.email,
-                  password: DEMO_CREDENTIALS.password
-                }))}
-                title="Click to fill test credentials"
-              >
-                <div>
-                  <span className="sds-demo-label">✦ Fast Access (Click to Fill)</span>
-                  <span className="sds-demo-email">{DEMO_CREDENTIALS.email}</span>
-                </div>
-                <Sparkles size={16} color="#C5A15A" />
-              </div>
-
               <div className="sds-input-wrapper">
                 <span className="sds-input-icon"><Mail size={16} color="#C5A15A" /></span>
                 <input

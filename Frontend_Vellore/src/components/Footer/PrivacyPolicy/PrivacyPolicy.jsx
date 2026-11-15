@@ -17,7 +17,6 @@ import {
   CheckCircle2,
   AlertCircle,
   ChevronRight,
-  Sparkles,
   ArrowRight
 } from 'lucide-react';
 
@@ -68,7 +67,6 @@ const PrivacyPolicy = () => {
           </nav>
 
           <div className="sds-policy-badge">
-            <Sparkles size={14} className="sds-badge-sparkle" />
             <span>Shri Deepaalaya Silks • Vellore Heritage</span>
           </div>
 
@@ -398,7 +396,6 @@ const PrivacyPolicy = () => {
               <div className="sds-card-body">
                 <div className="sds-official-contact-box">
                   <div className="sds-contact-brand-title">
-                    <Sparkles size={16} className="sds-sparkle-gold" />
                     <div>
                       <h3>Shri Deepaalaya Silks</h3>
                       <p>Heritage Pure Silk Sarees & Bridal Trousseau</p>

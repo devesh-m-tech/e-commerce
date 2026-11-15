@@ -302,7 +302,8 @@ const Settings = () => {
     if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
       return url;
     }
-    return `http://localhost:5000${url.startsWith('/') ? '' : '/'}${url}`;
+    const backendBase = (import.meta.env?.VITE_API_URL || import.meta.env?.VITE_SERVER_URL || 'https://api.shreedeepalayasilks.com').replace(/\/api\/?$/, '');
+    return `${backendBase}${url.startsWith('/') ? '' : '/'}${url}`;
   };
 
   const handleAddressChange = (field, value) => {

@@ -13,7 +13,6 @@ import {
   FiArrowRight,
 } from "react-icons/fi";
 import { orderApi } from "../../APi/orderApi";
-import { Sparkles } from "lucide-react";
 import "./OrderTrackingPage.css";
 
 const STAGES = [
@@ -82,7 +81,6 @@ const OrderTrackingPage = () => {
         {/* Header */}
         <div className="sds-tracking-header">
           <div className="sds-tracking-eyebrow">
-            <Sparkles size={13} />
             <span>Live Dispatch Status</span>
           </div>
           <h1>Track Your Order</h1>

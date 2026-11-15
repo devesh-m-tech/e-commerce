@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { createPortal } from 'react-dom';
-import { Search, ShoppingCart, Heart, User, LogOut, Menu, X, ArrowRight, ChevronRight, Sparkles, Tag, Palette, Folder, Mic, MicOff } from 'lucide-react';
+import { Search, ShoppingCart, Heart, User, LogOut, Menu, X, ArrowRight, ChevronRight, Tag, Palette, Folder, Mic, MicOff } from 'lucide-react';
 import { useSnackbar } from 'notistack';
 import { cartApi } from '../../APi/cartApi';
 import { getWishlist } from '../../APi/userApi';
@@ -98,12 +98,7 @@ const MobileDrawer = ({ isOpen, onClose, isLoggedIn, onOpenLogout }) => {
                     onClick={onClose}
                   >
                     <span className="sds-drawer-offer-content">
-                      <Sparkles size={16} className="sds-offer-icon" />
                       <span className="sds-offer-text">{link.label}</span>
-                    </span>
-                    <span className="sds-offer-badge">
-                      HOT
-                      <span className="sds-offer-ping" />
                     </span>
                   </Link>
                 );
@@ -538,12 +533,7 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
                       className={`sds-nav-link sds-nav-link-offer${active ? ' active' : ''}`}
                     >
                       <span className="sds-offer-content">
-                        <Sparkles size={13} className="sds-offer-icon" />
                         <span className="sds-offer-text">{link.label}</span>
-                        <span className="sds-offer-badge">
-                          HOT
-                          <span className="sds-offer-ping" />
-                        </span>
                       </span>
                     </Link>
                   );
@@ -828,7 +818,7 @@ const SdsNavbar = ({ isLoggedIn: propIsLoggedIn, onLogout, openLoginModal }) => 
                           {searchResults.length > 0 && (
                             <div className="sds-dropdown-section">
                               <div className="sds-dropdown-section-header">
-                                <Sparkles size={13} className="sds-dropdown-section-icon" />
+                                <Tag size={13} className="sds-dropdown-section-icon" />
                                 <span>Handcrafted Sarees & Jewellery ({searchResults.length})</span>
                               </div>
                               <div className="sds-dropdown-product-list">

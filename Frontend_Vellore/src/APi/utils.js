@@ -50,7 +50,7 @@ export const transformImageUrl = (imagePath) => {
 
   const baseUrl = import.meta.env?.VITE_API_BASE_URL
     ? import.meta.env.VITE_API_BASE_URL.replace(/\/api\/?$/, '')
-    : (import.meta.env?.VITE_SERVER_URL || 'http://localhost:5000');
+    : (import.meta.env?.VITE_SERVER_URL || 'https://api.shreedeepalayasilks.com');
 
   // Normalize all backslashes to forward slashes
   let cleanPath = imagePath.replace(/\\/g, '/').trim();

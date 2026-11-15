@@ -7,7 +7,6 @@ import ModernLoader from "../Loading/ModernLoader";
 import Sidebar from "../ProductPage/Sidebar";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaFilter } from "react-icons/fa";
-import { Sparkles } from "lucide-react";
 import "../ProductPage/ProductPage.css";
 import "../ProductPage/SideBar.css";
 
@@ -389,7 +388,7 @@ const CategoryProducts = () => {
           ) : (
             <div className="empty-state">
               <div className="empty-state-icon">
-                <Sparkles size={32} />
+                <FaFilter size={28} />
               </div>
               <h3 className="empty-state-title">No matching pieces found</h3>
               <p className="empty-state-subtitle">

@@ -32,7 +32,7 @@ export const generateSignedInvoiceUrl = (orderId, invoiceNumber) => {
   const data = `${orderId}:${invoiceNumber}:${expires}`;
   const signature = crypto.createHmac('sha256', INVOICE_SIGNING_SECRET).update(data).digest('hex');
 
-  const baseUrl = process.env.VITE_SERVER_URL || process.env.SERVER_URL || 'http://localhost:5000';
+  const baseUrl = process.env.VITE_SERVER_URL || process.env.SERVER_URL || 'https://api.shreedeepalayasilks.com';
   return `${baseUrl}/api/orders/${orderId}/invoice/download?token=${signature}&expires=${expires}&inv=${encodeURIComponent(invoiceNumber)}`;
 };
 

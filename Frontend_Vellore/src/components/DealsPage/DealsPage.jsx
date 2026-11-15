@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
-  Sparkles,
   Clock,
   Percent,
   ArrowRight,
@@ -342,7 +341,6 @@ const DealsPage = () => {
             </nav>
 
             <div className="sds-deals-badge">
-              <Sparkles size={14} className="sds-badge-sparkle" />
               <span>Festive Weaves & Heirloom Savings • Shri Deepaalaya Silks</span>
             </div>
 

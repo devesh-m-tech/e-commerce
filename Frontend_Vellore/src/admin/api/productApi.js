@@ -36,7 +36,7 @@ const transformImageUrl = (imagePath) => {
   
   // If it's a full path, extract just the filename
   const filename = imagePath.split('\\').pop().split('/').pop();
-  const baseUrl = (import.meta.env?.VITE_API_URL || 'http://localhost:5000/api').replace(/\/api\/?$/, '');
+  const baseUrl = (import.meta.env?.VITE_API_URL || 'https://api.shreedeepalayasilks.com/api').replace(/\/api\/?$/, '');
   
   return `${baseUrl}/uploads/${filename}`;
 };

@@ -21,18 +21,12 @@ import {
   KeyRound,
   Eye,
   EyeOff,
-  Sparkles,
   ArrowRight
 } from "lucide-react";
 import { useSnackbar } from "notistack";
 import axiosinstance from "../../APi/axiosInstance";
 import { userApi } from "../../APi/userApi";
 import SdsLogo from "../common/SdsLogo";
-
-const DEMO_CREDENTIALS = {
-  email: "priya.sharma@example.com",
-  password: "Demo@1234"
-};
 
 // ── Luxury Styled Components (Shri Deepaalaya Silks Editorial Standard) ──
 
@@ -461,54 +455,6 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
             {/* ═════════ 1. LOGIN FORM ═════════ */}
             {activeForm === 'login' && (
               <form onSubmit={handleLogin}>
-                {/* Demo Credentials Fast-Fill Card */}
-                <Box
-                  onClick={() => setFormData(prev => ({
-                    ...prev,
-                    email: DEMO_CREDENTIALS.email,
-                    password: DEMO_CREDENTIALS.password
-                  }))}
-                  sx={{
-                    mb: 2.5,
-                    p: '10px 14px',
-                    borderRadius: '2px',
-                    backgroundColor: '#FFF8EC',
-                    border: '1px dashed #C5A15A',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    '&:hover': {
-                      backgroundColor: '#FEF3DF',
-                      borderColor: '#6D1734',
-                      transform: 'translateY(-1px)'
-                    }
-                  }}
-                  title="Click to fill test credentials"
-                >
-                  <Box>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        display: 'block',
-                        color: '#6D1734',
-                        fontWeight: 700,
-                        fontSize: '0.68rem',
-                        letterSpacing: '0.12em',
-                        textTransform: 'uppercase',
-                        fontFamily: "'Karla', sans-serif"
-                      }}
-                    >
-                      ✦ Fast Access (Click to Fill)
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: '#554A43', fontSize: '0.72rem', fontFamily: "'Karla', sans-serif" }}>
-                      {DEMO_CREDENTIALS.email}
-                    </Typography>
-                  </Box>
-                  <Sparkles size={16} color="#C5A15A" />
-                </Box>
-
                 <LuxuryInput
                   fullWidth
                   name="email"

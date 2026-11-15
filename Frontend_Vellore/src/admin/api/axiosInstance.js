@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = import.meta.env?.VITE_API_URL || 'http://localhost:5000/api';
+const BASE_URL = import.meta.env?.VITE_API_URL || 'https://api.shreedeepalayasilks.com/api';
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -61,7 +61,7 @@ axiosInstance.interceptors.response.use(
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('userType');
         localStorage.removeItem('currentUser');
-        window.location.href = '/login';
+        window.location.href = '/admin/login';
       }
     }
 

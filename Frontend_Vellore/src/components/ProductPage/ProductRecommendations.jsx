@@ -1,5 +1,4 @@
 import React from "react";
-import { Sparkles } from "lucide-react";
 import SdsProductCard from "../common/SdsProductCard";
 import "./ProductRecommendations.css";
 
@@ -14,7 +13,6 @@ const ProductRecommendations = ({
       <div className="sds-recommendations-wrapper">
         <div className="sds-recommendations-header">
           <div className="sds-recommendations-eyebrow">
-            <Sparkles size={13} />
             <span>Curated Pairings</span>
           </div>
           <h2 className="sds-recommendations-title">{title}</h2>
@@ -32,7 +30,6 @@ const ProductRecommendations = ({
     <div className="sds-recommendations-wrapper">
       <div className="sds-recommendations-header">
         <div className="sds-recommendations-eyebrow">
-          <Sparkles size={13} />
           <span>Curated Pairings</span>
         </div>
         <h2 className="sds-recommendations-title">{title}</h2>

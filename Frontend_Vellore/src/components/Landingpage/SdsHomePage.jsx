@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, ShieldCheck, Truck, CheckCircle, Award, Sparkles, ArrowRight, ChevronsRight, Flame, ChevronLeft, ChevronRight, Clock, Star, Shield } from 'lucide-react';
+import { Heart, ShieldCheck, Truck, CheckCircle, Award, ArrowRight, ChevronsRight, Flame, ChevronLeft, ChevronRight, Clock, Star, Shield } from 'lucide-react';
 import { productApi } from '../../APi/productApi';
 import { categoryApi } from '../../APi/categoryApi';
 import { bannerApi } from '../../APi/bannerApi';
@@ -793,15 +793,15 @@ const SdsHomePage = () => {
               <div className="sds-promo-ticker-track">
                 {[1, 2].map((groupNum) => (
                   <div key={groupNum} className="sds-promo-ticker-group">
-                    <span className="sds-ticker-item"><Sparkles size={12} /> FLAT 25% OFF ON KANCHIPURAM SILKS</span>
+                    <span className="sds-ticker-item">FLAT 25% OFF ON KANCHIPURAM SILKS</span>
                     <span className="sds-ticker-bullet">•</span>
-                    <span className="sds-ticker-item"><Sparkles size={12} /> TEMPLE JEWELLERY SETS FROM ₹3,499</span>
+                    <span className="sds-ticker-item">TEMPLE JEWELLERY SETS FROM ₹3,499</span>
                     <span className="sds-ticker-bullet">•</span>
-                    <span className="sds-ticker-item"><Sparkles size={12} /> BRIDAL LEHENGAS EXTRA 15% OFF</span>
+                    <span className="sds-ticker-item">BRIDAL LEHENGAS EXTRA 15% OFF</span>
                     <span className="sds-ticker-bullet">•</span>
-                    <span className="sds-ticker-item"><Sparkles size={12} /> FREE SILK MARK CERTIFIED PURITY</span>
+                    <span className="sds-ticker-item">FREE SILK MARK CERTIFIED PURITY</span>
                     <span className="sds-ticker-bullet">•</span>
-                    <span className="sds-ticker-item"><Sparkles size={12} /> FREE EXPRESS DELIVERY PAN-INDIA</span>
+                    <span className="sds-ticker-item">FREE EXPRESS DELIVERY PAN-INDIA</span>
                     <span className="sds-ticker-bullet">•</span>
                   </div>
                 ))}
@@ -893,7 +893,6 @@ const SdsHomePage = () => {
               transition={{ duration: 0.65, ease: "easeOut" }}
             >
               <div className="sds-story-eyebrow-pill">
-                <Sparkles size={13} className="sds-sparkle-spin" />
                 <span>Our Heritage & Craftsmanship</span>
               </div>
 
@@ -1045,7 +1044,6 @@ const SdsHomePage = () => {
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <div className="sds-story-eyebrow-pill">
-              <Sparkles size={13} className="sds-sparkle-spin" />
               <span>Why Choose Shri Deepaalaya Silks</span>
             </div>
             <h2 className="sds-section-title">
@@ -1141,7 +1139,7 @@ const SdsHomePage = () => {
             </div>
             <div className="sds-guarantee-sep" aria-hidden="true" />
             <div className="sds-guarantee-item">
-              <Sparkles size={20} className="sds-guarantee-icon" />
+              <Award size={20} className="sds-guarantee-icon" />
               <div>
                 <strong>Personal Video Shopping</strong>
                 <span>Live saree viewing before dispatch</span>
