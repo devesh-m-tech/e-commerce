@@ -1,4 +1,4 @@
-name: Picknow CI/CD
+name: Shri Deepaalaya Silks Backend CI/CD
 
 on:
   push:
@@ -11,11 +11,9 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18.x, 20.x]
 
     steps:
     - uses: actions/checkout@v4
-    - run: rm -rf node_modules
     - run: npm i
-    - run: pm2 reload PicknowBack
-    - run: pm2 reset PicknowBack
+    - run: pm2 reload sds-backend || pm2 start server.js --name sds-backend

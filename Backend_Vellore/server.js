@@ -28,6 +28,7 @@ import bannerRoutes from "./routes/bannerRoutes.js";
 import settingRoutes from "./routes/settingRoutes.js";
 import whatsappRoutes from "./routes/whatsappRoute.js";
 import { startWhatsAppWorker } from "./services/whatsapp/whatsappQueue.js";
+import { ALLOWED_ORIGINS } from "./config/envConfig.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,24 +61,7 @@ app.use(morgan("dev"));
 
 // Enable CORS with proper configuration
 const rawOrigins = (process.env.ALLOWED_ORIGINS || '').split(',').map(o => o.trim().replace(/\/+$/, '')).filter(Boolean);
-
-const defaultOrigins = [
-  'https://shrideepalayasilks.com',
-  'https://www.shrideepalayasilks.com',
-  'https://shreedeepalayasilks.com',
-  'https://www.shreedeepalayasilks.com',
-  'https://api.shreedeepalayasilks.com',
-  'http://localhost:3000',
-  'https://api.shreedeepalayasilks.com',
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'http://127.0.0.1:3000',
-  'http://127.0.0.1:5000',
-  'http://127.0.0.1:5173',
-  'http://127.0.0.1:5174'
-];
-
-const allowedOrigins = Array.from(new Set([...defaultOrigins, ...rawOrigins]));
+const allowedOrigins = Array.from(new Set([...ALLOWED_ORIGINS, ...rawOrigins]));
 
 const corsOptions = {
   origin: function (origin, callback) {

@@ -14,6 +14,8 @@
 *.zip
 
 # Runtime-generated files
+Backend_Vellore/uploads/
+Backend_Vellore/logs/
 Picknow_Backend_Vellore/uploads/
 Picknow_Backend_Vellore/logs/
 

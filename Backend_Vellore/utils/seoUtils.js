@@ -1,8 +1,10 @@
 /**
- * SEO Utility Functions for Picknow
+ * SEO Utility Functions for Shri Deepaalaya Silks
  */
 
-const BASE_URL = "https://www.picknow.in";
+import { STOREFRONT_URL } from "../config/envConfig.js";
+
+const BASE_URL = STOREFRONT_URL;
 
 /**
  * Generate canonical URL for products
@@ -78,7 +80,12 @@ export const getComboCanonicalUrl = (productId) => {
 export const isValidUrl = (url) => {
   try {
     const urlObj = new URL(url);
-    return urlObj.hostname === 'www.picknow.in' || urlObj.hostname === 'picknow.in';
+    return (
+      urlObj.hostname === 'www.shrideepalayasilks.com' ||
+      urlObj.hostname === 'shrideepalayasilks.com' ||
+      urlObj.hostname === 'shreedeepalayasilks.com' ||
+      urlObj.hostname === 'www.shreedeepalayasilks.com'
+    );
   } catch (error) {
     return false;
   }
@@ -100,7 +107,7 @@ export const generateProductStructuredData = (product) => {
     "image": product.pImage || [],
     "brand": {
       "@type": "Brand",
-      "name": product.pBrand || ""
+      "name": product.pBrand || "Shri Deepaalaya Silks"
     },
     "category": product.pCategory || "",
     "offers": {
@@ -111,7 +118,7 @@ export const generateProductStructuredData = (product) => {
       "availability": product.pStock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       "seller": {
         "@type": "Organization",
-        "name": "PickNow"
+        "name": "Shri Deepaalaya Silks"
       }
     },
     "aggregateRating": product.pRatingsReviews?.length > 0 ? {

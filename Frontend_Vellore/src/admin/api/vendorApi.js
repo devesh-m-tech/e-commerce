@@ -4,8 +4,10 @@ const checkAdminAccess = () => {
   const token = localStorage.getItem('token');
   const userType = localStorage.getItem('userType');
   const isLoggedIn = localStorage.getItem('isLoggedIn');
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const isAdmin = userType === 'admin' || userType === 'super_admin' || currentUser?.role === 'admin' || currentUser?.role === 'super_admin';
 
-  if (!token || !isLoggedIn || userType !== 'admin') {
+  if (!token || !isLoggedIn || !isAdmin) {
     throw new Error('Unauthorized access. Please login as admin.');
   }
 };

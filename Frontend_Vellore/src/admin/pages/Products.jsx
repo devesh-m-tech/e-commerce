@@ -359,6 +359,22 @@ const Products = () => {
     fetchBrands();
   }, []);
 
+  // Handle URL query parameters from Global Search (?search=...&edit=...)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const searchParam = params.get('search');
+    const editId = params.get('edit');
+    if (searchParam && searchParam !== searchQuery) {
+      setSearchQuery(searchParam);
+    }
+    if (editId && products.length > 0) {
+      const target = products.find((p) => p._id === editId);
+      if (target) {
+        handleOpen(target);
+      }
+    }
+  }, [location.search, products]);
+
   useEffect(() => {
     updateDisplayedProducts();
   }, [page, rowsPerPage, searchQuery, categoryFilter, statusFilter, typeFilter]);

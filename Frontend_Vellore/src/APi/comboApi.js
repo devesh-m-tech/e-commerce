@@ -1,5 +1,6 @@
 import axios from 'axios';
 import axiosInstance from './axiosInstance';
+import { SERVER_URL } from '../config/envConfig.js';
 
 export const getAllCombos = async () => {
     try {
@@ -27,16 +28,15 @@ export const getComboById = async (id) => {
             if (combo.ccProducts) {
                 combo.ccProducts = combo.ccProducts.map(product => {
                     console.log('Product Image:', product.pImage);
+                    const backendBase = SERVER_URL;
                     let productImage = 'default-image-path.jpg';
                     if (product.pImage) {
-                        if (typeof product.pImage === 'string') {
-                            productImage = product.pImage.startsWith('http')
-                                ? product.pImage
-                                : `http://localhost:3000 ${product.pImage}`;
-                        } else if (Array.isArray(product.pImage) && product.pImage.length > 0) {
-                            productImage = product.pImage[0].startsWith('http')
-                                ? product.pImage[0]
-                                : `http://localhost:3000 ${product.pImage[0]}`;
+                        const raw = Array.isArray(product.pImage) ? product.pImage[0] : product.pImage;
+                        if (typeof raw === 'string') {
+                            const clean = raw.replace(/\\/g, '/');
+                            productImage = clean.startsWith('http') || clean.startsWith('data:')
+                                ? clean
+                                : `${backendBase}${clean.startsWith('/') ? '' : '/'}${clean}`;
                         }
                     }
                     console.log('Processed Product Image:', productImage);

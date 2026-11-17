@@ -1,11 +1,14 @@
 import axiosInstance from './axiosInstance';
+import { SERVER_URL } from '../../config/envConfig.js';
 
 const checkAdminAccess = () => {
   const token = localStorage.getItem('token');
   const userType = localStorage.getItem('userType');
   const isLoggedIn = localStorage.getItem('isLoggedIn');
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const isAdmin = userType === 'admin' || userType === 'super_admin' || currentUser?.role === 'admin' || currentUser?.role === 'super_admin';
 
-  if (!token || !isLoggedIn || userType !== 'admin') {
+  if (!token || !isLoggedIn || !isAdmin) {
     throw new Error('Unauthorized access. Please login as admin.');
   }
 };
@@ -36,7 +39,7 @@ const transformImageUrl = (imagePath) => {
   
   // If it's a full path, extract just the filename
   const filename = imagePath.split('\\').pop().split('/').pop();
-  const baseUrl = (import.meta.env?.VITE_API_URL || 'https://api.shreedeepalayasilks.com/api').replace(/\/api\/?$/, '');
+  const baseUrl = SERVER_URL;
   
   return `${baseUrl}/uploads/${filename}`;
 };

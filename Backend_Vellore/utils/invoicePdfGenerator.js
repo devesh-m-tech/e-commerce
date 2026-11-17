@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
+import { API_BASE_URL } from '../config/envConfig.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,7 +33,7 @@ export const generateSignedInvoiceUrl = (orderId, invoiceNumber) => {
   const data = `${orderId}:${invoiceNumber}:${expires}`;
   const signature = crypto.createHmac('sha256', INVOICE_SIGNING_SECRET).update(data).digest('hex');
 
-  const baseUrl = process.env.VITE_SERVER_URL || process.env.SERVER_URL || 'https://api.shreedeepalayasilks.com';
+  const baseUrl = API_BASE_URL;
   return `${baseUrl}/api/orders/${orderId}/invoice/download?token=${signature}&expires=${expires}&inv=${encodeURIComponent(invoiceNumber)}`;
 };
 

@@ -3,6 +3,8 @@
  * Maps events to pre-approved Meta WhatsApp Cloud API templates
  */
 
+import { STOREFRONT_URL } from '../../config/envConfig.js';
+
 export const WHATSAPP_TEMPLATES = {
   order_confirmation_invoice: {
     templateName: 'order_confirmation_invoice',
@@ -29,7 +31,7 @@ export const WHATSAPP_TEMPLATES = {
       const orderId = order._id ? `#${order._id.toString().slice(-6).toUpperCase()}` : '#ORDER';
       const courierName = courier || order.trackingInfo?.courierName || 'Express Courier';
       const trackingId = trackingNumber || order.trackingInfo?.trackingNumber || 'Available Shortly';
-      const url = trackingUrl || `https://www.shrideepaalayasilks.com/order-tracking/${order._id}`;
+      const url = trackingUrl || `${STOREFRONT_URL}/order-tracking/${order._id}`;
       return [name, orderId, courierName, trackingId, url];
     },
   },
@@ -83,7 +85,7 @@ export const WHATSAPP_TEMPLATES = {
     buildParams: ({ order, customerName, retryUrl }) => {
       const name = customerName || order.shippingAddress?.name || 'Customer';
       const orderId = order._id ? `#${order._id.toString().slice(-6).toUpperCase()}` : '#ORDER';
-      const url = retryUrl || `https://www.shrideepaalayasilks.com/payment?orderId=${order._id}`;
+      const url = retryUrl || `${STOREFRONT_URL}/payment?orderId=${order._id}`;
       return [name, orderId, url];
     },
   },
@@ -99,7 +101,7 @@ export const WHATSAPP_TEMPLATES = {
       const name = customerName || order.shippingAddress?.name || 'Customer';
       const total = Number(order.finalAmount || order.totalAmount || 0).toLocaleString('en-IN');
       const paymentMethod = order.paymentMethod || 'RAZORPAY';
-      const adminUrl = `https://admin.shrideepaalayasilks.com/orders`;
+      const adminUrl = `${STOREFRONT_URL}/admin/orders`;
       return [orderId, name, total, paymentMethod, adminUrl];
     },
   },

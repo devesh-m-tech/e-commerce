@@ -48,7 +48,7 @@ import '../styles/Categories.css';
 import { SAMPLE_IMAGES } from '../utils/sampleData';
 import { useSnackbar } from 'notistack';
 import { categoryApi } from '../api/categoryApi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import usePermissions from '../hooks/usePermissions';
 import { PERMISSIONS, ACTIONS } from '../constants/permissions';
 
@@ -140,6 +140,15 @@ const Categories = () => {
   const [previewImage, setPreviewImage] = useState('');
   const [errors, setErrors] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const searchParam = params.get('search');
+    if (searchParam) {
+      setSearchQuery(searchParam);
+    }
+  }, [location.search]);
   const [statusFilter, setStatusFilter] = useState('all');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);

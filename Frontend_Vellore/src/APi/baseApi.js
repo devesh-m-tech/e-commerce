@@ -1,4 +1,5 @@
 import axiosInstance from './axiosInstance';
+import { SERVER_URL } from '../config/envConfig.js';
 
 export const transformImageUrl = (imagePath) => {
   if (!imagePath) return '';
@@ -6,8 +7,7 @@ export const transformImageUrl = (imagePath) => {
     return imagePath;
   }
   const filename = imagePath.split('\\').pop().split('/').pop();
-  const serverUrl = (import.meta.env?.VITE_SERVER_URL || (import.meta.env?.VITE_API_BASE_URL || '').replace(/\/api\/?$/, '') || 'https://api.shreedeepalayasilks.com').replace(/\/+$/, '');
-  return `${serverUrl}/uploads/${filename}`;
+  return `${SERVER_URL}/uploads/${filename}`;
 };
 
 // Product APIs

@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { API_URL } from '../config/envConfig.js';
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env?.VITE_API_BASE_URL || 'https://api.shreedeepalayasilks.com/api',
+  baseURL: API_URL,
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json'
@@ -39,7 +40,13 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Clear all auth data
+      const userType = localStorage.getItem('userType');
+      // Do NOT clear session if admin or super_admin is logged in
+      if (userType === 'admin' || userType === 'super_admin') {
+        return Promise.reject(error);
+      }
+
+      // Clear customer auth data
       localStorage.removeItem('token');
       localStorage.removeItem('vendorToken');
       localStorage.removeItem('userType');
@@ -50,7 +57,6 @@ axiosInstance.interceptors.response.use(
 
       window.dispatchEvent(new Event('loginStateChanged'));
 
-      const userType = localStorage.getItem('userType');
       if (userType === 'vendor') {
         window.location.href = '/vendor/login';
       }

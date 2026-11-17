@@ -62,6 +62,7 @@ import { comboApi } from "../api/comboApi";
 import { userApi } from "../api/userApi";
 import { useOrderNotifications } from "../context/OrderNotificationContext";
 import { useSnackbar } from "notistack";
+import { useLocation } from "react-router-dom";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { resendOrderInvoice } from "../api/whatsappApi";
 
@@ -296,6 +297,15 @@ const Orders = () => {
   const { newOrdersCount, resetNewOrdersCount } = useOrderNotifications();
   const { enqueueSnackbar } = useSnackbar();
   const [searchQuery, setSearchQuery] = useState("");
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const searchParam = params.get('search');
+    if (searchParam) {
+      setSearchQuery(searchParam);
+    }
+  }, [location.search]);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

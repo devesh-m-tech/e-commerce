@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { SERVER_URL } from '../../config/envConfig.js';
 import {
   Box,
   Button,
@@ -135,13 +136,12 @@ const ComboOffers = () => {
 
     // Handle relative paths
     if (typeof imagePath === 'string') {
-      if (imagePath.startsWith('http')) {
+      if (imagePath.startsWith('http') || imagePath.startsWith('data:')) {
         return imagePath;
-      } else if (imagePath.startsWith('/')) {
-        return `http://localhost:3000 ${imagePath}`;
-      } else {
-        return `http://localhost:3000 /${imagePath}`;
       }
+      const backendBase = SERVER_URL;
+      const clean = imagePath.replace(/\\/g, '/');
+      return clean.startsWith('/') ? `${backendBase}${clean}` : `${backendBase}/${clean}`;
     }
 
     return 'https://via.placeholder.com/120';

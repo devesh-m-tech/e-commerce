@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './ComboOffer.css';
 import { getAllCombos } from '../../APi/comboApi';
 import { cartApi } from '../../APi/cartApi';
+import { SERVER_URL } from '../../config/envConfig.js';
 
 const ComboOffer = () => {
   const navigate = useNavigate();
@@ -27,13 +28,12 @@ const ComboOffer = () => {
 
     // Handle relative paths
     if (typeof imagePath === 'string') {
-      if (imagePath.startsWith('http')) {
+      if (imagePath.startsWith('http') || imagePath.startsWith('data:')) {
         return imagePath;
-      } else if (imagePath.startsWith('/')) {
-        return `http://localhost:3000 ${imagePath}`;
-      } else {
-        return `http://localhost:3000 /${imagePath}`;
       }
+      const backendBase = SERVER_URL;
+      const clean = imagePath.replace(/\\/g, '/');
+      return clean.startsWith('/') ? `${backendBase}${clean}` : `${backendBase}/${clean}`;
     }
 
     console.log('Invalid image path:', imagePath);

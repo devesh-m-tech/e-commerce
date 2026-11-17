@@ -374,7 +374,10 @@ const SdsHomePage = () => {
           // Use default hero banners if public settings unavailable
         }
 
-        if (heroConfig?.enableCustomBg && heroConfig?.bgImage) {
+        // Priority: Use banners directly from Admin -> Hero Banners (bannerApi)
+        if (Array.isArray(bannersRes) && bannersRes.length > 0) {
+          setBanners(bannersRes);
+        } else if (heroConfig?.enableCustomBg && heroConfig?.bgImage) {
           const customHeroSlide = {
             _id: 'custom-hero-bg',
             title: heroConfig.title || 'Nice Summer Collection',
@@ -384,13 +387,9 @@ const SdsHomePage = () => {
             link: '/category/silk-sarees',
             ctaText: 'Explore Collection'
           };
-          if (Array.isArray(bannersRes) && bannersRes.length > 0) {
-            setBanners([customHeroSlide, ...bannersRes.filter(b => b._id !== 'custom-hero-bg')]);
-          } else {
-            setBanners([customHeroSlide, ...DEFAULT_HERO_SLIDES.slice(1)]);
-          }
-        } else if (Array.isArray(bannersRes) && bannersRes.length > 0) {
-          setBanners(bannersRes);
+          setBanners([customHeroSlide, ...DEFAULT_HERO_SLIDES.slice(1)]);
+        } else {
+          setBanners(DEFAULT_HERO_SLIDES);
         }
       } catch (err) {
         console.error('SdsHomePage: fetch error', err);

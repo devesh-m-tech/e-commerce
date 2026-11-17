@@ -273,7 +273,7 @@ export const resendOTP = async (req, res) => {
         // Send new OTP via email
         await sendMail({
             to: vendor.email,
-            subject: "New OTP - Picknow Vendor Registration",
+            subject: "New OTP - Shri Deepaalaya Silks Artisan Registration",
             html: generateEmailTemplate({
                 title: "New Verification OTP",
                 greetingName: vendor.vendorName,
@@ -282,11 +282,11 @@ export const resendOTP = async (req, res) => {
                     title: "Email Verification OTP",
                     code: newOTP,
                     footer: "This OTP expires in 10 minutes",
-                    instructions: "Enter this OTP on the vendor registration page to continue your application."
+                    instructions: "Enter this OTP on the registration page to continue your application."
                 },
-                portalName: "Vendor Partner Portal",
-                portalSubtitle: "Vendor Registration",
-                supportEmail: "vendors@picknow.in"
+                portalName: "Artisan Partner Portal",
+                portalSubtitle: "Artisan Registration",
+                supportEmail: "care@shrideepalayasilks.com"
             })
         });
 
@@ -550,10 +550,10 @@ export const uploadDocumentsAndBankDetails = async (req, res) => {
             html: generateEmailTemplate({
                 title: "Registration Submitted<br>Successfully",
                 greetingName: vendor.vendorName,
-                mainContent: "Your vendor registration has been successfully submitted and is now pending admin approval. We will review your documents and information shortly.<br><br>You will receive another email notification once your registration is approved. Thank you for choosing Picknow!",
-                portalName: "Vendor Partner Portal",
-                portalSubtitle: "Vendor Registration",
-                supportEmail: "vendors@picknow.in"
+                mainContent: "Your artisan registration has been successfully submitted and is now pending admin approval. We will review your documents and information shortly.<br><br>You will receive another email notification once your registration is approved. Thank you for choosing Shri Deepaalaya Silks!",
+                portalName: "Artisan Partner Portal",
+                portalSubtitle: "Artisan Registration",
+                supportEmail: "care@shrideepalayasilks.com"
             })
         };
 

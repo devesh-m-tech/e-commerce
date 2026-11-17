@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://api.shreedeepalayasilks.com/api';
+const BASE_URL = 'https://api.shrideepalayasilks.com/api';
 
 async function runFullSystemTest() {
   console.log('=== STARTING COMPLETE END-TO-END SYSTEM TEST ===\n');

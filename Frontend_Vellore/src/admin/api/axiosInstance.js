@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_URL } from '../../config/envConfig.js';
 
-const BASE_URL = import.meta.env?.VITE_API_URL || 'https://api.shreedeepalayasilks.com/api';
+const BASE_URL = API_URL;
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,

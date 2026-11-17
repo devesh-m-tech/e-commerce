@@ -48,6 +48,12 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { STOREFRONT_URL } from '../../config/envConfig.js';
+import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import AdminGlobalSearch from './AdminGlobalSearch';
 import usePermissions from '../hooks/usePermissions';
 import { PERMISSIONS, ACTIONS } from '../constants/permissions';
 import LogoutConfirmationPopup from './LogoutConfirmationPopup';
@@ -106,6 +112,7 @@ const Layout = () => {
   const menuItems = useMemo(() => {
     const items = [
       { text: 'Dashboard', path: '/', permission: PERMISSIONS.DASHBOARD, icon: <DashboardIcon /> },
+      { text: 'Hero Banners', path: '/banners', permission: PERMISSIONS.DASHBOARD, icon: <ViewCarouselIcon /> },
       { text: 'Products', path: '/products', permission: PERMISSIONS.PRODUCTS, icon: <ShoppingCartIcon /> },
       { text: 'Categories', path: '/categories', permission: PERMISSIONS.CATEGORIES, icon: <CategoryIcon /> },
       { text: 'Vendors', path: '/vendors', permission: PERMISSIONS.VENDORS, icon: <StorefrontIcon /> },
@@ -115,9 +122,12 @@ const Layout = () => {
       { text: 'Combo Offers', path: '/combo-offers', permission: PERMISSIONS.COMBO_OFFERS, icon: <ViewModuleIcon /> },
       { text: 'Deals', path: '/deals', permission: PERMISSIONS.DEALS, icon: <FlashOnIcon /> },
       { text: 'Orders', path: '/orders', permission: PERMISSIONS.ORDERS, icon: <ShoppingCartIcon /> },
+      { text: 'Exchange Manage', path: '/exchange-manage', permission: PERMISSIONS.EXCHANGES, icon: <SwapHorizIcon /> },
+      { text: 'Reports', path: '/reports', permission: PERMISSIONS.REPORTS, icon: <AssessmentIcon /> },
       { text: 'Shipping', path: '/shipping', permission: PERMISSIONS.SHIPPING, icon: <LocalOfferIcon /> },
       { text: 'Users', path: '/users', permission: PERMISSIONS.USERS, icon: <PeopleIcon /> },
       { text: 'Admin Users', path: '/admin-users', permission: PERMISSIONS.ADMIN_USERS, icon: <AdminPanelSettingsIcon /> },
+      { text: 'WhatsApp Logs', path: '/whatsapp-logs', permission: PERMISSIONS.SETTINGS, icon: <WhatsAppIcon /> },
       { text: 'Store Settings', path: '/settings', permission: PERMISSIONS.SETTINGS, icon: <SettingsIcon /> }
     ];
 
@@ -735,11 +745,16 @@ const Layout = () => {
             </Box>
           </Box>
 
+          {/* Center: Global Search Bar */}
+          <Box sx={{ mx: { xs: 1, sm: 2 }, display: 'flex', alignItems: 'center' }}>
+            <AdminGlobalSearch />
+          </Box>
+
           {/* Center: Live Storefront Quick Link */}
-          <Box sx={{ display: { xs: 'none', lg: 'flex' }, alignItems: 'center' }}>
+          <Box sx={{ display: { xs: 'none', xl: 'flex' }, alignItems: 'center' }}>
             <Button
               component="a"
-              href="http://localhost:3000"
+              href={STOREFRONT_URL}
               target="_blank"
               rel="noopener noreferrer"
               size="small"
@@ -924,7 +939,7 @@ const Layout = () => {
               <MenuItem
                 onClick={() => {
                   handleUserMenuClose();
-                  window.open('http://localhost:3000', '_blank');
+                  window.open(STOREFRONT_URL, '_blank');
                 }}
                 sx={{ py: 1.2, fontSize: '0.85rem', fontWeight: 500 }}
               >

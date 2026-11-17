@@ -1,3 +1,5 @@
+import { SERVER_URL } from '../config/envConfig.js';
+
 // Get token from localStorage
 export const getToken = () => {
   return localStorage.getItem('token') || null;
@@ -48,9 +50,7 @@ export const transformImageUrl = (imagePath) => {
     return imagePath;
   }
 
-  const baseUrl = import.meta.env?.VITE_API_BASE_URL
-    ? import.meta.env.VITE_API_BASE_URL.replace(/\/api\/?$/, '')
-    : (import.meta.env?.VITE_SERVER_URL || 'https://api.shreedeepalayasilks.com');
+  const baseUrl = SERVER_URL;
 
   // Normalize all backslashes to forward slashes
   let cleanPath = imagePath.replace(/\\/g, '/').trim();

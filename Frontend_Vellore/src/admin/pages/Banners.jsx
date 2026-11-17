@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -46,8 +47,9 @@ import {
   deleteBanner,
   toggleBannerStatus,
 } from '../api/bannerApi';
+import { SERVER_URL } from '../../config/envConfig.js';
 
-const BACKEND_BASE = (import.meta.env?.VITE_API_URL || 'https://api.shreedeepalayasilks.com/api').replace(/\/api\/?$/, '');
+const BACKEND_BASE = SERVER_URL;
 
 const resolveImageUrl = (img) => {
   if (!img) return '';
@@ -155,6 +157,19 @@ const Banners = () => {
     setPreviewUrl(resolveImageUrl(banner.imageUrl));
     setDialogOpen(true);
   };
+
+  // Auto-open edit modal if query param ?edit=bannerId is present
+  const location = useLocation();
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const editId = params.get('edit');
+    if (editId && banners.length > 0) {
+      const target = banners.find((b) => b._id === editId);
+      if (target) {
+        handleOpenEdit(target);
+      }
+    }
+  }, [location.search, banners]);
 
   // Close form dialog
   const handleCloseDialog = () => {

@@ -11,6 +11,7 @@ import {
   getProductCanonicalUrl,
   generateProductStructuredData,
 } from "../utils/seoUtils.js";
+import { STOREFRONT_URL } from "../config/envConfig.js";
 import { sendPushNotification } from "../utils/pushNotification.js";
 
 // Add new product
@@ -101,7 +102,7 @@ export const createProduct = async (req, res) => {
     const safeTax = Number(pTax) || 5;
     const safePrice = Number(pPrice) || 0;
     const safeStock = Number(pStock) || 0;
-    const safeCanonical = pCanonicalUrl || `https://shrideepaalayasilks.com/product/${encodeURIComponent((pName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-'))}`;
+    const safeCanonical = pCanonicalUrl || `${STOREFRONT_URL}/product/${encodeURIComponent((pName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-'))}`;
 
     // Create product with user information
     const product = new productModel({

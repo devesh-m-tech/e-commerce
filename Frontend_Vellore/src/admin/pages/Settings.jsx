@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { SERVER_URL } from '../../config/envConfig.js';
 import {
   Box,
   Paper,
@@ -302,7 +303,7 @@ const Settings = () => {
     if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
       return url;
     }
-    const backendBase = (import.meta.env?.VITE_API_URL || import.meta.env?.VITE_SERVER_URL || 'https://api.shreedeepalayasilks.com').replace(/\/api\/?$/, '');
+    const backendBase = SERVER_URL;
     return `${backendBase}${url.startsWith('/') ? '' : '/'}${url}`;
   };
 
@@ -1000,7 +1001,7 @@ const Settings = () => {
                     />
                   </Box>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Change the luxury hero background wallpaper and typography shown at the very top of the customer storefront (<code>http://localhost:3000</code>).
+                    Change the luxury hero background wallpaper and typography shown at the very top of the customer storefront (<code>https://shrideepalayasilks.com</code>).
                   </Typography>
                 </Grid>
 
