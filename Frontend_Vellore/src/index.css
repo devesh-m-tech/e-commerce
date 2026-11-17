@@ -121,7 +121,9 @@
 
 html {
   overflow-y: auto;
-  scrollbar-gutter: stable;
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
   scroll-behavior: smooth;
   font-variant-numeric: tabular-nums lining-nums;
   font-feature-settings: "tnum" 1, "lnum" 1;
@@ -129,6 +131,9 @@ html {
 
 /* ── Base body ── */
 body {
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
   font-family: var(--font-sans);
   font-size: var(--text-body);
   line-height: 1.6;
@@ -501,6 +506,23 @@ textarea:focus {
   text-transform: uppercase;
   font-family: var(--font-sans);
   box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .sds-announcement-bar {
+    display: block !important;
+    font-size: 9.5px !important;
+    line-height: var(--announcement-height, 36px) !important;
+    letter-spacing: 0.03em !important;
+    padding: 0 10px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    text-align: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
 }
 
 /* ============================================================

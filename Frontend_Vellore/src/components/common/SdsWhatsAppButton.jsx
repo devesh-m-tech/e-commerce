@@ -9,6 +9,7 @@ const SdsWhatsAppButton = ({
 
   return (
     <div
+      className="sds-whatsapp-floating-btn"
       style={{
         position: 'fixed',
         bottom: '24px',

@@ -100,10 +100,36 @@
 }
 
 @media (max-width: 1024px) {
+  .sidebar-header-premium {
+    position: sticky;
+    top: -1.25rem;
+    background: #FCFBF7;
+    z-index: 20;
+    padding-top: 6px;
+    padding-bottom: 12px;
+    margin-top: -6px;
+    margin-bottom: 1rem;
+  }
+
   .sidebar-close-mobile {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    background: #F4EFE6;
+    color: #282321;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .sidebar-close-mobile:hover,
+  .sidebar-close-mobile:active {
+    background: #6D1734;
+    color: #FFFFFF;
   }
 }
 
@@ -840,5 +866,9 @@
 @media (max-width: 1024px) {
   .sidebar-mobile-apply-btn {
     display: block;
+  }
+  .sidebar-action-footer {
+    padding-bottom: 24px;
+    margin-bottom: 20px;
   }
 }

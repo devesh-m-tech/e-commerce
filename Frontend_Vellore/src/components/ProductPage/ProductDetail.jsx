@@ -1385,7 +1385,7 @@ const ProductDetail = () => {
                       onClick={() => handleImagepopup(selectedImage)}
                     >
                       <span className={`sds-zoom-pill ${isZooming ? "zooming" : ""}`}>
-                        <Search size={12} /> {isZooming ? "Zoomed View · Click to Enlarge" : "Roll over image to zoom in"}
+                        <Search size={12} /> {isMobile ? "Tap to enlarge" : (isZooming ? "Zoomed View · Click to Enlarge" : "Roll over image to zoom in")}
                       </span>
                       <img
                         src={transformImageUrl(productImages[selectedImage]?.url || product?.pImage?.[0])}
@@ -1908,7 +1908,7 @@ const ProductDetail = () => {
         {isMobile && (
           <div className={`mobile-sticky-actions ${!showSticky ? 'hidden' : ''}`}>
             <div className={`mobile-action-pill-btn ${isInWishlist ? "active" : ""}`} onClick={handleWishlist}>
-              <Heart size={20} fill={isInWishlist ? "#6D1734" : "none"} stroke={isInWishlist ? "#6D1734" : "currentColor"} />
+              <Heart size={18} fill={isInWishlist ? "#6D1734" : "none"} stroke={isInWishlist ? "#6D1734" : "currentColor"} />
             </div>
             <div className="mobile-action-pill-btn" onClick={() => {
               if (navigator.share) {
@@ -1921,7 +1921,7 @@ const ProductDetail = () => {
                 navigator.clipboard.writeText(window.location.href);
               }
             }}>
-              <Share2 size={20} />
+              <Share2 size={18} />
             </div>
             <button
               className={`sds-btn-add-cart ${addingToCart ? "loading" : ""} ${(cartSuccessOpen || isProductInCart(product._id, selectedVariant?._id)) ? "added" : ""} ${(selectedVariant ? selectedVariant.stock : product.pStock) <= 0 ? "out-of-stock" : ""}`}

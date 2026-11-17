@@ -30,11 +30,19 @@ const Sidebar = ({
   onResetFilters,
   ratingCounts = {},
   disableNavigate = false,
-  baseCategoryName = ''
+  baseCategoryName = '',
+  onClose
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
+
+  const handleClose = () => {
+    if (typeof onClose === 'function') {
+      onClose();
+    }
+    window.dispatchEvent(new Event('closeSidebar'));
+  };
 
   // Accordion state
   const [expandedSections, setExpandedSections] = useState({
@@ -347,7 +355,7 @@ const Sidebar = ({
           <button
             type="button"
             className="sidebar-close-mobile"
-            onClick={() => window.dispatchEvent(new Event('closeSidebar'))}
+            onClick={handleClose}
             aria-label="Close Filters"
           >
             <FaTimes />
@@ -776,7 +784,7 @@ const Sidebar = ({
         <button
           type="button"
           className="sidebar-mobile-apply-btn"
-          onClick={() => window.dispatchEvent(new Event('closeSidebar'))}
+          onClick={handleClose}
         >
           <span>VIEW RESULTS</span>
         </button>

@@ -59,15 +59,21 @@ const CategoryProducts = () => {
   };
 
   const toggleFilter = () => {
-    setIsFilterOpen((prev) => !prev);
-    document.body.style.overflow = !isFilterOpen ? "hidden" : "auto";
+    setIsFilterOpen((prev) => {
+      const next = !prev;
+      document.body.style.overflow = next ? "hidden" : "auto";
+      return next;
+    });
   };
 
   // Close filter drawer on 'closeSidebar' event (triggered by mobile apply button in Sidebar)
   useEffect(() => {
     const handleClose = () => closeFilter();
     window.addEventListener("closeSidebar", handleClose);
-    return () => window.removeEventListener("closeSidebar", handleClose);
+    return () => {
+      window.removeEventListener("closeSidebar", handleClose);
+      document.body.style.overflow = "auto";
+    };
   }, []);
 
   // Fetch category details, products, and categories
@@ -328,6 +334,7 @@ const CategoryProducts = () => {
             onResetFilters={resetAllFilters}
             ratingCounts={ratingCounts}
             disableNavigate={true}
+            onClose={closeFilter}
           />
         </aside>
 

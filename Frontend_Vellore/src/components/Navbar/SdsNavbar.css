@@ -1276,8 +1276,60 @@
   .sds-hamburger { display: flex; }
 
   .sds-navbar-inner {
-    gap: 0.5rem;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    gap: 0.35rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: space-between !important;
+    box-sizing: border-box !important;
   }
+
+  .sds-nav-logo img,
+  .sds-nav-logo svg {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .sds-hamburger {
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .sds-nav-utils {
+    margin-left: auto !important;
+    gap: 3px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .sds-nav-icon-btn {
+    width: 34px !important;
+    height: 34px !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .sds-nav-icon-btn svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .sds-nav-login-btn {
+    padding: 0 10px !important;
+    height: 34px !important;
+    font-size: 11px !important;
+    gap: 4px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .sds-user-avatar {
+    width: 32px !important;
+    height: 32px !important;
+    flex-shrink: 0 !important;
+  }
+
   .sds-search-panel-inner {
     padding: 16px 12px 20px;
   }
@@ -1287,6 +1339,74 @@
 }
 
 @media (max-width: 480px) {
+  .sds-navbar-inner {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    gap: 0.2rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: space-between !important;
+    box-sizing: border-box !important;
+  }
+
+  .sds-nav-logo img,
+  .sds-nav-logo svg {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .sds-hamburger {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .sds-nav-utils {
+    margin-left: auto !important;
+    gap: 2px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .sds-nav-icon-btn {
+    width: 30px !important;
+    height: 32px !important;
+  }
+
+  .sds-nav-icon-btn svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .sds-nav-login-btn {
+    width: auto !important;
+    height: 32px !important;
+    padding: 0 7px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    font-size: 10px !important;
+    letter-spacing: 0.04em !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    border: 1px solid var(--color-beige);
+    border-radius: var(--radius);
+  }
+
+  .sds-nav-login-btn span {
+    display: inline !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+    line-height: 1 !important;
+  }
+
+  .sds-nav-login-btn svg {
+    width: 14px !important;
+    height: 14px !important;
+    flex-shrink: 0 !important;
+  }
+
   .sds-search-box-input {
     font-size: 13.5px;
   }

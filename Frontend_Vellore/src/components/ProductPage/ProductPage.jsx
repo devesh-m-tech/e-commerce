@@ -1428,6 +1428,7 @@ const ProductPage = () => {
               onBrandChange={handleBrandChange}
               onResetFilters={resetFilters}
               ratingCounts={ratingCounts}
+              onClose={closeFilter}
             />
           </aside>
 

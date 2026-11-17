@@ -1128,6 +1128,7 @@
   bottom: 0;
   left: 0;
   width: 100%;
+  box-sizing: border-box;
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(8px);
   padding: 10px 16px;
@@ -1137,6 +1138,13 @@
   gap: 10px;
   z-index: 1000;
   box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.mobile-sticky-actions.hidden {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .mobile-action-pill-btn {
@@ -1151,6 +1159,7 @@
   color: var(--sds-dark);
   cursor: pointer;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .mobile-action-pill-btn.active {
@@ -1159,18 +1168,38 @@
 
 /* ── 7. RESPONSIVE BREAKPOINTS ── */
 @media (max-width: 1024px) {
-  .sds-product-showcase-card {
-    grid-template-columns: 1fr;
-    gap: 36px;
-    padding: 32px 24px;
+  .sds-product-showcase-section {
+    margin: 12px auto 24px;
+    padding: 0 16px;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
-  .sds-gallery-column {
+  .sds-product-showcase-card {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 24px;
+    padding: 24px 20px;
+    box-sizing: border-box !important;
+  }
+
+  .sds-gallery-column,
+  .sds-info-column {
     position: static;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .sds-main-stage {
-    max-width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .sds-lightbox-nav.prev {
@@ -1183,18 +1212,73 @@
 }
 
 @media (max-width: 768px) {
+  .sds-product-detail-page {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .sds-breadcrumb-wrapper {
+    padding: 10px 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .sds-breadcrumb-container {
+    padding: 0 !important;
+    font-size: 11px !important;
+    gap: 5px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    flex-wrap: wrap !important;
+  }
+
+  .sds-breadcrumb-active {
+    max-width: 130px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
   .sds-product-showcase-section,
   .sds-product-tabs-section,
   .sds-related-section {
-    padding: 0 12px;
+    padding: 0 10px !important;
+    margin: 8px auto 20px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
   }
 
   .sds-product-showcase-card {
-    padding: 20px 16px;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 12px 10px !important;
+    gap: 16px !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .sds-gallery-column {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .sds-gallery-main-row {
-    flex-direction: column-reverse;
+    flex-direction: column-reverse !important;
+    gap: 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .sds-thumbs-pillar {
@@ -1202,6 +1286,12 @@
     width: 100%;
     max-height: none;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .sds-thumbs-pillar::-webkit-scrollbar {
+    display: none;
   }
 
   .sds-thumb-arrow-btn {
@@ -1214,31 +1304,258 @@
     width: 100%;
     max-height: none;
     gap: 8px;
-    padding-bottom: 4px;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .sds-thumbs-scroll-track::-webkit-scrollbar {
+    display: none;
   }
 
   .sds-thumb-cell {
-    width: 62px;
-    height: 78px;
+    width: 58px;
+    height: 74px;
     flex-shrink: 0;
+    border-radius: 4px;
   }
 
   .sds-main-stage {
-    width: 100%;
-    aspect-ratio: 1;
+    flex: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    aspect-ratio: 3 / 4 !important;
+    height: auto !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
   }
 
-  .sds-specs-table {
-    grid-template-columns: 1fr;
+  .sds-main-stage-img-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .sds-main-stage-img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+
+  .sds-zoom-pill {
+    top: 8px !important;
+    right: 8px !important;
+    padding: 4px 8px !important;
+    font-size: 9.5px !important;
+    max-width: calc(100% - 16px) !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .sds-info-column {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .sds-product-title {
+    font-size: clamp(1.25rem, 4.5vw, 1.6rem) !important;
+    line-height: 1.25 !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .sds-pricing-island {
+    padding: 12px 12px !important;
+    border-radius: 8px !important;
+    gap: 6px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .sds-price-current {
+    font-size: 1.75rem !important;
+  }
+
+  .sds-price-original {
+    font-size: 1rem;
+  }
+
+  .sds-price-save-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+
+  .sds-stock-badge-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .sds-stock-badge {
+    max-width: 100% !important;
+    white-space: normal !important;
+    font-size: 11px !important;
+    padding: 6px 10px !important;
+    line-height: 1.3 !important;
+    box-sizing: border-box !important;
+  }
+
+  .sds-delivery-status-tag {
+    max-width: 100% !important;
+    white-space: normal !important;
+    font-size: 11px !important;
+    padding: 6px 10px !important;
+    line-height: 1.3 !important;
+    box-sizing: border-box !important;
+  }
+
+  .sds-action-console {
+    padding: 12px 10px !important;
+    border-radius: 8px !important;
+    gap: 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .sds-action-row-upper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .sds-qty-stepper {
+    flex-shrink: 0;
+  }
+
+  .sds-utility-buttons {
+    flex: 1;
+    display: flex;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .sds-detail-wishlist-btn,
+  .sds-share-btn {
+    flex: 1;
+    padding: 0 8px !important;
+    font-size: 12px !important;
+    height: 38px !important;
+    min-width: 0;
+  }
+
+  .sds-action-row-lower {
+    display: flex;
+    gap: 8px;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .sds-btn-add-cart,
+  .sds-btn-buy-now {
+    flex: 1;
+    max-width: none;
+    height: 44px;
+    padding: 0 10px;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
+  .sds-btn-whatsapp-enquiry {
+    padding: 10px 14px !important;
+    font-size: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .sds-trust-strip {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 10px;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Tabs Section on Mobile */
+  .sds-product-tabs-section {
+    margin: 0 auto 30px;
+  }
+
+  .sds-tabs-card {
+    border-radius: 8px;
+  }
+
+  .sds-tab-nav-btn {
+    padding: 12px 16px;
+    font-size: 11px;
   }
 
   .sds-tab-pane {
-    padding: 24px 16px;
+    padding: 18px 14px;
+  }
+
+  .sds-specs-table {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .sds-spec-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 10px 12px;
+  }
+
+  .sds-spec-name {
+    font-size: 11px;
+    color: #8C8075;
+  }
+
+  .sds-spec-val {
+    font-size: 13px;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  /* Mobile Sticky Bottom Bar */
+  .mobile-sticky-actions {
+    padding: 8px 10px;
+    gap: 8px;
+    box-sizing: border-box;
+  }
+
+  .mobile-action-pill-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 4px;
+  }
+
+  .mobile-sticky-actions .sds-btn-add-cart,
+  .mobile-sticky-actions .sds-btn-buy-now {
+    height: 40px;
+    font-size: 10.5px;
+    padding: 0 8px;
+    letter-spacing: 0.02em;
+  }
+
+  /* Floating WhatsApp Button positioned above sticky bar on mobile */
+  .sds-whatsapp-floating-btn {
+    bottom: 74px !important;
+    right: 14px !important;
   }
 }
 
@@ -1246,24 +1563,36 @@
   .sds-action-row-upper {
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
   }
 
   .sds-qty-stepper {
     justify-content: center;
-  }
-
-  .sds-utility-buttons {
-    justify-content: center;
-  }
-
-  .sds-action-row-lower {
-    max-width: 100%;
     width: 100%;
   }
 
-  .sds-btn-add-cart,
-  .sds-btn-buy-now {
-    flex: 1;
-    max-width: none;
+  .sds-utility-buttons {
+    width: 100%;
+  }
+
+  .sds-bubbles-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .sds-v-bubble {
+    padding: 8px 10px;
+  }
+
+  .sds-v-bubble-name {
+    font-size: 11px;
+  }
+
+  .sds-v-bubble-price {
+    font-size: 11px;
+  }
+
+  .sds-v-bubble-stock {
+    font-size: 10px;
   }
 }
