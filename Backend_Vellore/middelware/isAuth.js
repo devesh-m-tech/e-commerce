@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { User } from "../models/User.js";
+import { Admin } from "../models/Admin.js";
 
 // Authentication Middleware
 export const isAuth = async (req, res, next) => {
@@ -11,6 +12,17 @@ export const isAuth = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = await User.findById(decoded._id).select("-password");
+
+    // If not found in User collection, check Admin collection (e.g. Admin browsing storefront)
+    if (!req.user) {
+      const admin = await Admin.findById(decoded._id).select("-password");
+      if (admin) {
+        req.user = admin;
+        req.user.role = admin.role || "admin";
+        req.user.isAdmin = true;
+      }
+    }
+
     if (!req.user) {
       return res.status(401).json({ message: "User not found or unauthorized" });
     }

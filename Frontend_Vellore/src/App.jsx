@@ -247,6 +247,7 @@ const App = () => {
         </div>
         {!shouldHideFooter() && <SdsFooter />}
         <ToastContainer
+          style={{ zIndex: 2147483647 }}
           position="top-right"
           autoClose={3000}
           limit={1}

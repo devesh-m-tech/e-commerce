@@ -85,11 +85,26 @@ const UserProfile = () => {
       const response = await userApi.myProfile();
       setUser(response.user);
     } catch (err) {
-      toast.error(err.message || "Failed to load account profile");
+      const errMsg = err?.message || "";
+      if (
+        errMsg.includes("User not found") ||
+        errMsg.includes("unauthorized") ||
+        errMsg.includes("Unauthorized") ||
+        errMsg.includes("Session expired")
+      ) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("currentUser");
+        toast.info("Please sign in to access your profile");
+        window.dispatchEvent(new Event("openLogin"));
+        navigate("/");
+        return;
+      }
+      toast.error(errMsg || "Failed to load account profile");
     } finally {
       setLoading((prev) => ({ ...prev, profile: false }));
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");

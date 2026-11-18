@@ -186,16 +186,23 @@ body.dropdown-open {
 /* ================================================================
    SHRI DEEPAALAYA SILKS — LUXURY EDITORIAL TOAST NOTIFICATIONS
    ================================================================ */
-/* Force all floating notifications to top of stacking context */
+/* Force all floating notifications above everything, including modal backdrops and blurs */
 .Toastify__toast-container,
 .SnackbarContainer-root,
 .MuiSnackbar-root,
-.MuiDialog-root,
-.MuiModal-root,
 [class*="SnackbarContainer"],
 [class*="MuiSnackbar"],
-[class*="Toastify"] {
-  z-index: 99999999 !important;
+[class*="Toastify"],
+[class*="notistack-SnackbarContainer"],
+[class*="notistack-Snackbar"] {
+  z-index: 2147483647 !important;
+  pointer-events: auto !important;
+}
+
+/* Modals and dialogs stay below floating notifications */
+.MuiDialog-root,
+.MuiModal-root {
+  z-index: 13000 !important;
 }
 
 /* Position below header */

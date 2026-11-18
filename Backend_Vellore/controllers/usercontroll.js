@@ -1,4 +1,5 @@
 import { User } from "../models/User.js";
+import { Admin } from "../models/Admin.js";
 import Product from "../models/Product.js";
 import { Order } from "../models/order.js";
 import { WalletTransaction } from "../models/wallet.js";
@@ -16,20 +17,23 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 
 export const checkmobile = async (req, res, next) => {
-  const { contact } = req.body;
+  const { contact, email } = req.body;
 
   if (!contact) {
     return res.status(400).json({ message: "Contact number is required" });
   }
 
-  // Exact match search for performance and accuracy
-  let user = await User.findOne({ contact });
-  if (user) {
-    return res.status(400).json({ message: "Mobile number already in use" });
+  const cleanContact = contact.toString().trim();
+  const cleanEmail = (email || '').toLowerCase().trim();
+
+  // Search if mobile is already used by a verified different user
+  let user = await User.findOne({ contact: cleanContact });
+  if (user && user.isVerified && user.email !== cleanEmail) {
+    return res.status(400).json({ message: "Mobile number already in use by another account" });
   } else {
     next();
   }
-}
+};
 export const checkBalance = async (req, res) => {
   const user = await User.findById(req.user._id).select("walletBalance");
   if (user) {
@@ -37,7 +41,7 @@ export const checkBalance = async (req, res) => {
   } else {
     return res.status(400).json({ message: "No such user found!" });
   }
-}
+};
 
 // New User Registration
 export const registerUser = async (req, res) => {
@@ -53,49 +57,63 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ message: "Password must be at least 6 characters long" });
     }
 
-    // Check if user already exists
-    let user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ message: "Email already in use" });
-    }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const otp = Math.floor(100000 + Math.random() * 900000);
-    user = new User({
-      name,
-      email,
-      password: hashedPassword,
-      contact,
-      isVerified: false,
-    });
-    const a = await user.save();
-    const activationToken = jwt.sign(
-      { userId: user._id, otp },
-      process.env.ACTIVATION_SECRET,
-      { expiresIn: "1m" }
-    );
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanContact = contact.toString().trim();
 
-    const emailData = {
-      to: email,
-      subject: "Welcome to Shri Deepaalaya Silks - Email Verification",
-      html: generateEmailTemplate({
-        title: "Welcome to Shri Deepaalaya Silks!",
-        greetingName: name || email,
-        mainContent: "Thank you for registering. Please verify your account using the code below.",
-        otpBox: {
-          title: "Verification Code",
-          code: otp,
-          footer: "This code expires in 1 minute",
-          instructions: "Enter this code to verify your account."
-        },
-        portalName: "User Portal",
-        portalSubtitle: "Account Verification"
-      }),
-    };
-    sendMail(emailData);
+    // Check if user already exists and is verified
+    let user = await User.findOne({ email: cleanEmail });
+    if (user && user.isVerified) {
+      return res.status(400).json({ message: "Email already registered. Please sign in." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    if (user) {
+      user.name = name.trim();
+      user.password = hashedPassword;
+      user.contact = cleanContact;
+      user.isVerified = true;
+      await user.save();
+    } else {
+      user = new User({
+        name: name.trim(),
+        email: cleanEmail,
+        password: hashedPassword,
+        contact: cleanContact,
+        isVerified: true,
+      });
+      await user.save();
+    }
+
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "30d",
+    });
+
+    const { password: _, ...userDetails } = user.toObject();
+
+    // Non-blocking welcome email
+    try {
+      const emailData = {
+        to: cleanEmail,
+        subject: "Welcome to Shri Deepaalaya Silks!",
+        html: generateEmailTemplate({
+          title: "Welcome to Shri Deepaalaya Silks!",
+          greetingName: user.name || cleanEmail,
+          mainContent: "Thank you for creating your account with Shri Deepaalaya Silks. Explore our handloom pure silk sarees.",
+          portalName: "Customer Account",
+          portalSubtitle: "Account Created"
+        }),
+      };
+      sendMail(emailData).catch(() => {});
+    } catch (e) {
+      // non-blocking
+    }
 
     return res.status(200).json({
-      message: "OTP sent to your email",
-      activationToken,
+      success: true,
+      message: `Account created successfully! Welcome ${user.name}.`,
+      token,
+      user: userDetails,
     });
   } catch (error) {
     console.error("Error during user registration:", error);
@@ -155,23 +173,24 @@ export const verifyUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log("Login attempt for email:", email);
-
-    // Find user by email
-    const user = await User.findOne({ email });
-    if (!user) {
-      console.log("User not found");
-      return res.status(400).json({ message: "Wrong email or password" });
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email or phone number, and password are required" });
     }
 
-    console.log("User verification status:", user.isVerified);
+    const loginIdentifier = email.toString().trim();
+    console.log("Login attempt for identifier:", loginIdentifier);
 
-    // Check if user is verified
-    if (!user.isVerified) {
-      console.log("User not verified");
-      return res
-        .status(400)
-        .json({ message: "Please verify your account first" });
+    // Find user by email OR contact number!
+    const user = await User.findOne({
+      $or: [
+        { email: loginIdentifier.toLowerCase() },
+        { contact: loginIdentifier }
+      ]
+    });
+
+    if (!user) {
+      console.log("User not found for identifier:", loginIdentifier);
+      return res.status(400).json({ message: "Invalid email/mobile or password" });
     }
 
     // Check password
@@ -181,17 +200,24 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    console.log("Login successful");
+    // If password is valid, auto-verify user
+    if (!user.isVerified) {
+      user.isVerified = true;
+      await user.save();
+    }
+
+    console.log("Login successful for user:", user.email);
 
     // Generate token
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "15d",
+      expiresIn: "30d",
     });
 
     // Exclude password from response
     const { password: _, ...userDetails } = user.toObject();
 
     return res.status(200).json({
+      success: true,
       message: `Welcome ${user.name}`, 
       token,
       user: userDetails,
@@ -205,7 +231,21 @@ export const loginUser = async (req, res) => {
 // User Profile
 export const myProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select("-password");
+    let user = await User.findById(req.user._id).select("-password");
+    if (!user) {
+      const admin = await Admin.findById(req.user._id).select("-password");
+      if (admin) {
+        user = {
+          _id: admin._id,
+          name: admin.name,
+          email: admin.email,
+          role: admin.role || "admin",
+          contact: admin.phone || admin.phoneNumber || "",
+          addresses: [],
+          isAdmin: true
+        };
+      }
+    }
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }

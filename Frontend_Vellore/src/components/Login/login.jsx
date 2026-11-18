@@ -99,16 +99,32 @@ const Login = ({ onLogin, initialForm = "login" }) => {
       showSnackbar("All fields are required to register", "warning");
       return;
     }
+    if (password.length < 6) {
+      showSnackbar("Password must be at least 6 characters long", "warning");
+      setFormErrors(prev => ({ ...prev, password: "Password must be at least 6 characters long" }));
+      return;
+    }
     setLoading(true);
     try {
       const response = await axiosinstance.post("/user/register", { name, email, password, contact });
-      showSnackbar(response.data.message || "Registration successful! Please verify code", "success");
-      if (response.data.activationToken) {
-        localStorage.setItem("activationToken", response.data.activationToken);
-        setActivationToken(response.data.activationToken);
+      if (response.data.token) {
+        localStorage.removeItem("userLoggedOut");
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("isLoggedIn", "true");
+        window.dispatchEvent(new Event("loginStateChanged"));
+        showSnackbar(response.data.message || `Welcome ${response.data.user?.name || ''}!`, "success");
+        if (onLogin) onLogin(true);
+        navigate("/");
+      } else {
+        showSnackbar(response.data.message || "Registration successful! Please verify code", "success");
+        if (response.data.activationToken) {
+          localStorage.setItem("activationToken", response.data.activationToken);
+          setActivationToken(response.data.activationToken);
+        }
+        localStorage.setItem("userEmail", email);
+        setActiveForm("verify-otp");
       }
-      localStorage.setItem("userEmail", email);
-      setActiveForm("verify-otp");
     } catch (error) {
       const msg = error.response?.data?.message || "Registration failed";
       showSnackbar(msg, "error");

@@ -31,6 +31,7 @@ import SdsLogo from "../common/SdsLogo";
 // ── Luxury Styled Components (Shri Deepaalaya Silks Editorial Standard) ──
 
 const LuxuryDialog = styled(Dialog)({
+  zIndex: 13000,
   '& .MuiBackdrop-root': {
     backdropFilter: 'blur(4px)',
     backgroundColor: 'rgba(26, 22, 21, 0.65)',
@@ -262,19 +263,38 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
       showSnackbar("Please fill in all registration fields", "warning");
       return;
     }
+    if (password.length < 6) {
+      showSnackbar("Password must be at least 6 characters long", "warning");
+      setFormErrors(prev => ({ ...prev, password: "Password must be at least 6 characters long" }));
+      return;
+    }
     setLoading(true);
     try {
       const response = await axiosinstance.post("/user/register", { name, email, password, contact });
-      showSnackbar(response.data.message || "Account created! Please verify your OTP", "success");
-      if (response.data.activationToken) {
-        localStorage.setItem("activationToken", response.data.activationToken);
+      // If direct login token returned
+      if (response.data.token) {
+        localStorage.removeItem("userLoggedOut");
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("isLoggedIn", "true");
+        window.dispatchEvent(new Event("loginStateChanged"));
+        showSnackbar(response.data.message || `Welcome ${response.data.user?.name || ''}!`, "success");
+        onLoginSuccess(true);
+        onClose();
+      } else {
+        showSnackbar(response.data.message || "Account created! Please verify your OTP", "success");
+        if (response.data.activationToken) {
+          localStorage.setItem("activationToken", response.data.activationToken);
+        }
+        localStorage.setItem("userEmail", email);
+        setActiveForm("verify-otp");
       }
-      localStorage.setItem("userEmail", email);
-      setActiveForm("verify-otp");
     } catch (error) {
       const msg = error.response?.data?.message || "Registration failed";
       showSnackbar(msg, "error");
       if (msg.toLowerCase().includes("email") || msg.toLowerCase().includes("exist")) setFormErrors(prev => ({ ...prev, email: msg }));
+      if (msg.toLowerCase().includes("password")) setFormErrors(prev => ({ ...prev, password: msg }));
+      if (msg.toLowerCase().includes("mobile") || msg.toLowerCase().includes("contact")) setFormErrors(prev => ({ ...prev, contact: msg }));
     } finally {
       setLoading(false);
     }
