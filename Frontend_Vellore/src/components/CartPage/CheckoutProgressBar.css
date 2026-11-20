@@ -4,22 +4,20 @@
    ============================================================ */
 
 .checkout-header-wrapper {
-  position: sticky;
-  top: var(--sds-navbar-height, 72px);
-  z-index: 99;
+  position: relative;
+  z-index: 10;
   width: 100%;
   background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border, #EDE2D2);
   box-shadow: 0 2px 10px rgba(40, 35, 33, 0.04);
-  padding: 12px 0 10px;
-  transition: top 0.15s ease;
+  padding: 16px 0 14px;
+  margin-bottom: 12px;
 }
 
 @media (max-width: 768px) {
   .checkout-header-wrapper {
-    padding: 9px 0 7px;
+    padding: 12px 0 10px;
+    margin-bottom: 8px;
   }
 }
 

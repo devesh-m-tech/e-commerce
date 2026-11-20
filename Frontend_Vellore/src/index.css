@@ -90,8 +90,9 @@
   --announcement-height:  36px;
   --nav-height:           72px;
   --nav-height-sm:        64px;
-  --header-total-height:  108px;
-  --sds-navbar-height:    72px;
+  --header-total-height:  116px;
+  --sds-navbar-height:    116px;
+  --sds-total-header-height: 116px;
 
   /* ── Corners — square with max 2px ── */
   --radius-sm: 2px;

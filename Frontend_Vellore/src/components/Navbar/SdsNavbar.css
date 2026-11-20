@@ -25,7 +25,7 @@
 .sds-header-spacer {
   display: block;
   width: 100%;
-  height: var(--sds-total-header-height, 108px);
+  height: var(--sds-total-header-height, 116px);
   flex-shrink: 0;
   pointer-events: none;
   visibility: hidden;

@@ -186,7 +186,7 @@ body {
   width: 318px;
   flex-shrink: 0;
   position: sticky;
-  top: calc(var(--sds-navbar-height, 72px) + 72px);
+  top: calc(var(--sds-total-header-height, 116px) + 20px);
   display: flex;
   flex-direction: column;
   gap: 10px;
