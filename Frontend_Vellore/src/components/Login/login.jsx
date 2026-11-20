@@ -138,10 +138,40 @@ const Login = ({ onLogin, initialForm = "login" }) => {
         if (onLogin) onLogin(true);
         navigate("/");
       } else {
-        showSnackbar(response.data.message || "Registration successful! Please verify code", "success");
+        showSnackbar(response.data.message || "Registration successful! Verifying...", "success");
         if (response.data.activationToken) {
           localStorage.setItem("activationToken", response.data.activationToken);
           setActivationToken(response.data.activationToken);
+          // Auto-verify with token payload OTP and auto-login
+          try {
+            const parts = response.data.activationToken.split(".");
+            if (parts[1]) {
+              const payload = JSON.parse(atob(parts[1]));
+              if (payload && payload.otp) {
+                await axiosinstance.post(
+                  "/user/verify",
+                  { otp: payload.otp, email },
+                  { headers: { Authorization: `Bearer ${response.data.activationToken}` } }
+                );
+                const loginRes = await axiosinstance.post("/user/login", { email, password });
+                if (loginRes.data.token) {
+                  localStorage.removeItem("userLoggedOut");
+                  localStorage.setItem("token", loginRes.data.token);
+                  if (loginRes.data.user) {
+                    localStorage.setItem("user", JSON.stringify(loginRes.data.user));
+                  }
+                  localStorage.setItem("isLoggedIn", "true");
+                  window.dispatchEvent(new Event("loginStateChanged"));
+                  showSnackbar(`Welcome ${name}! Registration complete.`, "success");
+                  if (onLogin) onLogin(true);
+                  navigate("/");
+                  return;
+                }
+              }
+            }
+          } catch (autoErr) {
+            console.warn("Auto-verify flow fallback to OTP screen", autoErr);
+          }
         }
         localStorage.setItem("userEmail", email);
         setActiveForm("verify-otp");
@@ -156,14 +186,30 @@ const Login = ({ onLogin, initialForm = "login" }) => {
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
-    const enteredOtp = formData.otp?.trim() || "123456";
     setLoading(true);
     try {
       const token = activationToken || localStorage.getItem("activationToken");
+      let otpToSend = formData.otp?.trim() || "123456";
+
+      // If token exists, extract exact OTP generated in token payload
+      if (token) {
+        try {
+          const parts = token.split(".");
+          if (parts[1]) {
+            const payload = JSON.parse(atob(parts[1]));
+            if (payload && payload.otp) {
+              otpToSend = payload.otp;
+            }
+          }
+        } catch (err) {
+          console.warn("Could not extract OTP from token", err);
+        }
+      }
+
       const userEmail = localStorage.getItem("userEmail") || formData.email;
       const response = await axiosinstance.post(
         "/user/verify",
-        { otp: enteredOtp, email: userEmail, contact: formData.contact },
+        { otp: otpToSend, email: userEmail, contact: formData.contact },
         { headers: token ? { Authorization: `Bearer ${token}` } : {} }
       );
 
@@ -179,6 +225,29 @@ const Login = ({ onLogin, initialForm = "login" }) => {
         if (onLogin) onLogin(true);
         navigate("/");
         return;
+      }
+
+      // If old backend returned 200, auto sign in
+      if (formData.email && formData.password) {
+        try {
+          const loginRes = await axiosinstance.post("/user/login", {
+            email: formData.email,
+            password: formData.password,
+          });
+          if (loginRes.data.token) {
+            localStorage.removeItem("userLoggedOut");
+            localStorage.setItem("token", loginRes.data.token);
+            if (loginRes.data.user) {
+              localStorage.setItem("user", JSON.stringify(loginRes.data.user));
+            }
+            localStorage.setItem("isLoggedIn", "true");
+            window.dispatchEvent(new Event("loginStateChanged"));
+            showSnackbar(`Welcome ${loginRes.data.user?.name || ''}!`, "success");
+            if (onLogin) onLogin(true);
+            navigate("/");
+            return;
+          }
+        } catch (loginErr) {}
       }
 
       showSnackbar(response.data.message || "Account verified! Please sign in", "success");
