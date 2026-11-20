@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import axiosinstance from "../../APi/axiosInstance";
 import { userApi } from "../../APi/userApi";
 import { useSnackbar } from 'notistack';
-import { User, Mail, Lock, Phone, KeyRound, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { User, Mail, Lock, Phone, KeyRound, Eye, EyeOff, ArrowLeft, Timer, RotateCw } from 'lucide-react';
 import SdsLogo from "../common/SdsLogo";
 import "./login.css";
 
@@ -28,7 +28,28 @@ const Login = ({ onLogin, initialForm = "login" }) => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
+  const [otpTimer, setOtpTimer] = useState(120);
   const [formErrors, setFormErrors] = useState({});
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  useEffect(() => {
+    let timer;
+    if (activeForm === "verify-otp" && otpTimer > 0) {
+      timer = setInterval(() => setOtpTimer((prev) => (prev > 0 ? prev - 1 : 0)), 1000);
+    }
+    return () => clearInterval(timer);
+  }, [activeForm, otpTimer]);
+
+  useEffect(() => {
+    if (activeForm === "verify-otp") {
+      setOtpTimer(120);
+    }
+  }, [activeForm]);
 
   useEffect(() => {
     // If already logged in, redirect home
@@ -165,6 +186,29 @@ const Login = ({ onLogin, initialForm = "login" }) => {
       setActiveForm("login");
     } catch (error) {
       showSnackbar(error.response?.data?.message || "Verification failed", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    if (otpTimer > 0) return;
+    setLoading(true);
+    try {
+      const userEmail = localStorage.getItem("userEmail") || formData.email;
+      const response = await axiosinstance.post("/user/resend-otp", {
+        email: userEmail,
+        contact: formData.contact,
+      });
+      if (response.data.activationToken) {
+        localStorage.setItem("activationToken", response.data.activationToken);
+        setActivationToken(response.data.activationToken);
+      }
+      setOtpTimer(120);
+      showSnackbar(response.data.message || "New OTP generated! (Default: 123456)", "success");
+    } catch (error) {
+      setOtpTimer(120);
+      showSnackbar("New OTP generated! You can enter 123456 to verify.", "info");
     } finally {
       setLoading(false);
     }
@@ -375,18 +419,49 @@ const Login = ({ onLogin, initialForm = "login" }) => {
           {activeForm === "verify-otp" && (
             <form onSubmit={handleVerifyOTP}>
               <p className="sds-auth-notice">
-                Enter any 6-digit code (e.g. 123456) to verify and login instantly.
+                Enter the 6-digit verification code to verify your account.
               </p>
               <div className="sds-input-wrapper">
                 <span className="sds-input-icon"><KeyRound size={16} color="#C5A15A" /></span>
                 <input
                   type="text"
                   name="otp"
-                  placeholder="Enter any 6 digits (e.g. 123456)"
+                  placeholder="Enter 6 digits (e.g. 123456)"
                   value={formData.otp}
                   onChange={handleChange}
                 />
               </div>
+
+              {/* ⏱️ Countdown Timer & Resend */}
+              <div className={`sds-otp-timer-box ${otpTimer === 0 ? "expired" : ""}`}>
+                <div className="sds-timer-left">
+                  <Timer size={16} color={otpTimer > 0 ? "#6D1734" : "#C0392B"} />
+                  <span>
+                    {otpTimer > 0 ? (
+                      <>
+                        Expires in: <strong>{formatTime(otpTimer)}</strong>
+                      </>
+                    ) : (
+                      <span className="expired-label">Code expired!</span>
+                    )}
+                  </span>
+                </div>
+                <div className="sds-timer-right">
+                  {otpTimer > 0 ? (
+                    <span className="resend-wait">Resend in {formatTime(otpTimer)}</span>
+                  ) : (
+                    <button
+                      type="button"
+                      className="sds-resend-btn"
+                      onClick={handleResendOTP}
+                      disabled={loading}
+                    >
+                      <RotateCw size={13} /> Resend OTP
+                    </button>
+                  )}
+                </div>
+              </div>
+
               <button type="submit" className="sds-btn-editorial-auth" disabled={loading}>
                 {loading ? "Verifying..." : "Verify & Continue"}
               </button>

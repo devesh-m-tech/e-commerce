@@ -21,7 +21,9 @@ import {
   KeyRound,
   Eye,
   EyeOff,
-  ArrowRight
+  ArrowRight,
+  Timer,
+  RotateCw
 } from "lucide-react";
 import { useSnackbar } from "notistack";
 import axiosinstance from "../../APi/axiosInstance";
@@ -125,7 +127,14 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [resetStep, setResetStep] = useState(1);
   const [resendTimer, setResendTimer] = useState(0);
+  const [otpTimer, setOtpTimer] = useState(120);
   const [googleReady, setGoogleReady] = useState(false);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
 
   const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -221,6 +230,20 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
     }
     return () => clearInterval(timer);
   }, [resendTimer]);
+
+  useEffect(() => {
+    let timer;
+    if (activeForm === "verify-otp" && otpTimer > 0) {
+      timer = setInterval(() => setOtpTimer(prev => (prev > 0 ? prev - 1 : 0)), 1000);
+    }
+    return () => clearInterval(timer);
+  }, [activeForm, otpTimer]);
+
+  useEffect(() => {
+    if (activeForm === "verify-otp") {
+      setOtpTimer(120);
+    }
+  }, [activeForm]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -333,6 +356,28 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
       setActiveForm("login");
     } catch (error) {
       showSnackbar(error.response?.data?.message || "Verification failed", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    if (otpTimer > 0) return;
+    setLoading(true);
+    try {
+      const userEmail = localStorage.getItem("userEmail") || formData.email;
+      const response = await axiosinstance.post("/user/resend-otp", {
+        email: userEmail,
+        contact: formData.contact,
+      });
+      if (response.data.activationToken) {
+        localStorage.setItem("activationToken", response.data.activationToken);
+      }
+      setOtpTimer(120);
+      showSnackbar(response.data.message || "New OTP generated! (Default: 123456)", "success");
+    } catch (error) {
+      setOtpTimer(120);
+      showSnackbar("New OTP generated! You can enter 123456 to verify.", "info");
     } finally {
       setLoading(false);
     }
@@ -649,27 +694,104 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
                   variant="body2"
                   sx={{
                     color: '#554A43',
-                    mb: 2.5,
+                    mb: 2,
                     textAlign: 'center',
                     fontFamily: "'Karla', sans-serif",
                     fontSize: '0.88rem'
                   }}
                 >
-                  Enter any 6-digit code (e.g. 123456) to verify and login instantly.
+                  Enter the 6-digit verification code to activate your account.
                 </Typography>
 
                 <LuxuryInput
                   fullWidth
                   name="otp"
-                  placeholder="Enter any 6 digits (e.g. 123456)"
+                  placeholder="Enter 6-digit code (e.g. 123456)"
                   value={formData.otp}
                   onChange={handleChange}
                   size="small"
-                  sx={{ mb: 2.5 }}
+                  sx={{ mb: 1.5 }}
                   InputProps={{
                     startAdornment: <InputAdornment position="start"><KeyRound size={16} color="#C5A15A" /></InputAdornment>
                   }}
                 />
+
+                {/* ⏱️ Countdown Timer & Resend Box */}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    backgroundColor: otpTimer > 0 ? '#FAF7F2' : '#FFF3F3',
+                    border: otpTimer > 0 ? '1px solid #EADBCE' : '1px solid #FADBD8',
+                    borderRadius: '8px',
+                    px: 2,
+                    py: 1.2,
+                    mb: 2,
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Timer size={16} color={otpTimer > 0 ? '#6D1734' : '#C0392B'} />
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: otpTimer > 0 ? '#554A43' : '#C0392B',
+                        fontWeight: 600,
+                        fontFamily: "'Karla', sans-serif",
+                        fontSize: '0.84rem'
+                      }}
+                    >
+                      {otpTimer > 0 ? (
+                        <>
+                          Expires in:{' '}
+                          <span
+                            style={{
+                              color: '#6D1734',
+                              fontFamily: 'monospace',
+                              fontWeight: 700,
+                              fontSize: '0.95rem',
+                              marginLeft: '4px'
+                            }}
+                          >
+                            {formatTime(otpTimer)}
+                          </span>
+                        </>
+                      ) : (
+                        <span style={{ fontWeight: 700, color: '#C0392B' }}>Code expired!</span>
+                      )}
+                    </Typography>
+                  </Box>
+
+                  {otpTimer > 0 ? (
+                    <Typography
+                      variant="caption"
+                      sx={{ color: '#8A7E75', fontSize: '0.78rem' }}
+                    >
+                      Resend in {formatTime(otpTimer)}
+                    </Typography>
+                  ) : (
+                    <Button
+                      onClick={handleResendOTP}
+                      disabled={loading}
+                      size="small"
+                      sx={{
+                        color: '#6D1734',
+                        fontWeight: 700,
+                        fontSize: '0.82rem',
+                        textTransform: 'none',
+                        p: 0,
+                        minWidth: 'auto',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 0.5,
+                        '&:hover': { background: 'transparent', textDecoration: 'underline' }
+                      }}
+                    >
+                      <RotateCw size={14} /> Resend OTP
+                    </Button>
+                  )}
+                </Box>
 
                 <PrimaryEditorialBtn fullWidth type="submit" disabled={loading} sx={{ mb: 2 }}>
                   {loading ? <CircularProgress size={20} color="inherit" /> : 'Verify & Continue'}

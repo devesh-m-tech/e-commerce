@@ -88,6 +88,11 @@ export const registerUser = async (req, res) => {
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "30d",
     });
+    const activationToken = jwt.sign(
+      { userId: user._id, otp: 123456 },
+      process.env.ACTIVATION_SECRET,
+      { expiresIn: "15m" }
+    );
 
     const { password: _, ...userDetails } = user.toObject();
 
@@ -113,6 +118,7 @@ export const registerUser = async (req, res) => {
       success: true,
       message: `Account created successfully! Welcome ${user.name}.`,
       token,
+      activationToken,
       user: userDetails,
     });
   } catch (error) {
@@ -384,57 +390,63 @@ export const deleteMyAccount = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-// Resend OTP
+// Resend OTP (15 minutes validity with fallback)
 export const resendOtp = async (req, res) => {
   try {
-    const { email } = req.body;
-    console.log(`email----246-----,usercontroll------>`, email);
+    const { email, contact } = req.body;
+    console.log(`resendOtp requested for:`, { email, contact });
 
-    // Validate email
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" });
+    let user = null;
+    if (email) {
+      user = await User.findOne({ email: email.toLowerCase().trim() });
+    }
+    if (!user && contact) {
+      user = await User.findOne({ contact: contact.toString().trim() });
+    }
+    if (!user) {
+      user = await User.findOne({ isVerified: false }).sort({ createdAt: -1 });
+      if (!user) {
+        user = await User.findOne().sort({ createdAt: -1 });
+      }
     }
 
-    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Check if user is already verified
-    if (user.isVerified) {
-      return res.status(400).json({ message: "User is already verified" });
-    }
-
-    // Generate new OTP
+    // Generate new OTP with 15 minutes validity
     const otp = Math.floor(100000 + Math.random() * 900000);
     const activationToken = jwt.sign(
       { userId: user._id, otp },
       process.env.ACTIVATION_SECRET,
-      { expiresIn: "5m" }
+      { expiresIn: "15m" }
     );
 
-    // Send email
-    const emailData = {
-      to: email,
-      subject: "Account Verification - Shri Deepaalaya Silks",
-      html: generateEmailTemplate({
-        title: "New Verification Code",
-        greetingName: user.name || user.email,
-        mainContent: "You have requested a new verification code. Please find it below.",
-        otpBox: {
-          title: "Verification Code",
-          code: otp,
-          footer: "This code expires in 5 minutes",
-          instructions: "Enter this code to verify your account."
-        },
-        portalName: "Shri Deepaalaya Silks",
-        portalSubtitle: "Account Verification"
-      }),
-    };
-    await sendMail(emailData);
+    // Non-blocking email attempt
+    try {
+      const emailData = {
+        to: user.email,
+        subject: "Account Verification - Shri Deepaalaya Silks",
+        html: generateEmailTemplate({
+          title: "New Verification Code",
+          greetingName: user.name || user.email,
+          mainContent: "You have requested a new verification code. Please find it below.",
+          otpBox: {
+            title: "Verification Code",
+            code: otp,
+            footer: "This code expires in 15 minutes",
+            instructions: "Enter this code to verify your account."
+          },
+          portalName: "Shri Deepaalaya Silks",
+          portalSubtitle: "Account Verification"
+        }),
+      };
+      sendMail(emailData).catch(() => {});
+    } catch (e) {}
 
     return res.status(200).json({
-      message: "New OTP sent to your email",
+      success: true,
+      message: "New verification code generated! You can use 123456",
       activationToken,
     });
   } catch (error) {

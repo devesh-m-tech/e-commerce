@@ -308,3 +308,63 @@
     padding: 20px 18px 24px;
   }
 }
+
+/* ── OTP Countdown Timer & Resend Box ── */
+.sds-otp-timer-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #FAF7F2;
+  border: 1px solid #EADBCE;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #554A43;
+  transition: all 0.3s ease;
+}
+
+.sds-otp-timer-box.expired {
+  background-color: #FFF3F3;
+  border-color: #FADBD8;
+}
+
+.sds-timer-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sds-timer-left strong {
+  color: #6D1734;
+  font-family: monospace;
+  font-size: 14px;
+  margin-left: 4px;
+}
+
+.sds-timer-left .expired-label {
+  color: #C0392B;
+  font-weight: 700;
+}
+
+.sds-timer-right .resend-wait {
+  color: #8A7E75;
+  font-size: 12px;
+}
+
+.sds-resend-btn {
+  background: transparent;
+  border: none;
+  color: #6D1734;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  font-size: 13px;
+}
+
+.sds-resend-btn:hover {
+  text-decoration: underline;
+}
