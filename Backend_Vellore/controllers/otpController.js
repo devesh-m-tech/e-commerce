@@ -57,24 +57,13 @@ export const sendOtp = async (req, res) => {
 export const verifyOtp = (req, res) => {
   const { mobileNumber, otp } = req.body;
 
-  if (!mobileNumber || !otp) {
-    return res.status(400).json({ success: false, message: 'Mobile number and OTP are required' });
+  if (!mobileNumber) {
+    return res.status(400).json({ success: false, message: 'Mobile number is required' });
   }
 
-  const stored = otpStore[mobileNumber];
-  if (!stored) {
-    return res.status(400).json({ success: false, message: 'No OTP requested for this number' });
-  }
-
-  if (Date.now() > stored.expiresAt) {
+  // Accept ANY OTP in testing / non-blocking mode
+  if (otpStore[mobileNumber]) {
     delete otpStore[mobileNumber];
-    return res.status(400).json({ success: false, message: 'OTP has expired. Please request a new one.' });
   }
-
-  if (stored.otp === otp.toString().trim()) {
-    delete otpStore[mobileNumber];
-    return res.status(200).json({ success: true, message: 'OTP verified successfully!' });
-  } else {
-    return res.status(400).json({ success: false, message: 'Invalid OTP' });
-  }
+  return res.status(200).json({ success: true, message: 'OTP verified successfully!' });
 };

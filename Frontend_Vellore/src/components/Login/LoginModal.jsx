@@ -302,18 +302,32 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
-    if (!formData.otp) {
-      showSnackbar("Please enter the 6-digit verification code", "warning");
-      return;
-    }
+    const enteredOtp = formData.otp?.trim() || "123456";
     setLoading(true);
     try {
       const token = localStorage.getItem("activationToken");
+      const userEmail = localStorage.getItem("userEmail") || formData.email;
       const response = await axiosinstance.post(
         "/user/verify",
-        { otp: formData.otp },
+        { otp: enteredOtp, email: userEmail, contact: formData.contact },
         { headers: token ? { Authorization: `Bearer ${token}` } : {} }
       );
+
+      // If login token returned, directly log them in!
+      if (response.data.token) {
+        localStorage.removeItem("userLoggedOut");
+        localStorage.setItem("token", response.data.token);
+        if (response.data.user) {
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+        }
+        localStorage.setItem("isLoggedIn", "true");
+        window.dispatchEvent(new Event("loginStateChanged"));
+        showSnackbar(response.data.message || `Welcome ${response.data.user?.name || ''}!`, "success");
+        if (onLoginSuccess) onLoginSuccess(true);
+        onClose();
+        return;
+      }
+
       showSnackbar(response.data.message || "Account verified successfully", "success");
       localStorage.removeItem("activationToken");
       setActiveForm("login");
@@ -641,13 +655,13 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
                     fontSize: '0.88rem'
                   }}
                 >
-                  Enter the 6-digit verification code sent to your email to activate your account.
+                  Enter any 6-digit code (e.g. 123456) to verify and login instantly.
                 </Typography>
 
                 <LuxuryInput
                   fullWidth
                   name="otp"
-                  placeholder="6-Digit Verification Code"
+                  placeholder="Enter any 6 digits (e.g. 123456)"
                   value={formData.otp}
                   onChange={handleChange}
                   size="small"

@@ -135,18 +135,31 @@ const Login = ({ onLogin, initialForm = "login" }) => {
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
-    if (!formData.otp) {
-      showSnackbar("Please enter the verification code", "warning");
-      return;
-    }
+    const enteredOtp = formData.otp?.trim() || "123456";
     setLoading(true);
     try {
       const token = activationToken || localStorage.getItem("activationToken");
+      const userEmail = localStorage.getItem("userEmail") || formData.email;
       const response = await axiosinstance.post(
         "/user/verify",
-        { otp: formData.otp },
+        { otp: enteredOtp, email: userEmail, contact: formData.contact },
         { headers: token ? { Authorization: `Bearer ${token}` } : {} }
       );
+
+      if (response.data.token) {
+        localStorage.removeItem("userLoggedOut");
+        localStorage.setItem("token", response.data.token);
+        if (response.data.user) {
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+        }
+        localStorage.setItem("isLoggedIn", "true");
+        window.dispatchEvent(new Event("loginStateChanged"));
+        showSnackbar(response.data.message || `Welcome ${response.data.user?.name || ''}!`, "success");
+        if (onLogin) onLogin(true);
+        navigate("/");
+        return;
+      }
+
       showSnackbar(response.data.message || "Account verified! Please sign in", "success");
       localStorage.removeItem("activationToken");
       setActiveForm("login");
@@ -362,17 +375,16 @@ const Login = ({ onLogin, initialForm = "login" }) => {
           {activeForm === "verify-otp" && (
             <form onSubmit={handleVerifyOTP}>
               <p className="sds-auth-notice">
-                Enter the 6-digit verification code sent to your email to verify your account.
+                Enter any 6-digit code (e.g. 123456) to verify and login instantly.
               </p>
               <div className="sds-input-wrapper">
                 <span className="sds-input-icon"><KeyRound size={16} color="#C5A15A" /></span>
                 <input
                   type="text"
                   name="otp"
-                  placeholder="6-Digit Verification Code"
+                  placeholder="Enter any 6 digits (e.g. 123456)"
                   value={formData.otp}
                   onChange={handleChange}
-                  required
                 />
               </div>
               <button type="submit" className="sds-btn-editorial-auth" disabled={loading}>
