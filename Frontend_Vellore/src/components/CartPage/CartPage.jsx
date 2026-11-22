@@ -2,16 +2,16 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft, ShoppingBag, LogIn, ShieldCheck,
-  Bookmark, Trash2, Zap, MapPin
+  Bookmark, Trash2, Zap, MapPin, CheckCircle2, Tag
 } from "lucide-react";
 import { useSnackbar } from "notistack";
 import "./CartPage.css";
 import { cartApi } from "../../APi/cartApi";
+import { couponApi } from "../../APi/couponApi";
 import { userApi, addToSaveForLater, removeFromSaveForLater, getSaveForLater } from "../../APi/userApi";
 import { transformImageUrl } from "../../APi/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import ModernLoader from "../Loading/ModernLoader";
-import { Tag } from "lucide-react";
 import CheckoutProgressBar from "./CheckoutProgressBar";
 
 /* ── Helpers ── */
@@ -43,11 +43,35 @@ const CartPage = () => {
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [deliveryData, setDeliveryData] = useState([]);
   const [isDeliveryDataLoaded, setIsDeliveryDataLoaded] = useState(false);
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(() => {
+    try {
+      const stored = localStorage.getItem("appliedCoupon");
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState("");
+  const [activeCoupons, setActiveCoupons] = useState([]);
 
   useEffect(() => {
     checkAuth();
     fetchDeliveryFees();
+    fetchActiveCoupons();
   }, []);
+
+  const fetchActiveCoupons = async () => {
+    try {
+      const res = await couponApi.getActiveCoupons();
+      if (res?.success && Array.isArray(res.coupons)) {
+        setActiveCoupons(res.coupons);
+      }
+    } catch (err) {
+      console.warn("Could not fetch active coupons:", err);
+    }
+  };
 
   const checkAuth = () => {
     const token = localStorage.getItem("token");
@@ -395,6 +419,37 @@ const CartPage = () => {
   };
 
 
+  const handleApplyCoupon = async (codeToApply) => {
+    if (!codeToApply || !codeToApply.trim()) return;
+    const clean = codeToApply.trim().toUpperCase();
+    try {
+      setCouponLoading(true);
+      setCouponError("");
+      const res = await couponApi.applyCoupon(clean, totalSellingPrice);
+      if (res?.success && res.coupon) {
+        setAppliedCoupon(res.coupon);
+        localStorage.setItem("appliedCoupon", JSON.stringify(res.coupon));
+        setCouponInput("");
+        enqueueSnackbar(res.message || `Coupon ${clean} applied!`, {
+          variant: "success",
+          autoHideDuration: 3000,
+        });
+      }
+    } catch (err) {
+      const msg = err.message || "Failed to apply coupon";
+      setCouponError(msg);
+      enqueueSnackbar(msg, { variant: "error", autoHideDuration: 3500 });
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    localStorage.removeItem("appliedCoupon");
+    enqueueSnackbar("Coupon removed", { variant: "info", autoHideDuration: 2000 });
+  };
+
   const handleCheckout = () => {
     if (!deliveryAddress) {
       setShowAddressModal(true);
@@ -402,7 +457,12 @@ const CartPage = () => {
     }
     setCheckoutProcessing(true);
     navigate("/CheckoutPage", {
-      state: { cart, totalAmount: cartSummary.finalAmount, isFromCart: true },
+      state: {
+        cart,
+        totalAmount: calculatedFinalTotal,
+        isFromCart: true,
+        appliedCoupon: appliedCoupon,
+      },
     });
   };
 
@@ -517,6 +577,26 @@ const CartPage = () => {
   }, 0);
 
   const totalDiscount = totalMrp - totalSellingPrice;
+
+  const calculatedCouponDiscount = (() => {
+    if (!appliedCoupon) return 0;
+    if (appliedCoupon.minOrderValue > 0 && totalSellingPrice < appliedCoupon.minOrderValue) {
+      return 0;
+    }
+    if (appliedCoupon.discountType === "percentage") {
+      let disc = Math.round((totalSellingPrice * appliedCoupon.discountValue) / 100);
+      if (appliedCoupon.maxDiscount && appliedCoupon.maxDiscount > 0) {
+        disc = Math.min(disc, appliedCoupon.maxDiscount);
+      }
+      return disc;
+    }
+    if (appliedCoupon.discountType === "flat") {
+      return Math.min(appliedCoupon.discountValue, totalSellingPrice);
+    }
+    return 0;
+  })();
+
+  const calculatedFinalTotal = Math.max(0, totalSellingPrice - calculatedCouponDiscount);
 
   /* ── Main layout ── */
   return (
@@ -805,6 +885,93 @@ const CartPage = () => {
         {/* ═══ RIGHT COLUMN — Price Details + Place Order ═══ */}
         <div className="cart-right">
 
+          {/* ── Boutique Coupon & Promo Codes ── */}
+          <div className="cart-coupon-box">
+            <div className="cart-coupon-title">
+              <Tag size={15} />
+              <span>Coupons & Offers</span>
+            </div>
+
+            {appliedCoupon ? (
+              <div className="cart-coupon-applied">
+                <div className="applied-info">
+                  <div className="applied-code-badge">
+                    <CheckCircle2 size={14} />
+                    <span>{appliedCoupon.code}</span>
+                  </div>
+                  <span className="applied-savings">
+                    {appliedCoupon.freeShipping
+                      ? "Free Air Shipping Applied"
+                      : `You save ₹${formatINR(calculatedCouponDiscount)}!`}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="cart-coupon-remove-btn"
+                  onClick={handleRemoveCoupon}
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <form
+                className="cart-coupon-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleApplyCoupon(couponInput);
+                }}
+              >
+                <div className="coupon-input-group">
+                  <input
+                    type="text"
+                    placeholder="Enter Coupon Code"
+                    value={couponInput}
+                    onChange={(e) => {
+                      setCouponInput(e.target.value.toUpperCase());
+                      setCouponError("");
+                    }}
+                    className="coupon-text-input"
+                  />
+                  <button
+                    type="submit"
+                    className="coupon-btn-apply"
+                    disabled={couponLoading || !couponInput.trim()}
+                  >
+                    {couponLoading ? "APPLYING..." : "APPLY"}
+                  </button>
+                </div>
+                {couponError && <div className="coupon-alert-msg">{couponError}</div>}
+              </form>
+            )}
+
+            {/* Quick Coupon Chips */}
+            {!appliedCoupon && activeCoupons.length > 0 && (
+              <div className="cart-coupon-chips">
+                <span className="chips-hint">Available Privileges:</span>
+                <div className="chips-row">
+                  {activeCoupons.slice(0, 4).map((c) => (
+                    <button
+                      key={c.code}
+                      type="button"
+                      className="coupon-chip"
+                      onClick={() => handleApplyCoupon(c.code)}
+                      title={c.description || c.title}
+                    >
+                      <span className="chip-name">{c.code}</span>
+                      <span className="chip-disc">
+                        {c.discountType === "percentage"
+                          ? `${c.discountValue}% OFF`
+                          : c.discountType === "flat"
+                          ? `₹${c.discountValue} OFF`
+                          : "FREE DELIVERY"}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="price-details11">
             <div className="price-details-title">Price Details</div>
             <div className="price-details-body">
@@ -817,8 +984,23 @@ const CartPage = () => {
               {/* Requirement 2: Discount (-price) */}
               {totalDiscount > 0 && (
                 <div className="price-row">
-                  <span>Discount</span>
+                  <span>Product Discount</span>
                   <span className="discount-text">− ₹{formatINR(totalDiscount)}</span>
+                </div>
+              )}
+
+              {/* Coupon Discount */}
+              {calculatedCouponDiscount > 0 && (
+                <div className="price-row coupon-row">
+                  <span>Coupon Discount ({appliedCoupon.code})</span>
+                  <span className="discount-text coupon-highlight">− ₹{formatINR(calculatedCouponDiscount)}</span>
+                </div>
+              )}
+
+              {appliedCoupon?.freeShipping && (
+                <div className="price-row coupon-row">
+                  <span>Delivery Privileges</span>
+                  <span className="discount-text coupon-highlight">FREE AIR DELIVERY</span>
                 </div>
               )}
 
@@ -827,14 +1009,14 @@ const CartPage = () => {
               {/* Requirement 3: Total Amount */}
               <div className="price-total">
                 <span>Total Amount</span>
-                <span>₹{formatINR(totalSellingPrice)}</span>
+                <span>₹{formatINR(calculatedFinalTotal)}</span>
               </div>
 
               {/* Requirement 3: Save price message */}
-              {totalDiscount > 0 && (
+              {(totalDiscount > 0 || calculatedCouponDiscount > 0) && (
                 <div className="savings-info">
                   <Tag size={14} strokeWidth={2.2} style={{ marginRight: "6px" }} />
-                  You will save ₹{formatINR(totalDiscount)} on this order
+                  You will save ₹{formatINR(totalDiscount + calculatedCouponDiscount)} on this order
                 </div>
               )}
             </div>

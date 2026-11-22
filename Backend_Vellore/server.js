@@ -27,6 +27,7 @@ import exchangeRoutes from "./routes/exchangeRoutes.js";
 import bannerRoutes from "./routes/bannerRoutes.js";
 import settingRoutes from "./routes/settingRoutes.js";
 import whatsappRoutes from "./routes/whatsappRoute.js";
+import couponRoutes from "./routes/couponRoutes.js";
 import { startWhatsAppWorker } from "./services/whatsapp/whatsappQueue.js";
 import { ALLOWED_ORIGINS } from "./config/envConfig.js";
 
@@ -113,6 +114,7 @@ app.use("/api/otp", otpRoutes);
 app.use("/api/banners", bannerRoutes);
 app.use("/api/settings", settingRoutes);
 app.use("/api", whatsappRoutes);
+app.use("/api/coupon", couponRoutes);
 
 app.get('/getlog', (req, res) => {
   const logPath = path.join(__dirname, 'logs', 'app.log');

@@ -594,12 +594,197 @@ body {
 /* ================================================================
    RIGHT PANEL — Price Details + Place Order
    ================================================================ */
+.cart-coupon-box {
+  background: var(--white);
+  border-radius: 4px;
+  box-shadow: var(--shadow);
+  padding: 16px 20px;
+  margin-top: -50px;
+  margin-bottom: 16px;
+  border: 1px solid #F0E6D8;
+}
+
+.cart-coupon-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #4D0E22;
+  margin-bottom: 12px;
+}
+
+.cart-coupon-title svg {
+  color: #8C6A28;
+}
+
+.coupon-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.coupon-text-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1.5px solid #D5C2AF;
+  border-radius: 4px;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #212121;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.coupon-text-input:focus {
+  border-color: #4D0E22;
+}
+
+.coupon-btn-apply {
+  background: #4D0E22;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 18px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.coupon-btn-apply:hover:not(:disabled) {
+  background: #6E1834;
+}
+
+.coupon-btn-apply:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.coupon-alert-msg {
+  color: #D32F2F;
+  font-size: 12px;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+.cart-coupon-applied {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #E8F5E9;
+  border: 1px solid #A5D6A7;
+  padding: 10px 14px;
+  border-radius: 4px;
+}
+
+.applied-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.applied-code-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #2E7D32;
+  font-weight: 700;
+  font-size: 13.5px;
+  letter-spacing: 0.5px;
+}
+
+.applied-savings {
+  font-size: 12px;
+  color: #1B5E20;
+  font-weight: 500;
+}
+
+.cart-coupon-remove-btn {
+  background: transparent;
+  border: none;
+  color: #D32F2F;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 8px;
+  text-decoration: underline;
+}
+
+.cart-coupon-remove-btn:hover {
+  color: #B71C1C;
+}
+
+.cart-coupon-chips {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed #E0D5C7;
+}
+
+.chips-hint {
+  font-size: 11px;
+  color: #7A696E;
+  text-transform: uppercase;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.coupon-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #FDF9F3;
+  border: 1px dashed #C8B097;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.coupon-chip:hover {
+  background: #F4EBE1;
+  border-color: #4D0E22;
+}
+
+.chip-name {
+  font-weight: 700;
+  font-size: 11.5px;
+  color: #4D0E22;
+}
+
+.chip-disc {
+  font-size: 10.5px;
+  background: #4D0E22;
+  color: #FFFFFF;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
 .price-details11 {
   background: var(--white);
   border-radius: 2px;
   box-shadow: var(--shadow);
   overflow: hidden;
-  margin-top: -50px;
+  margin-top: 0px;
+}
+
+.coupon-highlight {
+  color: #2E7D32 !important;
+  font-weight: 600;
 }
 
 .savings-info {

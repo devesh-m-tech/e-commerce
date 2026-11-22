@@ -910,6 +910,59 @@
   background: #2E6B38;
 }
 
+.sds-voucher-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.sds-voucher-min-pill {
+  font-size: 11px;
+  background: #F4EBE1;
+  color: #7A451A;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.sds-voucher-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.sds-apply-voucher-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: #FFFFFF;
+  color: #4D0E22;
+  border: 1.5px solid #4D0E22;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.sds-apply-voucher-btn:hover {
+  background: #FBF4F6;
+  border-color: #6E1834;
+}
+
+.sds-apply-voucher-btn.is-applied {
+  background: #2E6B38;
+  color: #FFFFFF;
+  border-color: #2E6B38;
+}
+
 /* ── Guarantee Card ── */
 .sds-guarantee-card {
   background: #FFFFFF;

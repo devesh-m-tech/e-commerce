@@ -36,6 +36,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     { text: 'Exchange Manage', icon: <SwapHorizIcon />, path: '/exchange-manage' },
     { text: 'Reports', icon: <AssessmentIcon />, path: '/reports' },
     { text: 'Deals', icon: <ShoppingBasketIcon />, path: '/deals' },
+    { text: 'Coupons & Offers', icon: <LocalOfferIcon />, path: '/offers' },
     { text: 'Shipping', icon: <LocalShippingIcon />, path: '/shipping' },
     { text: 'Admin Users', icon: <AdminPanelSettingsIcon />, path: '/admin-users' },
     { text: 'WhatsApp Logs', icon: <WhatsAppIcon />, path: '/whatsapp-logs' },

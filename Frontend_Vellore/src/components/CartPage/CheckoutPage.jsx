@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   MapPin, Plus, Edit2, Trash2, ChevronRight,
   CreditCard, Wallet, Smartphone, Building2, Package,
-  ShieldCheck, Tag, Star, Bookmark, Zap, Receipt, Info, Truck, Calendar
+  ShieldCheck, Tag, Star, Bookmark, Zap, Receipt, Info, Truck, Calendar,
+  CheckCircle2
 } from "lucide-react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,6 +13,7 @@ import Confetti from "react-confetti";
 import ConfettiExplosion from "react-confetti-explosion";
 import "./CheckoutPage.css";
 import { cartApi } from "../../APi/cartApi";
+import { couponApi } from "../../APi/couponApi";
 import { userApi, addToWishlist } from "../../APi/userApi";
 import { transformImageUrl } from "../../APi/utils";
 import ModernLoader from "../Loading/ModernLoader";
@@ -586,6 +588,96 @@ const CheckoutPage = () => {
   // Delivery data
   const [deliverydata, setdeliverydata] = useState([]);
   const [isDeliveryDataLoaded, setIsDeliveryDataLoaded] = useState(false);
+
+  // Promo code & coupon system
+  const [appliedCoupon, setAppliedCoupon] = useState(() => {
+    try {
+      if (location.state?.appliedCoupon) return location.state.appliedCoupon;
+      const stored = localStorage.getItem("appliedCoupon");
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [couponInput, setCouponInput] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState("");
+  const [activeCoupons, setActiveCoupons] = useState([]);
+
+  useEffect(() => {
+    fetchActiveCoupons();
+  }, []);
+
+  const fetchActiveCoupons = async () => {
+    try {
+      const res = await couponApi.getActiveCoupons();
+      if (res?.success && Array.isArray(res.coupons)) {
+        setActiveCoupons(res.coupons);
+      }
+    } catch (err) {
+      console.warn("Could not fetch active coupons in checkout:", err);
+    }
+  };
+
+  const handleApplyCoupon = async (codeToApply) => {
+    if (!codeToApply || !codeToApply.trim()) return;
+    const clean = codeToApply.trim().toUpperCase();
+    try {
+      setCouponLoading(true);
+      setCouponError("");
+      const res = await couponApi.applyCoupon(clean, cartSummary.subtotal);
+      if (res?.success && res.coupon) {
+        setAppliedCoupon(res.coupon);
+        localStorage.setItem("appliedCoupon", JSON.stringify(res.coupon));
+        setCouponInput("");
+        toast.success(res.message || `Coupon ${clean} applied!`);
+      }
+    } catch (err) {
+      const msg = err.message || "Failed to apply coupon";
+      setCouponError(msg);
+      toast.error(msg);
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    localStorage.removeItem("appliedCoupon");
+    toast.info("Coupon removed");
+  };
+
+  // Dynamic Coupon Calculations
+  const calculatedCouponDiscount = (() => {
+    if (!appliedCoupon) return 0;
+    if (appliedCoupon.minOrderValue > 0 && cartSummary.subtotal < appliedCoupon.minOrderValue) {
+      return 0;
+    }
+    if (appliedCoupon.discountType === "percentage") {
+      let disc = Math.round((cartSummary.subtotal * appliedCoupon.discountValue) / 100);
+      if (appliedCoupon.maxDiscount && appliedCoupon.maxDiscount > 0) {
+        disc = Math.min(disc, appliedCoupon.maxDiscount);
+      }
+      return disc;
+    }
+    if (appliedCoupon.discountType === "flat") {
+      return Math.min(appliedCoupon.discountValue, cartSummary.subtotal);
+    }
+    return 0;
+  })();
+
+  const effectiveShippingFee = (appliedCoupon?.freeShipping || appliedCoupon?.discountType === "free_shipping")
+    ? 0
+    : cartSummary.shippingfee;
+
+  const effectiveCashPayment = Math.max(
+    0,
+    cartSummary.subtotal +
+      cartSummary.platformFee +
+      effectiveShippingFee -
+      cartSummary.kaitCoinsUsed -
+      calculatedCouponDiscount
+  );
 
   // Voucher system
   const [useKaitCoins50, setUseKaitCoins50] = useState(false);
@@ -1184,7 +1276,7 @@ const CheckoutPage = () => {
       }
 
       const result = await cartApi.CreateRazorpay({
-        amount: +cartSummary.cashPayment.toFixed(2),
+        amount: +effectiveCashPayment.toFixed(2),
       });
 
       if (!result) {
@@ -1266,11 +1358,13 @@ const CheckoutPage = () => {
         },
         useKaitCoins: useKaitCoins50 || useKaitCoins100,
         kaitCoinsUsed: cartSummary.kaitCoinsUsed,
-        cashPayment: cartSummary.cashPayment,
+        cashPayment: effectiveCashPayment,
         paymentMethod: data.paymentMethod,
-        total: cartSummary.total,
-        shippingfee: cartSummary.shippingfee,
+        total: effectiveCashPayment,
+        shippingfee: effectiveShippingFee,
         platformFee: cartSummary.platformFee,
+        couponCode: appliedCoupon?.code || "",
+        couponDiscount: calculatedCouponDiscount,
         items: cartItems, // Send the current items (supports selective Buy Now)
         checkoutType: location.state?.isFromCart === false ? "BUY_NOW" : "CART",
         whatsappOptIn: whatsappConsent
@@ -1280,6 +1374,7 @@ const CheckoutPage = () => {
 
       if (orderresult.success) {
         toast.success("Order placed successfully!");
+        localStorage.removeItem("appliedCoupon");
         await cartApi.clearCart();
         navigate("/profile");
       } else {
@@ -1432,6 +1527,83 @@ const CheckoutPage = () => {
 
         {/* RIGHT COLUMN - PRICE SUMMARY */}
         <div className="checkout-right">
+
+          {/* ── Boutique Coupon & Promo Code Box ── */}
+          <div className="checkout-coupon-card">
+            <div className="coupon-header-row">
+              <Tag size={15} color="#8C6A28" />
+              <span>Have a Promo Code?</span>
+            </div>
+
+            {appliedCoupon ? (
+              <div className="checkout-coupon-applied">
+                <div className="applied-info">
+                  <div className="applied-code-pill">
+                    <CheckCircle2 size={14} />
+                    <span>{appliedCoupon.code}</span>
+                  </div>
+                  <span className="applied-desc">
+                    {appliedCoupon.freeShipping
+                      ? "Free Air Delivery applied!"
+                      : `Saving ₹${formatINR(calculatedCouponDiscount)} on this order`}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="coupon-remove-btn"
+                  onClick={handleRemoveCoupon}
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <form
+                className="checkout-coupon-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleApplyCoupon(couponInput);
+                }}
+              >
+                <div className="coupon-input-row">
+                  <input
+                    type="text"
+                    placeholder="Enter Coupon Code"
+                    value={couponInput}
+                    onChange={(e) => {
+                      setCouponInput(e.target.value.toUpperCase());
+                      setCouponError("");
+                    }}
+                    className="checkout-coupon-input"
+                  />
+                  <button
+                    type="submit"
+                    className="checkout-coupon-btn"
+                    disabled={couponLoading || !couponInput.trim()}
+                  >
+                    {couponLoading ? "..." : "APPLY"}
+                  </button>
+                </div>
+                {couponError && <div className="coupon-checkout-err">{couponError}</div>}
+              </form>
+            )}
+
+            {/* Quick Chips */}
+            {!appliedCoupon && activeCoupons.length > 0 && (
+              <div className="checkout-chips-row">
+                {activeCoupons.slice(0, 3).map((c) => (
+                  <button
+                    key={c.code}
+                    type="button"
+                    className="checkout-chip-btn"
+                    onClick={() => handleApplyCoupon(c.code)}
+                  >
+                    {c.code}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div className="price-summary-card">
             <div className="price-summary-title">Price Details</div>
             <div className="price-summary-body">
@@ -1462,61 +1634,46 @@ const CheckoutPage = () => {
 
               <div className="price-row">
                 <span className="price-row-label"><Truck size={14} /> Delivery Charges</span>
-                {cartSummary.shippingfee <= 0 ? (
+                {effectiveShippingFee <= 0 ? (
                   <span className="discount-text">FREE</span>
                 ) : (
-                  <span>₹{formatINR(cartSummary.shippingfee)}</span>
+                  <span>₹{formatINR(effectiveShippingFee)}</span>
                 )}
               </div>
 
-              {/* {hasVoucherEligibleItems && (
-                <>
-                  {hasvoucher50 && (
-                    <div className="voucher-option">
-                      <label className="voucher-label">
-                        <input
-                          type="checkbox"
-                          checked={useKaitCoins50}
-                          onChange={handleUseKaitCoins50Change}
-                        />
-                        <div className="voucher-info">
-                          <span className="voucher-title">Use Voucher (50%)</span>
-                          <span className="voucher-balance">Balance: ₹{formatINR(userInfo?.walletBalance || 0)}</span>
-                          {useKaitCoins50 && (
-                            <span className="voucher-applied">
-                              ₹{formatINR(Math.min(userInfo?.walletBalance || 0, voucherSubtotal50 * 0.5))} applied
-                            </span>
-                          )}
-                        </div>
-                      </label>
-                    </div>
-                  )}
-                </>
+              {/* Coupon Discount Row */}
+              {calculatedCouponDiscount > 0 && (
+                <div className="price-row coupon-applied-row">
+                  <span className="price-row-label">
+                    <Tag size={14} className="discount-text" /> Coupon ({appliedCoupon.code})
+                  </span>
+                  <span className="discount-text coupon-highlight">− ₹{formatINR(calculatedCouponDiscount)}</span>
+                </div>
               )}
 
-              {hasVoucherEligibleItems && (useKaitCoins50 || useKaitCoins100) && (
-                <>
-                  <div className="price-row">
-                    <span>Voucher Discount ({useKaitCoins50 ? "50%" : "100%"})</span>
-                    <span className="discount-text">− ₹{formatINR(cartSummary.kaitCoinsUsed)}</span>
-                  </div>
-                </>
-              )} */}
+              {appliedCoupon?.freeShipping && (
+                <div className="price-row coupon-applied-row">
+                  <span className="price-row-label">
+                    <Tag size={14} className="discount-text" /> Delivery Privilege
+                  </span>
+                  <span className="discount-text coupon-highlight">FREE AIR SHIPPING</span>
+                </div>
+              )}
 
               <hr className="price-divider" />
 
               <div className="price-total">
                 <span className="price-row-label">
                   <CreditCard size={18} />
-                  {hasVoucherEligibleItems && (useKaitCoins50 || useKaitCoins100) ? "Amount Payable" : "Total Amount"}
+                  Total Amount
                 </span>
-                <span>₹{formatINR(cartSummary.cashPayment)}</span>
+                <span>₹{formatINR(effectiveCashPayment)}</span>
               </div>
 
-              {cartSummary.totalSavings > 0 && (
+              {(cartSummary.totalSavings > 0 || calculatedCouponDiscount > 0) && (
                 <div className="savings-info">
                   <Tag size={14} />
-                  You will save ₹{formatINR(cartSummary.totalSavings)} on this order
+                  You will save ₹{formatINR((cartSummary.totalSavings || 0) + calculatedCouponDiscount)} on this order
                 </div>
               )}
             </div>
@@ -1534,7 +1691,7 @@ const CheckoutPage = () => {
               onClick={handlePlaceOrder}
               disabled={isProcessing || !selectedPayment}
             >
-              {isProcessing ? "PROCESSING..." : `PAY ₹${formatINR(cartSummary.cashPayment)}`}
+              {isProcessing ? "PROCESSING..." : `PAY ₹${formatINR(effectiveCashPayment)}`}
             </button>
           )}
           <div className="summary-secure1">
@@ -1548,7 +1705,7 @@ const CheckoutPage = () => {
       <div className="mobile-checkout-footer">
         <div className="mobile-footer-price">
           <span className="price-label">Total Amount</span>
-          <span className="price-value">₹{formatINR(cartSummary.cashPayment)}</span>
+          <span className="price-value">₹{formatINR(effectiveCashPayment)}</span>
         </div>
         {currentStep === 2 && (
           <button className="mobile-primary-btn" onClick={handleContinueToPayment}>

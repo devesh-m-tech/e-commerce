@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Clock,
   Percent,
@@ -11,10 +11,13 @@ import {
   ChevronRight,
   HelpCircle,
   Gem,
-  Store
+  Store,
+  CheckCircle2,
+  ShoppingBag
 } from "lucide-react";
 import Heading from "../Heading";
 import { getAllDeals } from "../../APi/deals";
+import { couponApi } from "../../APi/couponApi";
 import "./DealsPage.css";
 
 // Fallback authentic luxury deals if backend has no active deals or API fails
@@ -178,16 +181,79 @@ const CATEGORIES = [
 ];
 
 const DealsPage = () => {
+  const navigate = useNavigate();
   const [deals, setDeals] = useState([]);
+  const [coupons, setCoupons] = useState(PROMO_VOUCHERS);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All Offers");
   const [copiedCode, setCopiedCode] = useState("");
+  const [appliedCode, setAppliedCode] = useState(() => {
+    try {
+      const stored = localStorage.getItem("appliedCoupon");
+      return stored ? JSON.parse(stored)?.code || "" : "";
+    } catch {
+      return "";
+    }
+  });
   const [timeLeft, setTimeLeft] = useState({ days: 18, hours: 14, minutes: 32, seconds: 40 });
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
     fetchDeals();
+    fetchCoupons();
   }, []);
+
+  const fetchCoupons = async () => {
+    try {
+      const res = await couponApi.getActiveCoupons();
+      if (res?.success && Array.isArray(res.coupons) && res.coupons.length > 0) {
+        const mapped = res.coupons.map((c) => ({
+          _id: c._id,
+          code: c.code,
+          badge: c.badge || "Special Silk Courtesy",
+          discount:
+            c.discountType === "percentage"
+              ? `Flat ${c.discountValue}% OFF`
+              : c.discountType === "flat"
+              ? `₹${c.discountValue.toLocaleString("en-IN")} OFF`
+              : "Free Air Shipping",
+          desc:
+            c.description ||
+            (c.minOrderValue > 0
+              ? `Valid on orders above ₹${c.minOrderValue.toLocaleString("en-IN")}`
+              : "Valid on all eligible orders"),
+          expiry: c.endDate
+            ? `Valid till ${new Date(c.endDate).toLocaleDateString("en-IN", { month: "short", day: "numeric" })}`
+            : "Valid till Festive Season",
+          discountType: c.discountType,
+          discountValue: c.discountValue,
+          minOrderValue: c.minOrderValue || 0,
+        }));
+        setCoupons(mapped);
+      }
+    } catch (err) {
+      console.warn("Could not fetch dynamic coupons, using defaults:", err);
+    }
+  };
+
+  const handleApplyVoucher = (voucher) => {
+    try {
+      const couponObj = {
+        code: voucher.code,
+        discountType: voucher.discountType || "percentage",
+        discountValue: voucher.discountValue || 10,
+        minOrderValue: voucher.minOrderValue || 0,
+        title: voucher.discount || voucher.title || voucher.code,
+        badge: voucher.badge,
+        freeShipping: voucher.discountType === "free_shipping" || voucher.code === "FREESHIP",
+      };
+      localStorage.setItem("appliedCoupon", JSON.stringify(couponObj));
+      setAppliedCode(voucher.code);
+      window.dispatchEvent(new Event("couponUpdated"));
+    } catch (e) {
+      console.error("Failed to apply voucher:", e);
+    }
+  };
 
   // Real-time ticking countdown
   useEffect(() => {
@@ -594,18 +660,26 @@ const DealsPage = () => {
             </div>
 
             <div className="sds-vouchers-grid">
-              {PROMO_VOUCHERS.map((v) => {
+              {coupons.map((v) => {
                 const isCopied = copiedCode === v.code;
+                const isApplied = appliedCode === v.code;
                 return (
                   <div key={v.code} className="sds-voucher-card">
                     <div className="sds-voucher-left">
                       <div className="sds-voucher-badge">{v.badge}</div>
                       <div className="sds-voucher-discount">{v.discount}</div>
                       <p className="sds-voucher-desc">{v.desc}</p>
-                      <span className="sds-voucher-expiry">
-                        <Clock size={12} />
-                        <span>{v.expiry}</span>
-                      </span>
+                      <div className="sds-voucher-meta-row">
+                        <span className="sds-voucher-expiry">
+                          <Clock size={12} />
+                          <span>{v.expiry}</span>
+                        </span>
+                        {v.minOrderValue > 0 && (
+                          <span className="sds-voucher-min-pill">
+                            Min Order ₹{v.minOrderValue.toLocaleString("en-IN")}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     <div className="sds-voucher-divider">
@@ -617,23 +691,49 @@ const DealsPage = () => {
                     <div className="sds-voucher-right">
                       <span className="sds-code-label">PROMO CODE</span>
                       <div className="sds-code-val">{v.code}</div>
-                      <button
-                        type="button"
-                        className={`sds-copy-btn ${isCopied ? "is-copied" : ""}`}
-                        onClick={() => handleCopyCode(v.code)}
-                      >
-                        {isCopied ? (
-                          <>
-                            <Check size={14} />
-                            <span>COPIED!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy size={14} />
-                            <span>COPY CODE</span>
-                          </>
-                        )}
-                      </button>
+                      <div className="sds-voucher-btns">
+                        <button
+                          type="button"
+                          className={`sds-copy-btn ${isCopied ? "is-copied" : ""}`}
+                          onClick={() => handleCopyCode(v.code)}
+                        >
+                          {isCopied ? (
+                            <>
+                              <Check size={14} />
+                              <span>COPIED!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy size={14} />
+                              <span>COPY CODE</span>
+                            </>
+                          )}
+                        </button>
+
+                        <button
+                          type="button"
+                          className={`sds-apply-voucher-btn ${isApplied ? "is-applied" : ""}`}
+                          onClick={() => {
+                            if (isApplied) {
+                              navigate("/cart");
+                            } else {
+                              handleApplyVoucher(v);
+                            }
+                          }}
+                        >
+                          {isApplied ? (
+                            <>
+                              <CheckCircle2 size={14} />
+                              <span>APPLIED (CART &rarr;)</span>
+                            </>
+                          ) : (
+                            <>
+                              <ShoppingBag size={14} />
+                              <span>APPLY IN CART</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );

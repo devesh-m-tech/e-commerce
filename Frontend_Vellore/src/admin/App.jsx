@@ -25,7 +25,7 @@ import Reports from './pages/Reports';
 import Banners from './pages/Banners';
 import Settings from './pages/Settings';
 import WhatsAppLogs from './pages/WhatsAppLogs';
-// import Offers from './pages/Offers';
+import Offers from './pages/Offers';
 import { SnackbarProvider } from 'notistack';
 import { OrderNotificationProvider } from './context/OrderNotificationContext';
 import './index.css';
@@ -274,7 +274,8 @@ const App = () => {
                 <Route path="transaction-history" element={<TransactionHistory />} />
                 <Route path="combo-offers" element={<ComboOffers />} />
                 <Route path="deals" element={<Deals />} />
-                {/* <Route path="offers" element={<Offers />} /> */}
+                <Route path="offers" element={<Offers />} />
+                <Route path="coupons" element={<Offers />} />
                 <Route path="admin-users" element={<AdminUsers />} />
                 <Route path="users" element={<Users />} />
                 <Route path="users/:id" element={<UserDetails />} />

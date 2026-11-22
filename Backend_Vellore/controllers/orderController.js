@@ -1,4 +1,5 @@
 import { Order } from "../models/order.js";
+import { Coupon } from "../models/Coupon.js";
 import PDFDocument from "pdfkit";
 import { Cart } from "../models/Cart.js";
 import productModel from "../models/Product.js";
@@ -262,7 +263,9 @@ export const createCartOrder = async (req, res) => {
       kaitCoinsUsed,
       total,
       shippingfee,
-      cashPayment
+      cashPayment,
+      couponCode = "",
+      couponDiscount = 0
     } = req.body;
     console.log("System: Order body received:", { paymentMethod, PaymentId, itemsCount: items?.length });
 
@@ -379,7 +382,8 @@ export const createCartOrder = async (req, res) => {
       shippingCharges = subtotal > 500 ? 0 : 40;
     }
 
-    const totalToPay = subtotal + platformFee + shippingCharges;
+    const calculatedDiscount = Math.max(0, parseFloat(couponDiscount || 0));
+    const calculatedFinal = Math.max(0, subtotal + platformFee + shippingCharges - calculatedDiscount);
 
     const order = await Order.create([{
       user: userId,
@@ -388,7 +392,10 @@ export const createCartOrder = async (req, res) => {
       totalAmount: subtotal,
       platformFee: parseFloat(platformFee),
       shippingCharges: parseFloat(shippingCharges),
-      finalAmount: subtotal + platformFee + shippingCharges,
+      discount: calculatedDiscount,
+      couponCode: couponCode ? String(couponCode).trim().toUpperCase() : "",
+      couponDiscount: calculatedDiscount,
+      finalAmount: calculatedFinal,
       PaymentId,
       paymentMethod: paymentMethod === "ONLINE" ? "RAZORPAY/VOUCHER" : paymentMethod,
       kaitCoinsUsed: useKaitCoins ? parseFloat(kaitCoinsUsed) : 0,
@@ -398,6 +405,18 @@ export const createCartOrder = async (req, res) => {
     }]);
 
     const newOrder = order[0];
+
+    // Increment coupon usage count if coupon applied
+    if (couponCode) {
+      try {
+        await Coupon.findOneAndUpdate(
+          { code: String(couponCode).trim().toUpperCase() },
+          { $inc: { usedCount: 1 } }
+        );
+      } catch (cErr) {
+        console.error("Coupon usage increment error:", cErr.message);
+      }
+    }
 
     // Wallet Deduction
     if (useKaitCoins) {
