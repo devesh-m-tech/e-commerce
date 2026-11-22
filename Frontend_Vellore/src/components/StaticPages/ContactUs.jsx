@@ -115,9 +115,8 @@ const ContactUs = () => {
 
             {/* Quick Policy Reminder */}
             <div className="sds-contact-policy-alert">
-              <strong>Looking to Exchange an Item?</strong>
-              Please note our store follows a Strict No-Return Policy. If you received a damaged item or weave flaw, please submit a request directly through our{" "}
-              <a href="/exchange-request">Online Exchange Portal</a> with video proof within 7 days of delivery.
+              <strong>Authentic Handloom Assurance:</strong>
+              Please note our boutique follows a Strict No-Return & No-Exchange Policy to ensure every pure silk saree delivered is 100% untouched and pristine directly from the master weavers of Vellore.
             </div>
           </div>
 

@@ -1696,7 +1696,7 @@ const CheckoutPage = () => {
           )}
           <div className="summary-secure1">
             <ShieldCheck size={18} color="#878787" style={{ flexShrink: 0, marginTop: 1 }} />
-            <span>100% Authentic Handloom Silks. Safe & Secure Payments. Strict No-Return & Controlled Exchange Policy.</span>
+            <span>100% Authentic Handloom Silks. Safe & Secure Payments. Strict No-Return & No-Exchange Policy.</span>
           </div>
         </div>
       </div>

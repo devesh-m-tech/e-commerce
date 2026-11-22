@@ -1116,8 +1116,8 @@ const SdsHomePage = () => {
             <div className="sds-guarantee-item">
               <ShieldCheck size={20} className="sds-guarantee-icon" />
               <div>
-                <strong>7-Day Easy Exchange</strong>
-                <span>Hassle-free size & color swaps</span>
+                <strong>Direct Weaver Authenticity</strong>
+                <span>100% Pure silk handlooms directly from Vellore</span>
               </div>
             </div>
             <div className="sds-guarantee-sep" aria-hidden="true" />

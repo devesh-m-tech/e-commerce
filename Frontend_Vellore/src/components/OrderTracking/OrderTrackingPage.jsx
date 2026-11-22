@@ -9,7 +9,6 @@ import {
   FiAlertCircle,
   FiMapPin,
   FiCalendar,
-  FiRefreshCw,
   FiArrowRight,
 } from "react-icons/fi";
 import { orderApi } from "../../APi/orderApi";
@@ -309,14 +308,6 @@ const OrderTrackingPage = () => {
                 <div className="sds-tracking-total-paid">
                   Total Paid: <strong>₹{(order.finalAmount || order.totalAmount || 0).toLocaleString("en-IN")}</strong> via {order.paymentMethod || "Online"}
                 </div>
-                {order.orderStatus === "DELIVERED" && (
-                  <Link
-                    to={`/exchange-request?orderId=${order._id}&orderNumber=${order.orderNumber || order._id}`}
-                    className="sds-tracking-exchange-btn"
-                  >
-                    <FiRefreshCw size={13} /> Request Item Exchange
-                  </Link>
-                )}
               </div>
             </div>
           </div>

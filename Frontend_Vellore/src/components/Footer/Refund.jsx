@@ -2,41 +2,36 @@ import React, { useState } from 'react';
 import './Refund.css';
 
 const Refund = () => {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(true);
 
     const policyData = [
         {
-            category: "Lifestyle Items",
+            category: "Pure Silk Sarees & Handlooms",
             items: [
                 {
-                    type: "Jewellery, Sari, Dress, Women's Top, etc.",
-                    window: "3 days",
-                    action: "Replacement Only"
-                },
-                {
-                    type: "Footwear, Watch, Winter Wear",
-                    window: "3 days",
-                    action: "Refund, Replacement or Exchange"
+                    type: "Kanchipuram Silk, Banarasi, Tussar, Soft Silk, Cotton Silks",
+                    window: "No Returns / Exchanges",
+                    action: "Strictly Non-Returnable & Non-Exchangeable (Handloom Purity Guarantee)"
                 }
             ]
         },
         {
-            category: "Electronics",
+            category: "Bridal Muhurtham Collection",
             items: [
                 {
-                    type: "Trimmer, Mobile Phones (except Apple & Google)",
-                    window: "7 days",
-                    action: "Replacement only"
+                    type: "Pure Zari Wedding Sarees, Customized Bridal Silks",
+                    window: "No Returns / Exchanges",
+                    action: "Strictly Non-Returnable & Non-Exchangeable (Untouched Pristine Fabric)"
                 }
             ]
         },
         {
-            category: "Home & Living",
+            category: "Heirloom Jewellery & Accessories",
             items: [
                 {
-                    type: "Home Improvement Tools, Household Items",
-                    window: "3 days",
-                    action: "Refund or replacement"
+                    type: "Temple Jewellery, Antique Sets, Jhumkas, Necklaces",
+                    window: "No Returns / Exchanges",
+                    action: "Strictly Non-Returnable & Non-Exchangeable (Hygiene & Sanctity Standards)"
                 }
             ]
         }
@@ -45,20 +40,20 @@ const Refund = () => {
     return (
         <div className={`refund-policy ${isOpen ? 'open' : ''}`}>
             <div className="refund-header" onClick={() => setIsOpen(!isOpen)}>
-                <h2>Refund Policy</h2>
+                <h2>Strict No-Return & No-Exchange Policy</h2>
                 <span className={`arrow ${isOpen ? 'up' : 'down'}`}></span>
             </div>
             
             <div className="refund-content">
                 <div className="policy-intro">
-                    <p>Returns is a scheme provided by respective sellers directly under this policy in terms of which the option of exchange, replacement and/ or refund is offered by the respective sellers to you.</p>
+                    <p>At <strong>Shri Deepaalaya Silks</strong>, every handcrafted pure silk saree and heirloom jewellery creation is thoroughly inspected, steamed, and packaged in pristine condition. Because our products are delicate, authentic handloom masterpieces and sacred wedding garments, <strong>we maintain a strict No-Return and No-Exchange policy</strong>.</p>
                     
                     <div className="important-note">
-                        <h3>Important Notes:</h3>
+                        <h3>Our Handloom Standards:</h3>
                         <ul>
-                            <li>Items sold up to ₹200/- are not eligible for returns/exchange</li>
-                            <li>For products priced above ₹200/-, a return fee of ₹40/- is applicable</li>
-                            <li>Replacement and exchange are provided free of cost</li>
+                            <li>All orders are final sale and are not eligible for returns or exchanges.</li>
+                            <li>No size, color, or alternate product swaps are permitted once delivered.</li>
+                            <li>Orders may be cancelled exclusively prior to dispatch from our facility.</li>
                         </ul>
                     </div>
                 </div>
@@ -80,20 +75,6 @@ const Refund = () => {
                             </div>
                         </div>
                     ))}
-                </div>
-
-                <div className="cancellation-policy">
-                    <h3>Cancellation Policy</h3>
-                    <p>Cancellations are not allowed for certain products post 24 hours from the time the order is placed by the customer until the delivery of the product by the delivery agent. Customers can cancel the product while being delivered by the delivery agent or refuse to accept the product at the time of delivery.</p>
-                </div>
-
-                <div className="special-cases">
-                    <h3>Special Cases</h3>
-                    <ul>
-                        <li>Non-returnable items: Wind Instruments (due to hygiene and personal wellness)</li>
-                        <li>Electronics: May require troubleshooting before replacement</li>
-                        <li>Only one replacement shall be provided per order</li>
-                    </ul>
                 </div>
             </div>
         </div>

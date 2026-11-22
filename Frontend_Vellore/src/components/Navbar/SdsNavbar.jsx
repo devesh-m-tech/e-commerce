@@ -53,7 +53,6 @@ const NAV_LINKS = [
 
 const DRAWER_HELP_LINKS = [
   { label: 'Track Order', path: '/order-tracking' },
-  { label: 'Exchange Request', path: '/exchange-request' },
   { label: 'Contact Us', path: '/contact-us' },
 ];
 

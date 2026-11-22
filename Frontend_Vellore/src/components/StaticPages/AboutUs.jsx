@@ -251,7 +251,7 @@ const AboutUs = () => {
                   </p>
                   <div className="sds-about-card-callout">
                     <strong>Our Purity Standard:</strong>
-                    Because each creation is an authentic, delicate handloom masterpiece, we maintain a strict <strong>No-Return Policy</strong> to guarantee that every garment you receive is brand-new, untouched, and pristine. Verified transit damages or manufacturing flaws are supported under our controlled 7-day exchange program.
+                    Because each creation is an authentic, delicate handloom masterpiece, we maintain a strict <strong>No-Return & No-Exchange Policy</strong> to guarantee that every garment you receive is brand-new, untouched, and pristine directly from the master weavers of Vellore.
                   </div>
                 </div>
               </TiltedCard>

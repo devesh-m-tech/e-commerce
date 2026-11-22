@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
 import './ReturnRefundPolicy.css';
 import {
-  FaCalendarAlt, FaInfoCircle, FaShieldAlt, FaCheckCircle,
+  FaCalendarAlt, FaShieldAlt, FaCheckCircle,
   FaExclamationTriangle, FaTruck, FaUndo,
   FaPhone, FaEnvelope, FaMapMarkerAlt,
-  FaTimesCircle, FaExchangeAlt
+  FaTimesCircle, FaGem, FaHandHoldingHeart
 } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 const sections = [
-  { id: 1, icon: FaTimesCircle,    title: 'Strict No-Return & No-Refund Policy' },
-  { id: 2, icon: FaCheckCircle,    title: 'Controlled Exchange Eligibility (7 Days)' },
-  { id: 3, icon: FaExclamationTriangle, title: 'Mandatory Proof & Tags Requirement' },
-  { id: 4, icon: FaShieldAlt,      title: 'Non-Exchangeable Categories' },
-  { id: 5, icon: FaExchangeAlt,    title: 'Step-by-Step Exchange Process' },
-  { id: 6, icon: FaTruck,          title: 'Reverse Pickup & Verification' },
-  { id: 7, icon: FaUndo,           title: 'Pre-Dispatch Order Cancellations' },
-  { id: 8, icon: FaPhone,          title: 'Store Contact & Assistance' },
+  { id: 1, icon: FaTimesCircle,        title: 'Strict No-Return & No-Refund Policy' },
+  { id: 2, icon: FaTimesCircle,        title: 'Strict No-Exchange Policy' },
+  { id: 3, icon: FaGem,                title: 'The Sanctity of Bridal Silks' },
+  { id: 4, icon: FaHandHoldingHeart,   title: 'Authentic Handloom Characteristics' },
+  { id: 5, icon: FaTruck,              title: 'Transit Safety & Delivery Protocol' },
+  { id: 6, icon: FaUndo,               title: 'Pre-Dispatch Order Cancellations' },
+  { id: 7, icon: FaPhone,              title: 'Store Contact & Fabric Care Assistance' },
 ];
 
 const ReturnRefundPolicy = () => {
@@ -36,21 +35,24 @@ const ReturnRefundPolicy = () => {
         <div className="rr-hero-inner">
           <div className="rr-hero-badge">
             <FaShieldAlt />
-            <span>Shri Deepaalaya Silks</span>
+            <span>Shri Deepaalaya Silks • Vellore</span>
           </div>
-          <h1 className="rr-hero-title">No-Return & Controlled Exchange Policy</h1>
+          <h1 className="rr-hero-title">Strict No-Return & No-Exchange Policy</h1>
           <p className="rr-hero-sub">
-            Each silk saree and heirloom product at Shri Deepaalaya Silks is handcrafted with exquisite precision. Please review our strict no-return and transparent exchange guidelines before purchase.
+            Each silk saree and heirloom product at Shri Deepaalaya Silks is handcrafted with exquisite precision by our master weavers. To guarantee that every patron receives a 100% brand-new, untouched creation, we maintain a strict No-Return and No-Exchange policy.
           </p>
           <div className="rr-hero-meta">
             <span className="rr-meta-chip">
-              <FaCalendarAlt /> Effective: 2024–2025
+              <FaCalendarAlt /> Effective: 2024–2026
             </span>
             <span className="rr-meta-chip">
               <FaTimesCircle /> No Monetary Refunds
             </span>
             <span className="rr-meta-chip">
-              <FaCheckCircle /> 7-Day Controlled Exchange
+              <FaTimesCircle /> No Exchanges Allowed
+            </span>
+            <span className="rr-meta-chip">
+              <FaCheckCircle /> 100% Silk Mark Certified
             </span>
           </div>
         </div>
@@ -65,18 +67,18 @@ const ReturnRefundPolicy = () => {
           </div>
           <div className="rr-stat-divider" />
           <div className="rr-stat">
-            <span className="rr-stat-value">7 Days</span>
-            <span className="rr-stat-label">Exchange Request Window</span>
-          </div>
-          <div className="rr-stat-divider" />
-          <div className="rr-stat">
-            <span className="rr-stat-value">Mandatory</span>
-            <span className="rr-stat-label">Photos & Video Proof</span>
+            <span className="rr-stat-value">No Exchanges</span>
+            <span className="rr-stat-label">Untouched Purity Standard</span>
           </div>
           <div className="rr-stat-divider" />
           <div className="rr-stat">
             <span className="rr-stat-value">100% Inspected</span>
-            <span className="rr-stat-label">Pure Silk Verification</span>
+            <span className="rr-stat-label">Pure Silk Mark Verification</span>
+          </div>
+          <div className="rr-stat-divider" />
+          <div className="rr-stat">
+            <span className="rr-stat-value">Safe Transit</span>
+            <span className="rr-stat-label">Tamper-Proof Insured Shipping</span>
           </div>
         </div>
       </div>
@@ -102,8 +104,8 @@ const ReturnRefundPolicy = () => {
                 ))}
               </ul>
               <div className="rr-toc-footer">
-                <Link to="/exchange-request" className="rr-toc-action-btn">
-                  Open Exchange Portal &rarr;
+                <Link to="/contact-us" className="rr-toc-action-btn">
+                  Contact Silk Care Desk &rarr;
                 </Link>
               </div>
             </div>
@@ -125,12 +127,12 @@ const ReturnRefundPolicy = () => {
               </div>
               <div className="rr-sec-body">
                 <p>
-                  At <strong>Shri Deepaalaya Silks</strong>, every pure silk saree, tissue zari fabric, and traditional heirloom creation is inspected individually by our master weavers prior to packaging and dispatch. Due to the delicate nature of pure silk, hand-woven zari, and custom bridal sarees, <strong>we strictly do not accept returns or issue monetary refunds under any circumstances</strong>.
+                  At <strong>Shri Deepaalaya Silks</strong>, every pure silk saree, tissue zari fabric, and traditional bridal heirloom is individually steamed, quality-checked, and authenticated by our master craftsmen prior to packaging and dispatch. Due to the delicate nature of pure silk, real silver/gold zari, and bridal wear sanctity, <strong>we strictly do not accept returns or issue monetary refunds under any circumstances</strong>.
                 </p>
                 <div className="rr-callout warning">
                   <FaExclamationTriangle className="rr-callout-icon" />
                   <div>
-                    <strong>Important Notice:</strong> Orders once placed and delivered are non-refundable. All sales are final. Customers are requested to examine sizing, color swatches, and fabric descriptions carefully before placing an order.
+                    <strong>Important Notice:</strong> Orders once placed and delivered are non-refundable. All sales are final. Customers are requested to examine sizing, color nuances, motifs, and fabric descriptions carefully before placing an order.
                   </div>
                 </div>
               </div>
@@ -139,27 +141,27 @@ const ReturnRefundPolicy = () => {
             {/* Section 2 */}
             <section id="rr-section-2" className="rr-section">
               <div className="rr-sec-header">
-                <div className="rr-sec-icon-wrap primary">
-                  <FaCheckCircle />
+                <div className="rr-sec-icon-wrap danger">
+                  <FaTimesCircle />
                 </div>
                 <div>
                   <span className="rr-sec-num">Section 2</span>
-                  <h2 className="rr-sec-title">Controlled Exchange Eligibility (7 Days)</h2>
+                  <h2 className="rr-sec-title">Strict No-Exchange Policy</h2>
                 </div>
               </div>
               <div className="rr-sec-body">
                 <p>
-                  While returns are not permitted, we provide a structured <strong>Controlled Exchange Policy</strong> within <strong>7 days</strong> of delivery strictly for eligible criteria:
+                  In accordance with the sacred heritage of our bridal and handloom attire, <strong>we do not offer exchanges for any item</strong>, including size changes, color swaps, or alternate product selections.
                 </p>
                 <ul className="rr-list">
                   <li>
-                    <strong>Manufacturing Flaws:</strong> Significant weave defect, torn fabric, or damaged zari thread identified upon unboxing.
+                    <strong>No Size or Color Exchanges:</strong> We do not accept exchanges for fit, color preference, or change of mind after delivery.
                   </li>
                   <li>
-                    <strong>Incorrect Item Received:</strong> Delivery of an item that differs completely in SKU, design, or color from the order confirmation.
+                    <strong>No Product Replacements:</strong> Because each saree is a single unique loom piece, individual swaps cannot be facilitated.
                   </li>
                   <li>
-                    <strong>Size Mismatch:</strong> In garments with ready stitching (e.g. readymade blouses or kurtis), an exchange for a different size of the exact same design is permitted subject to stock availability.
+                    <strong>Untouched Hygiene & Sanctity:</strong> To uphold religious sanctity and hygiene for auspicious occasions, sarees once delivered to a patron are never restocked or re-issued.
                   </li>
                 </ul>
               </div>
@@ -168,41 +170,41 @@ const ReturnRefundPolicy = () => {
             {/* Section 3 */}
             <section id="rr-section-3" className="rr-section">
               <div className="rr-sec-header">
-                <div className="rr-sec-icon-wrap accent">
-                  <FaExclamationTriangle />
+                <div className="rr-sec-icon-wrap primary">
+                  <FaGem />
                 </div>
                 <div>
                   <span className="rr-sec-num">Section 3</span>
-                  <h2 className="rr-sec-title">Mandatory Proof & Tags Requirement</h2>
+                  <h2 className="rr-sec-title">The Sanctity of Bridal & Heirloom Silks</h2>
                 </div>
               </div>
               <div className="rr-sec-body">
                 <p>
-                  To prevent misuse and protect authentic artisan silk, exchange requests must satisfy the following strict criteria:
+                  A Muhurtham silk saree is not merely attire; it is an auspicious blessing passed down through generations. Our patrons trust Shri Deepaalaya Silks because every order received is guaranteed to be:
                 </p>
                 <div className="rr-grid-2">
                   <div className="rr-card">
-                    <h4>1. Continuous Unboxing Video</h4>
+                    <h4>1. 100% Virgin Handloom</h4>
                     <p>
-                      An uncut video starting from showing the sealed outer parcel label, opening the package, and revealing the defect or error.
+                      Comes directly off the master weaver's pitloom, completely unworn, untried, and unhandled by third parties.
                     </p>
                   </div>
                   <div className="rr-card">
-                    <h4>2. Original Tags & Folds</h4>
+                    <h4>2. Pure Silk Mark Certified</h4>
                     <p>
-                      The product must be in its original pristine fold with all silk authenticity tags, price tags, and packaging intact and untampered.
+                      Affixed with the authorized National Silk Mark label certifying genuine natural mulberry and tussar silk threads.
                     </p>
                   </div>
                   <div className="rr-card">
-                    <h4>3. Unused & Unworn</h4>
+                    <h4>3. Master Craftsman Inspected</h4>
                     <p>
-                      Items must not have been worn, washed, ironed, perfumed, or altered in any manner (no fall/pico stitching performed).
+                      Each meter of silk and zari undergo rigorous 3-tier physical verification before being placed in bespoke protective cases.
                     </p>
                   </div>
                   <div className="rr-card">
-                    <h4>4. 7-Day Window</h4>
+                    <h4>4. Sacred & Auspicious</h4>
                     <p>
-                      The exchange request must be initiated through our portal within 7 calendar days from the courier delivery timestamp.
+                      Treated with utmost reverence so your wedding, temple visit, or festival is graced by an untouched garment.
                     </p>
                   </div>
                 </div>
@@ -212,23 +214,28 @@ const ReturnRefundPolicy = () => {
             {/* Section 4 */}
             <section id="rr-section-4" className="rr-section">
               <div className="rr-sec-header">
-                <div className="rr-sec-icon-wrap neutral">
-                  <FaShieldAlt />
+                <div className="rr-sec-icon-wrap accent">
+                  <FaHandHoldingHeart />
                 </div>
                 <div>
                   <span className="rr-sec-num">Section 4</span>
-                  <h2 className="rr-sec-title">Non-Exchangeable Categories</h2>
+                  <h2 className="rr-sec-title">Authentic Handloom Characteristics</h2>
                 </div>
               </div>
               <div className="rr-sec-body">
                 <p>
-                  The following items are completely ineligible for exchanges:
+                  Authentic handloom weaving is a human art, not a mechanized plastic output. The following characteristics are natural badges of genuine weaver craftsmanship and are celebrated hallmarks of pure silk:
                 </p>
                 <ul className="rr-list">
-                  <li>Customized, tailored, or altered sarees (including sarees with Fall & Pico stitched or blouse fabric cut).</li>
-                  <li>Sarees purchased during Clearance, Festive Flash Sales, or marked as "Final Sale".</li>
-                  <li>Subtle natural variations in handloom texture, slubs, or hand-spun zari threads (these are hallmarks of genuine handwoven craftsmanship, not defects).</li>
-                  <li>Minor color variations arising from digital screen resolutions or photography lighting.</li>
+                  <li>
+                    <strong>Natural Slubs & Thread Nuances:</strong> Slight variations in hand-reeled silk thread thickness or weft density reflect the rhythm of the artisan's shuttle.
+                  </li>
+                  <li>
+                    <strong>Hand-Knotted Zari Ends:</strong> Traditional pallu and border transitions often feature hand-twisted fringe threads characteristic of authentic Kanchipuram Korvai techniques.
+                  </li>
+                  <li>
+                    <strong>Subtle Hue Variations:</strong> Hand-dyed silk yarns can display gentle variations across daylight and warm evening lighting.
+                  </li>
                 </ul>
               </div>
             </section>
@@ -236,61 +243,32 @@ const ReturnRefundPolicy = () => {
             {/* Section 5 */}
             <section id="rr-section-5" className="rr-section">
               <div className="rr-sec-header">
-                <div className="rr-sec-icon-wrap info">
-                  <FaExchangeAlt />
+                <div className="rr-sec-icon-wrap success">
+                  <FaTruck />
                 </div>
                 <div>
                   <span className="rr-sec-num">Section 5</span>
-                  <h2 className="rr-sec-title">Step-by-Step Exchange Process</h2>
+                  <h2 className="rr-sec-title">Transit Safety & Delivery Protocol</h2>
                 </div>
               </div>
               <div className="rr-sec-body">
-                <ol className="rr-steps">
-                  <li>
-                    <strong>Step 1 — Submit Request Online:</strong> Go to the <Link to="/exchange-request" style={{ color: '#6D1734', fontWeight: 'bold' }}>Exchange Portal</Link> or click "Request Exchange" under your delivered order in My Orders.
-                  </li>
-                  <li>
-                    <strong>Step 2 — Upload Verification Proof:</strong> Upload clear photographs of the product, the defect area, tags, and the unboxing video proof.
-                  </li>
-                  <li>
-                    <strong>Step 3 — Administrative Review:</strong> Our quality assurance team will examine the uploaded evidence within 24–48 business hours.
-                  </li>
-                  <li>
-                    <strong>Step 4 — Reverse Pickup:</strong> Upon approval, our courier partner will collect the item from your delivery address.
-                  </li>
-                  <li>
-                    <strong>Step 5 — Physical Verification & Replacement:</strong> Once received at our Vellore facility and verified, a fresh replacement piece will be dispatched immediately.
-                  </li>
-                </ol>
+                <p>
+                  Every dispatch is securely packaged in weatherproof, tamper-evident security boxes and fully insured during transit through premier national air cargo partners.
+                </p>
+                <p>
+                  In the extremely rare event that your outer shipping parcel arrives physically tampered or damaged by the courier partner, <strong>please refuse delivery from the courier agent</strong> or notify our customer support desk within 24 hours with photographs of the unopened tamper box.
+                </p>
               </div>
             </section>
 
             {/* Section 6 */}
             <section id="rr-section-6" className="rr-section">
               <div className="rr-sec-header">
-                <div className="rr-sec-icon-wrap success">
-                  <FaTruck />
-                </div>
-                <div>
-                  <span className="rr-sec-num">Section 6</span>
-                  <h2 className="rr-sec-title">Reverse Pickup & Verification</h2>
-                </div>
-              </div>
-              <div className="rr-sec-body">
-                <p>
-                  Reverse pickup is arranged free of charge for approved manufacturing defects or wrong item deliveries. Please ensure the saree is securely packed in its original box with all accompanying certificates and invoices. If reverse pickup is unserviceable at your pincode, our support team will guide you through standard insured dispatch.
-                </p>
-              </div>
-            </section>
-
-            {/* Section 7 */}
-            <section id="rr-section-7" className="rr-section">
-              <div className="rr-sec-header">
                 <div className="rr-sec-icon-wrap warning">
                   <FaUndo />
                 </div>
                 <div>
-                  <span className="rr-sec-num">Section 7</span>
+                  <span className="rr-sec-num">Section 6</span>
                   <h2 className="rr-sec-title">Pre-Dispatch Order Cancellations</h2>
                 </div>
               </div>
@@ -301,27 +279,27 @@ const ReturnRefundPolicy = () => {
               </div>
             </section>
 
-            {/* Section 8 */}
-            <section id="rr-section-8" className="rr-section">
+            {/* Section 7 */}
+            <section id="rr-section-7" className="rr-section">
               <div className="rr-sec-header">
                 <div className="rr-sec-icon-wrap primary">
                   <FaPhone />
                 </div>
                 <div>
-                  <span className="rr-sec-num">Section 8</span>
-                  <h2 className="rr-sec-title">Store Contact & Assistance</h2>
+                  <span className="rr-sec-num">Section 7</span>
+                  <h2 className="rr-sec-title">Store Contact & Fabric Care Assistance</h2>
                 </div>
               </div>
               <div className="rr-sec-body">
                 <p>
-                  For assistance regarding your exchange request or questions on fabric care, our dedicated customer desk is available:
+                  For styling guidance, blouse tailoring inquiries, or fabric care consultations, our silk specialists at our Vellore flagship showroom are always happy to assist you:
                 </p>
                 <div className="rr-contact-grid">
                   <div className="rr-contact-card">
                     <FaEnvelope className="rr-contact-icon" />
                     <strong>Email Support</strong>
                     <a href="mailto:care@shrideepaalayasilks.com">care@shrideepaalayasilks.com</a>
-                    <span>Response within 24 hours</span>
+                    <span>Prompt reply within 24 hours</span>
                   </div>
                   <div className="rr-contact-card">
                     <FaPhone className="rr-contact-icon" />
@@ -331,8 +309,8 @@ const ReturnRefundPolicy = () => {
                   </div>
                   <div className="rr-contact-card">
                     <FaMapMarkerAlt className="rr-contact-icon" />
-                    <strong>Store Address</strong>
-                    <span>Gandhi Road, Vellore, Tamil Nadu - 632004</span>
+                    <strong>Flagship Showroom</strong>
+                    <span>Gandhi Road, Near Fort Round, Vellore, Tamil Nadu - 632004</span>
                   </div>
                 </div>
               </div>

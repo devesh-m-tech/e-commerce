@@ -8,7 +8,6 @@ import {
   FiClock,
   FiStar,
   FiXCircle,
-  FiRefreshCw,
 } from "react-icons/fi";
 import {
   formatProfessionalDate,
@@ -225,16 +224,7 @@ const OrderDetailsPage = ({
                             <span>Rate & Review</span>
                           </button>
                         )}
-                        {isDelivered && (
-                          <Link
-                            to={`/exchange-request?orderId=${order._id}&orderNumber=${order.orderNumber || order._id}&productId=${product._id || ''}&productName=${encodeURIComponent(product.pName || '')}&variantId=${item.variant || ''}`}
-                            className="profile-btn profile-btn-sm profile-btn-outline"
-                            style={{ textDecoration: "none", borderColor: "#7c3aed", color: "#7c3aed" }}
-                          >
-                            <FiRefreshCw />
-                            <span>Request Exchange</span>
-                          </Link>
-                        )}
+
                       </div>
                     </div>
                   </div>

@@ -31,12 +31,12 @@ const settingSchema = new mongoose.Schema(
       autoCancelUnpaidHours: { type: Number, default: 24 }
     },
     exchangePolicy: {
-      enableExchange: { type: Boolean, default: true },
-      exchangeWindowDays: { type: Number, default: 7 },
-      requireUnboxingVideo: { type: Boolean, default: true },
+      enableExchange: { type: Boolean, default: false },
+      exchangeWindowDays: { type: Number, default: 0 },
+      requireUnboxingVideo: { type: Boolean, default: false },
       policyNotice: {
         type: String,
-        default: "Exchanges accepted within 7 days of delivery with original tags, Silk Mark intact, and mandatory unboxing video."
+        default: "Strict No-Return & No-Exchange Policy. Every authentic handloom creation is carefully inspected and untouched."
       }
     },
     taxCurrency: {

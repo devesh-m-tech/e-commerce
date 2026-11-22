@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { SnackbarProvider } from "notistack";
 import SdsNavbar from "./components/Navbar/SdsNavbar";
 import AnnouncementBar from "./components/common/AnnouncementBar";
@@ -46,7 +46,6 @@ import BrandProducts from "./components/Brand/BrandProducts";
 import WishlistPage from "./components/Wishlist/WishlistPage";
 import SdsFooter from "./components/Footer/SdsFooter";
 import Login from "./components/Login/login";
-import ExchangeRequestPage from "./components/Exchange/ExchangeRequestPage";
 import OrderTrackingPage from "./components/OrderTracking/OrderTrackingPage";
 import ContactUs from "./components/StaticPages/ContactUs";
 import AboutUs from "./components/StaticPages/AboutUs";
@@ -235,7 +234,7 @@ const App = () => {
             <Route path="/wishlist" element={<WishlistPage />} />
             <Route path="/login" element={<Login onLogin={handleLogin} initialForm="login" />} />
             <Route path="/signup" element={<Login onLogin={handleLogin} initialForm="register" />} />
-            <Route path="/exchange-request" element={<ExchangeRequestPage />} />
+            <Route path="/exchange-request" element={<Navigate to="/no-return-exchange-policy" replace />} />
             <Route path="/order-tracking" element={<OrderTrackingPage />} />
             <Route path="/track-order" element={<OrderTrackingPage />} />
             <Route path="/no-return-exchange-policy" element={<ReturnRefundPolicy />} />

@@ -26,13 +26,12 @@ const QUICK_LINKS = [
   { name: "Women's Wear",       path: '/category/cat_womens_wear' },
   { name: 'Heirloom Jewellery', path: '/category/cat_jewellery' },
   { name: 'Track Order',        path: '/order-tracking' },
-  { name: 'Exchange Request',   path: '/exchange-request' },
   { name: 'About Us',           path: '/about-us' },
   { name: 'Contact Showroom',   path: '/contact-us' },
 ];
 
 const POLICY_LINKS = [
-  { name: 'No-Return & Exchange Policy', path: '/no-return-exchange-policy' },
+  { name: 'No-Return & No-Exchange Policy', path: '/no-return-exchange-policy' },
   { name: 'Shipping Policy',             path: '/ShippingPolicy' },
   { name: 'Privacy Policy',              path: '/PrivacyPolicy' },
   { name: 'Terms & Conditions',          path: '/terms-and-conditions' },
