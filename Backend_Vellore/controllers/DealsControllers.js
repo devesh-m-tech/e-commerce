@@ -130,6 +130,13 @@ export const adddeals = async (req, res) => {
 // get all deals
 export const getAlldeals = async (req, res) => {
   try {
+    const now = new Date();
+    // Auto-update status of deals whose endDate has passed
+    await deals.updateMany(
+      { endDate: { $lt: now }, status: "active" },
+      { status: "expired" }
+    );
+
     const allDeals = await deals
       .find()
       .populate({

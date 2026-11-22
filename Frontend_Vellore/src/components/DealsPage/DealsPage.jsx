@@ -195,7 +195,38 @@ const DealsPage = () => {
       return "";
     }
   });
-  const [timeLeft, setTimeLeft] = useState({ days: 18, hours: 14, minutes: 32, seconds: 40 });
+
+  // Calculate live remaining time based on deal's actual endDate from Admin Panel
+  const calculateRemaining = (endDateStr) => {
+    if (!endDateStr) {
+      return { days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: false, formattedDate: "" };
+    }
+    const target = new Date(endDateStr).getTime();
+    if (isNaN(target)) {
+      return { days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: false, formattedDate: "" };
+    }
+    const diff = target - Date.now();
+    const formattedDate = new Date(endDateStr).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+
+    if (diff <= 0) {
+      return { days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true, formattedDate };
+    }
+
+    return {
+      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((diff / (1000 * 60)) % 60),
+      seconds: Math.floor((diff / 1000) % 60),
+      isExpired: false,
+      formattedDate,
+    };
+  };
+
+  const [timeLeft, setTimeLeft] = useState(() => calculateRemaining(FALLBACK_DEALS[0].endDate));
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -255,21 +286,6 @@ const DealsPage = () => {
     }
   };
 
-  // Real-time ticking countdown
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (!prev) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
-        if (prev.minutes > 0) return { ...prev, minutes: 59, seconds: 59 };
-        if (prev.hours > 0) return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        if (prev.days > 0) return { ...prev, days: prev.days - 1, hours: 23, minutes: 59, seconds: 59 };
-        return prev;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
   const fetchDeals = async () => {
     try {
       setLoading(true);
@@ -282,8 +298,17 @@ const DealsPage = () => {
         ? res
         : [];
 
-      // Filter active deals
-      const activeDeals = rawDeals.filter(
+      // Sort deals so that currently active unexpired deals (endDate > now) are prioritized first
+      const now = Date.now();
+      const sortedDeals = [...rawDeals].sort((a, b) => {
+        const aActive = (!a.status || a.status === "active") && new Date(a.endDate).getTime() > now;
+        const bActive = (!b.status || b.status === "active") && new Date(b.endDate).getTime() > now;
+        if (aActive && !bActive) return -1;
+        if (!aActive && bActive) return 1;
+        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+      });
+
+      const activeDeals = sortedDeals.filter(
         (d) => !d?.status || d.status === "active"
       );
 
@@ -387,6 +412,20 @@ const DealsPage = () => {
 
   const heroDeal = (Array.isArray(deals) && deals.length > 0) ? deals[0] : FALLBACK_DEALS[0];
 
+  // Dynamic live ticking countdown connected directly to heroDeal.endDate from Admin Panel
+  useEffect(() => {
+    const targetDate = heroDeal?.endDate;
+    if (!targetDate) return;
+
+    setTimeLeft(calculateRemaining(targetDate));
+
+    const timer = setInterval(() => {
+      setTimeLeft(calculateRemaining(targetDate));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [heroDeal?.endDate]);
+
   return (
     <>
       <Heading
@@ -455,11 +494,11 @@ const DealsPage = () => {
                   <h2 className="sds-spotlight-title">{heroDeal.title || "Festive Pure Silk Offer"}</h2>
                   <p className="sds-spotlight-desc">{heroDeal.content || "Limited period celebratory discount on authentic pure silk weaves."}</p>
 
-                  {/* Real-Time Countdown Timer */}
+                  {/* Real-Time Countdown Timer dynamically connected to Admin End Date */}
                   <div className="sds-countdown-wrap">
                     <span className="sds-countdown-label">
                       <Clock size={14} />
-                      <span>Special Offer Ends In:</span>
+                      <span>{timeLeft?.isExpired ? "Special Offer Concluded" : "Special Offer Ends In:"}</span>
                     </span>
                     <div className="sds-countdown-grid">
                       <div className="sds-time-box">
@@ -482,6 +521,13 @@ const DealsPage = () => {
                         <span className="sds-time-sub">Secs</span>
                       </div>
                     </div>
+                    {timeLeft?.formattedDate && (
+                      <span className="sds-countdown-date-hint">
+                        {timeLeft.isExpired
+                          ? `(Offer concluded on ${timeLeft.formattedDate})`
+                          : `(Valid till ${timeLeft.formattedDate})`}
+                      </span>
+                    )}
                   </div>
 
                   <div className="sds-spotlight-actions">

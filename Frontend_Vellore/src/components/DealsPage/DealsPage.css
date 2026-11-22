@@ -289,6 +289,17 @@
   line-height: 1.2;
 }
 
+.sds-countdown-date-hint {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8C6A28;
+  letter-spacing: 0.3px;
+  background: #F4EBE1;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
 .sds-time-sub {
   font-size: 9px;
   text-transform: uppercase;
