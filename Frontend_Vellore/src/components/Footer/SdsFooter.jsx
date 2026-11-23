@@ -140,6 +140,9 @@ const SdsFooter = () => {
           <p className="sds-footer-copyright">
             © {year} Shri Deepaalaya Silks. All rights reserved.
           </p>
+          <p className="sds-footer-designer">
+            Designed by <span className="sds-designer-name">Devesh M</span>
+          </p>
           <div className="sds-footer-bottom-links">
             <Link to="/PrivacyPolicy"        className="sds-footer-bottom-link">Privacy</Link>
             <span className="sds-footer-bottom-sep">·</span>

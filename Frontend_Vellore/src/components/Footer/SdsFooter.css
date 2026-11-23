@@ -186,6 +186,19 @@
   color: rgba(255, 255, 255, 0.45);
 }
 
+.sds-footer-designer {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.3px;
+  margin: 0;
+}
+
+.sds-footer-designer .sds-designer-name {
+  color: var(--color-gold, #c5a15a);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
 .sds-footer-bottom-links {
   display: flex;
   align-items: center;
@@ -213,4 +226,10 @@
 @media (max-width: 600px) {
   .sds-footer-grid { grid-template-columns: 1fr; }
   .sds-footer-top .sds-footer-inner { flex-direction: column; align-items: flex-start; }
+  .sds-footer-bottom-inner {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    gap: 0.5rem;
+  }
 }
