@@ -591,6 +591,69 @@ const ProductDetail = () => {
     fetchProduct();
   }, [id, enqueueSnackbar]);
 
+  // ── Live Stock Polling & Window Focus Synchronization ────────────────
+  useEffect(() => {
+    if (!id) return;
+
+    const refreshLiveStock = async () => {
+      try {
+        const res = await productApi.getProductById(id);
+        if (res?.success && res.product) {
+          setProduct((prev) => {
+            if (!prev) return res.product;
+            return {
+              ...prev,
+              pStock: res.product.pStock,
+              pQuantity: res.product.pQuantity,
+              variants: res.product.variants,
+            };
+          });
+
+          if (res.product._id) {
+            const vRes = await productApi.getProductVariants(res.product._id);
+            if (vRes?.success && vRes.variants) {
+              const activeVars = vRes.variants.filter(
+                (v) => String(v?.status).toLowerCase() === "active"
+              );
+              setVariants(activeVars);
+              setSelectedVariant((currentSelected) => {
+                if (!currentSelected) return activeVars[0] || null;
+                const match = activeVars.find(
+                  (v) => String(v._id) === String(currentSelected._id)
+                );
+                return match || activeVars[0] || null;
+              });
+            }
+          }
+        }
+      } catch (e) {
+        // Silent background update
+      }
+    };
+
+    const handleWindowFocus = () => {
+      if (document.visibilityState === "visible") {
+        refreshLiveStock();
+      }
+    };
+
+    window.addEventListener("focus", handleWindowFocus);
+    document.addEventListener("visibilitychange", handleWindowFocus);
+
+    // Refresh stock every 15 seconds to ensure live count reflection
+    const stockPollInterval = setInterval(() => {
+      if (document.visibilityState === "visible") {
+        refreshLiveStock();
+      }
+    }, 15000);
+
+    return () => {
+      window.removeEventListener("focus", handleWindowFocus);
+      document.removeEventListener("visibilitychange", handleWindowFocus);
+      clearInterval(stockPollInterval);
+    };
+  }, [id]);
+
   useEffect(() => {
     if (product?.variants && Array.isArray(product.variants) && variants.length === 0) {
       const activeVariants = product.variants.filter(

@@ -604,6 +604,7 @@ export const getProductById = async (req, res) => {
     // const canonicalUrl = getProductCanonicalUrl(product.id);
     // const structuredData = generateProductStructuredData(product.schemaMarkup);
 
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
     res.status(200).json({
       success: true,
       product: {

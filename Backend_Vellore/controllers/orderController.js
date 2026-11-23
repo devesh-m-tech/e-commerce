@@ -129,18 +129,33 @@ export const createDirectOrder = async (req, res) => {
 
     // if (product.pStock < quantity) throw new Error("Insufficient stock");
 
-    // Validate variant if provided
+    // Validate variant if provided (or auto-detect default variant if product has variants)
     let variantPrice = product.pPrice;
-    if (variantId) {
-      const variant = await ProductVariant.findById(variantId);
+    let targetVariantId = variantId;
+    if (!targetVariantId) {
+      const vars = await ProductVariant.find({ productId });
+      if (vars && vars.length > 0) {
+        const defVar = vars.find(v => v.isDefault) || vars[0];
+        targetVariantId = defVar._id;
+      }
+    }
+
+    if (targetVariantId) {
+      const variant = await ProductVariant.findById(targetVariantId);
       if (!variant) throw new Error("Variant not found");
-      if (variant.stock < quantity) throw new Error("Insufficient variant stock");
+      if (variant.stock < quantity) throw new Error(`Insufficient stock for selected option. Only ${variant.stock} left in stock.`);
       variantPrice = variant.price || variant.vPrice || product.pPrice;
 
       // Update variant stock
-      await ProductVariant.findByIdAndUpdate(variantId, {
+      await ProductVariant.findByIdAndUpdate(targetVariantId, {
         $inc: { stock: -quantity }
       });
+    } else {
+      const currentStock = Math.min(
+        product.pStock !== undefined ? product.pStock : Infinity,
+        product.pQuantity !== undefined ? product.pQuantity : Infinity
+      );
+      if (currentStock < quantity) throw new Error(`Insufficient stock for ${product.pName}. Only ${Math.max(0, currentStock)} left in stock.`);
     }
 
     // Calculate amounts (Recalculate for security)
@@ -175,13 +190,23 @@ export const createDirectOrder = async (req, res) => {
 
     await order.save();
 
-    // Update main product stock
+    // Update main product stock (both pStock and pQuantity)
     await productModel.findByIdAndUpdate(productId, {
       $inc: {
         pStock: -quantity,
+        pQuantity: -quantity,
         pSold: quantity,
       },
     });
+
+    // Keep product pStock and pQuantity in exact sync with total variant stock
+    const remainingVars = await ProductVariant.find({ productId });
+    if (remainingVars && remainingVars.length > 0) {
+      const totalVarStock = remainingVars.reduce((sum, v) => sum + (v.stock || 0), 0);
+      await productModel.findByIdAndUpdate(productId, {
+        $set: { pStock: Math.max(0, totalVarStock), pQuantity: Math.max(0, totalVarStock) }
+      });
+    }
 
     // Handle Wallet logic
     if (useKaitCoins) {
@@ -312,29 +337,63 @@ export const createCartOrder = async (req, res) => {
       if (!product) throw new Error(`Product not found`);
       // if (product.pStock < item.quantity) throw new Error(`Insufficient stock for ${product.pName}`);
 
+      const targetVariantId = item.variantId?._id || item.variantId || item.variant?._id || item.variant;
+
       let itemPrice = product.pPrice;
-      if (item.variantId) {
-        const variant = await ProductVariant.findById(item.variantId);
+      if (targetVariantId) {
+        const variant = await ProductVariant.findById(targetVariantId);
         if (!variant) throw new Error("Variant not found");
-        if (variant.stock < item.quantity) throw new Error(`Insufficient stock for variant of ${product.pName}`);
+        if (variant.stock < item.quantity) {
+          throw new Error(`Insufficient stock for ${product.pName} (${variant.attributes?.size || 'Selected Option'}). Only ${variant.stock} left in stock.`);
+        }
         itemPrice = variant.price || variant.vPrice || product.pPrice;
 
         // Update Variant Stock
-        await ProductVariant.findByIdAndUpdate(item.variantId, {
+        await ProductVariant.findByIdAndUpdate(targetVariantId, {
           $inc: { stock: -item.quantity }
         });
+      } else {
+        // If product has variants but variantId was not passed, find default/first variant
+        const productVariants = await ProductVariant.find({ productId: product._id });
+        if (productVariants && productVariants.length > 0) {
+          const defaultVar = productVariants.find(v => v.isDefault) || productVariants[0];
+          if (defaultVar.stock < item.quantity) {
+            throw new Error(`Insufficient stock for ${product.pName}. Only ${defaultVar.stock} left in stock.`);
+          }
+          await ProductVariant.findByIdAndUpdate(defaultVar._id, {
+            $inc: { stock: -item.quantity }
+          });
+        } else {
+          // No variants - validate product-level stock
+          const currentStock = Math.min(
+            product.pStock !== undefined ? product.pStock : Infinity,
+            product.pQuantity !== undefined ? product.pQuantity : Infinity
+          );
+          if (currentStock < item.quantity) {
+            throw new Error(`Insufficient stock for ${product.pName}. Only ${Math.max(0, currentStock)} left in stock.`);
+          }
+        }
       }
 
-      // Update Product Stock
+      // Update Product Stock (both pStock and pQuantity)
       await productModel.findByIdAndUpdate(product._id, {
-        $inc: { pStock: -item.quantity, pSold: item.quantity }
+        $inc: { pStock: -item.quantity, pQuantity: -item.quantity, pSold: item.quantity }
       });
+
+      // Keep product pStock and pQuantity in exact sync with variants if variants exist
+      const remainingVariants = await ProductVariant.find({ productId: product._id });
+      if (remainingVariants && remainingVariants.length > 0) {
+        const totalVariantStock = remainingVariants.reduce((sum, v) => sum + (v.stock || 0), 0);
+        await productModel.findByIdAndUpdate(product._id, {
+          $set: { pStock: Math.max(0, totalVariantStock), pQuantity: Math.max(0, totalVariantStock) }
+        });
+      }
 
       orderItems.push({
         product: product._id,
         quantity: item.quantity,
         price: itemPrice,
-        variantId: item.variantId,
+        variantId: targetVariantId || item.variantId,
         variantType: item.variantType,
         variantValue: item.variantValue,
         isCombo: false,
@@ -577,14 +636,27 @@ export const cancelOrder = async (req, res) => {
 
     // Restore stocks
     for (const item of order.items) {
-      await productModel.findByIdAndUpdate(item.product, {
-        $inc: { pStock: item.quantity, pSold: -item.quantity }
-      });
+      const prodId = item.product?._id || item.product;
+      const targetVariantId = item.variantId?._id || item.variantId || item.variant?._id || item.variant;
 
-      if (item.variantId) {
-        await ProductVariant.findByIdAndUpdate(item.variantId, {
+      if (targetVariantId) {
+        await ProductVariant.findByIdAndUpdate(targetVariantId, {
           $inc: { stock: item.quantity }
         });
+      }
+
+      if (prodId) {
+        await productModel.findByIdAndUpdate(prodId, {
+          $inc: { pStock: item.quantity, pQuantity: item.quantity, pSold: -item.quantity }
+        });
+
+        const remainingVariants = await ProductVariant.find({ productId: prodId });
+        if (remainingVariants && remainingVariants.length > 0) {
+          const totalVariantStock = remainingVariants.reduce((sum, v) => sum + (v.stock || 0), 0);
+          await productModel.findByIdAndUpdate(prodId, {
+            $set: { pStock: Math.max(0, totalVariantStock), pQuantity: Math.max(0, totalVariantStock) }
+          });
+        }
       }
     }
 
@@ -646,17 +718,27 @@ export const updateOrderStatus = async (req, res) => {
     if (orderStatus === "CANCELLED" || orderStatus === "CANCELED") {
       // Restore inventories
       for (const item of order.items) {
-        if (item.product) {
-          const prodId = item.product._id || item.product;
-          await productModel.findByIdAndUpdate(prodId, {
-            $inc: { pStock: item.quantity, pSold: -item.quantity }
+        const prodId = item.product?._id || item.product;
+        const targetVariantId = item.variantId?._id || item.variantId || item.variant?._id || item.variant;
+
+        if (targetVariantId) {
+          await ProductVariant.findByIdAndUpdate(targetVariantId, {
+            $inc: { stock: item.quantity }
           });
         }
 
-        if (item.variantId) {
-          await ProductVariant.findByIdAndUpdate(item.variantId, {
-            $inc: { stock: item.quantity }
+        if (prodId) {
+          await productModel.findByIdAndUpdate(prodId, {
+            $inc: { pStock: item.quantity, pQuantity: item.quantity, pSold: -item.quantity }
           });
+
+          const remainingVariants = await ProductVariant.find({ productId: prodId });
+          if (remainingVariants && remainingVariants.length > 0) {
+            const totalVariantStock = remainingVariants.reduce((sum, v) => sum + (v.stock || 0), 0);
+            await productModel.findByIdAndUpdate(prodId, {
+              $set: { pStock: Math.max(0, totalVariantStock), pQuantity: Math.max(0, totalVariantStock) }
+            });
+          }
         }
       }
 

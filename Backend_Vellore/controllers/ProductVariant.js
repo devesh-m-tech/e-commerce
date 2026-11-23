@@ -256,6 +256,7 @@ export const getProductVariants = async (req, res) => {
 
     ]);
 
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
     return res.status(200).json({
       success: true,
       product: {
@@ -297,6 +298,7 @@ export const getVariantById = async (req, res) => {
 
     const product = await productModel.findById(variant.productId);
 
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
     return res.status(200).json({
       success: true,
       variant,
@@ -354,6 +356,7 @@ export const updateProductVariant = async (req, res) => {
         .json({ success: false, message: "Variant not found" });
     }
 
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
     return res.status(200).json({
       success: true,
       message: "Variant updated successfully",
@@ -399,6 +402,7 @@ export const deleteProductVariant = async (req, res) => {
       $pull: { variants: variantId },
     });
 
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
     return res.status(200).json({
       success: true,
       message: "Variant deleted successfully",
