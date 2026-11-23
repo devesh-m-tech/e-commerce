@@ -398,6 +398,13 @@
   flex-shrink: 0;
 }
 
+.sub-count-pill {
+  font-size: 10px;
+  padding: 0 5px;
+  margin-left: auto;
+  opacity: 0.85;
+}
+
 .category-tree-item.active .category-count-pill {
   background: #E5B869;
   color: #4A1025;

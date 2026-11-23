@@ -96,7 +96,7 @@ export const getAllCategory = async (req, res) => {
       ...matchStage,
       {
         $lookup: {
-          from: 'products',  // The name of your products collection
+          from: 'products',
           let: { categoryName: '$cName' },
           pipeline: [
             {
@@ -105,8 +105,8 @@ export const getAllCategory = async (req, res) => {
                   $and: [
                     {
                       $or: [
-                        { $eq: ["$pCategory", "$$categoryName"] },
-                        { $eq: ["$pSubCategory", "$$categoryName"] },
+                        { $eq: [{ $toLower: { $ifNull: ["$pCategory", ""] } }, { $toLower: "$$categoryName" }] },
+                        { $eq: [{ $toLower: { $ifNull: ["$pSubCategory", ""] } }, { $toLower: "$$categoryName" }] },
                         {
                           $and: [
                             { $eq: ["$pType", "combo"] },
@@ -120,46 +120,60 @@ export const getAllCategory = async (req, res) => {
                         }
                       ]
                     },
-                    { $in: ["$pStatus", ["active", "Out of Stock"]] }
+                    {
+                      $in: [
+                        { $toLower: { $ifNull: ["$pStatus", "active"] } },
+                        ["active", "out of stock"]
+                      ]
+                    }
                   ]
                 }
               }
+            },
+            {
+              $project: {
+                pCategory: 1,
+                pSubCategory: 1
+              }
             }
           ],
-          as: 'products'
+          as: 'matchedProducts'
         }
       },
       {
         $addFields: {
-          products: { $size: '$products' }  // Count number of products
+          products: { $size: '$matchedProducts' } // Count number of products
         }
       }
     ]);
 
-    // If public request, filter out inactive subcategories and nested subcategories
-    if (!isAdminRequest) {
-      const filteredCategories = categories.map((cat) => {
-        const subCats = Array.isArray(cat.subCategories) ? cat.subCategories : [];
-        const activeSubCats = subCats
-          .filter((sub) => (sub.status || 'active').toLowerCase() === 'active')
-          .map((sub) => {
-            const nested = Array.isArray(sub.subCategories) ? sub.subCategories : [];
-            return {
-              ...sub,
-              subCategories: nested.filter((n) => (n.status || 'active').toLowerCase() === 'active')
-            };
-          });
+    const formattedCategories = categories.map((cat) => {
+      const subCats = Array.isArray(cat.subCategories) ? cat.subCategories : [];
+      const activeSubCats = subCats
+        .filter((sub) => isAdminRequest || (sub.status || 'active').toLowerCase() === 'active')
+        .map((sub) => {
+          const nested = Array.isArray(sub.subCategories) ? sub.subCategories : [];
+          const subCount = (cat.matchedProducts || []).filter(p =>
+            (p.pSubCategory || '').trim().toLowerCase() === (sub.name || '').trim().toLowerCase()
+          ).length;
+          return {
+            ...sub,
+            products: subCount,
+            subCategories: isAdminRequest
+              ? nested
+              : nested.filter((n) => (n.status || 'active').toLowerCase() === 'active')
+          };
+        });
 
-        return {
-          ...cat,
-          subCategories: activeSubCats
-        };
-      });
+      const { matchedProducts, ...cleanCat } = cat;
+      return {
+        ...cleanCat,
+        subCategories: activeSubCats
+      };
+    });
 
-      return res.status(200).json(filteredCategories);
-    }
-
-    res.status(200).json(categories);
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
+    return res.status(200).json(formattedCategories);
   } catch (error) {
     console.error("Error:", error.message);
     return res.status(500).json({

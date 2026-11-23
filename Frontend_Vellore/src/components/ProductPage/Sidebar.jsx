@@ -547,6 +547,9 @@ const Sidebar = ({
                               >
                                 <span className="category-sub-dot" />
                                 <span className="category-sub-name">{sub.name}</span>
+                                {sub.products !== undefined && (
+                                  <span className="category-count-pill sub-count-pill">{sub.products}</span>
+                                )}
                               </div>
                             );
                           })}
